@@ -10,12 +10,13 @@ import { fileURLToPath } from 'url'
 import main from './main.js'
 
 describe('Example Test', function () {
-  it('should GET / with 200 OK', function () {
+  it('should GET / with 200 OK and return HTML', function () {
     return SuperTest(main(0))
       .get('/')
       .expect(response => {
         expect(response.status).toEqual(200)
-        expect(response.text).toEqual('Olá, Hola, Hello!')
+        expect(response.headers['content-type']).toContain('text/html')
+        expect(response.text).toContain('AI Agent Hub')
       })
   })
 

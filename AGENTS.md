@@ -1,6 +1,6 @@
-# AI Agents Library
+# AI Agent Hub
 
-Welcome to the **Agent Training** library - an open-source collection of reusable AI agents for various projects.
+Welcome to the **AI Agent Hub** - an open-source collection of reusable AI agents for various projects.
 
 ## Available Agents
 
