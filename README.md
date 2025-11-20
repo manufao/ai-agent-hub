@@ -1,4 +1,4 @@
-# Agent Training - AI Agents Library
+# AI Agent Hub
 
 An open-source collection of reusable AI agents that can be shared across different projects. This repository serves as a central hub where developers can store, share, and discover AI agent configurations.
 
@@ -6,13 +6,13 @@ An open-source collection of reusable AI agents that can be shared across differ
 
 ## Overview
 
-**Agent Training** provides a minimal web interface to browse and explore AI agents. Contributors can add their own agents and benefit from community contributions.
+**AI Agent Hub** provides a minimal web interface to browse and explore AI agents. Contributors can add their own agents and benefit from community contributions.
 
 ## Project Structure
 
 ```
-agent-training/
-├── agents/          # Directory containing all agent definitions
+ai-agent-hub/
+├── .agents/         # Directory containing all agent definitions
 ├── docker/          # Docker configuration
 │   ├── compose/     # Docker Compose files
 │   │   ├── compose.yaml
@@ -20,6 +20,7 @@ agent-training/
 │   │   └── docker-compose.dev.yml
 │   └── prod/        # Production environment
 │       └── Dockerfile
+├── docs/            # Project documentation and agent-generated plans
 ├── src/             # Server source code
 │   ├── main.ts      # HTTP server with EJS rendering
 │   ├── config.ts    # Configuration
@@ -50,7 +51,7 @@ agent-training/
 1. Clone the repository:
 ```bash
 git clone <your-repo-url>
-cd agent-training
+cd ai-agent-hub
 ```
 
 2. Start the development environment:

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Agent Training - AI Agents Library
+ * AI Agent Hub
  * Minimal web server to display AGENTS.md with EJS and Tailwind CSS
  */
 
@@ -85,6 +85,7 @@ export default function main(port: number = Config.port) {
         response.writeHead(200)
         response.end(html)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error rendering page:', error)
         response.setHeader('Content-Type', 'text/plain;charset=utf-8')
         response.writeHead(500)
@@ -102,9 +103,10 @@ export default function main(port: number = Config.port) {
 
   if (isCLI) {
     server.listen(port)
+    // eslint-disable-next-line no-console
     console.log(`
 ╔════════════════════════════════════════════╗
-║   🤖 Agent Training - AI Agents Library   ║
+║        🤖 AI Agent Hub - Running          ║
 ╚════════════════════════════════════════════╝
 
 Server running at: http://localhost:${port}
