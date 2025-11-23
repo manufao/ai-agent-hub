@@ -94,6 +94,76 @@ export default function main(port: number = Config.port) {
       return
     }
 
+    if (url === '/LICENSE') {
+      try {
+        const licensePath = join(rootDir, 'LICENSE')
+        if (!existsSync(licensePath)) {
+          response.writeHead(404)
+          response.end('LICENSE file not found')
+          return
+        }
+
+        const licenseContent = readFileSync(licensePath, 'utf-8')
+        response.setHeader('Content-Type', 'text/plain;charset=utf-8')
+        response.writeHead(200)
+        response.end(licenseContent)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error serving LICENSE file:', error)
+        response.setHeader('Content-Type', 'text/plain;charset=utf-8')
+        response.writeHead(500)
+        response.end('Internal Server Error')
+      }
+      return
+    }
+
+    // Handle agent routes of the form /.agents/<AGENT_NAME>/system-prompt.md
+    if (url.startsWith('/.agents/')) {
+      try {
+        const requestedFilePath = url.substring(1) // Remove the first '/'
+
+        const parts = requestedFilePath.split('/')
+        if (parts.length < 3) {
+          response.writeHead(404)
+          response.end('Invalid Agent URL format')
+          return
+        }
+
+        // Build the TARGET path (Replace system-prompt.md with README.md)
+        // Agent Directory: .agents/<AGENT_NAME>
+        const agentDir = join(rootDir, parts[0], parts[1])
+
+        // Target File: README.md
+        const targetFilename = 'README.md'
+        const targetFilePath = join(agentDir, targetFilename)
+
+        let htmlContent: string
+
+        if (!existsSync(targetFilePath)) {
+          htmlContent = `<h2 class="text-3xl font-bold text-red-600">⚠️ Agent README not found</h2><p>Fichier ${targetFilename} non trouvé dans ${agentDir}</p>`
+        } else {
+          const markdown = readFileSync(targetFilePath, 'utf-8')
+          htmlContent = marked.parse(markdown) as string
+        }
+
+        const templatePath = join(rootDir, 'views', 'index.ejs')
+        const html = ejs.render(readFileSync(templatePath, 'utf-8'), {
+          content: htmlContent,
+        })
+
+        response.setHeader('Content-Type', 'text/html;charset=utf-8')
+        response.writeHead(200)
+        response.end(html)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error rendering Agent path:', error)
+        response.setHeader('Content-Type', 'text/plain;charset=utf-8')
+        response.writeHead(500)
+        response.end('Internal Server Error')
+      }
+      return
+    }
+
     // 404 for all other routes
     response.writeHead(404)
     response.end('Not Found')
