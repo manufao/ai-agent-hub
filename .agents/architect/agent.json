@@ -1,0 +1,38 @@
+{
+  "agent": "architect",
+  "version": "1.0.0",
+  "status": "pilot",
+  "description": "Technical planning and project tracking agent with acceptance criteria management",
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-5-20250929",
+    "temperature": 0.3,
+    "max_tokens": 4000,
+    "top_p": 1.0
+  },
+  "capabilities": [
+    "technical-planning",
+    "acceptance-criteria",
+    "progress-tracking",
+    "retrospective-reports"
+  ],
+  "output": {
+    "format": "markdown",
+    "location": "docs/",
+    "naming_pattern": "project-plan-{project-name}-{date}.md"
+  },
+  "lifecycle": {
+    "on_completion": {
+      "generate_report": true,
+      "archive_to": "docs/archive/",
+      "notify_developer": true
+    }
+  },
+  "tags": [
+    "planning",
+    "architecture",
+    "project-management",
+    "technical-documentation",
+    "ai-dlc-pilot"
+  ]
+}
