@@ -4,14 +4,16 @@ const isCI = process.env.CI === 'true'
 
 export default {
   verbose: true,
-  collectCoverage: false,
+  collectCoverage: true,
   resetModules: true,
   restoreMocks: true,
+  roots: ['<rootDir>/src/'],
   testEnvironment: 'node',
   transform: {},
   preset: 'ts-jest/presets/default-esm',
   extensionsToTreatAsEsm: ['.ts'],
-  testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
+  moduleFileExtensions: ['ts', 'js'],
+  testRegex: '.spec.ts$',
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
@@ -21,8 +23,17 @@ export default {
       useESM: true,
     },
   },
-  collectCoverageFrom: ['<rootDir>/src/*.ts'],
-  coveragePathIgnorePatterns: ['<rootDir>/dist/', '/node_modules/', '<rootDir>/scripts', '<rootDir>/tools'],
+  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/**/*.spec.ts'],
+  coverageDirectory: './coverage',
+  coverageThreshold: {
+    global: {
+      branches: 100,
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
+  },
+  coveragePathIgnorePatterns: ['<rootDir>/dist/', '/node_modules/'],
   coverageProvider: 'v8',
   coverageReporters: isCI ? ['json'] : ['text'],
 }
