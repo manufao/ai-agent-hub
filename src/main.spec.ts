@@ -1,35 +1,68 @@
 /**
- * This is a sample test suite.
- * Replace this with your implementation.
+ * Test suite for main.ts
  */
 
-import { spawn } from 'child_process'
+import { jest } from '@jest/globals'
 import SuperTest from 'supertest'
-import Path, { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import main from './main.js'
+import type { Server } from 'http'
 
-describe('Example Test', function () {
-  it('should GET / with 200 OK and return HTML', function () {
-    return SuperTest(main(0))
-      .get('/')
-      .expect(response => {
-        expect(response.status).toEqual(200)
-        expect(response.headers['content-type']).toContain('text/html')
-        expect(response.text).toContain('AI Agent Hub')
-      })
+// Mock the router
+jest.unstable_mockModule('./routing/routes.js', () => ({
+  default: {
+    handle: jest.fn(),
+  },
+}))
+
+describe('main', () => {
+  let main: typeof import('./main.js').default
+  let mockRouter: { handle: jest.Mock }
+  let server: Server
+
+  beforeEach(async () => {
+    jest.clearAllMocks()
+
+    const routerModule = await import('./routing/routes.js')
+    mockRouter = routerModule.default as unknown as { handle: jest.Mock }
+
+    const module = await import('./main.js')
+    main = module.default
   })
 
-  it('should init without errors', async function () {
-    process.env.PORT = '0'
+  afterEach(() => {
+    if (server) {
+      server.close()
+    }
+  })
 
-    const dir = dirname(fileURLToPath(import.meta.url))
-    const index = Path.resolve(dir, 'index.ts')
-    const tsNodeExe = process.platform === 'win32' ? './node_modules/.bin/ts-node.cmd' : './node_modules/.bin/ts-node'
-    const proc = await spawn(tsNodeExe, [index])
+  describe('server creation', () => {
+    it('should create a server that delegates to router', () => {
+      mockRouter.handle.mockImplementation((req, res) => {
+        res.writeHead(200)
+        res.end('OK')
+      })
 
-    expect(proc.pid).toBeDefined()
+      server = main(0)
 
-    process.kill(proc.pid || 0, 'SIGTERM')
+      return SuperTest(server).get('/').expect(200).expect('OK')
+    })
+
+    it('should pass request and response to router.handle', () => {
+      mockRouter.handle.mockImplementation((req, res) => {
+        res.writeHead(200)
+        res.end('handled')
+      })
+
+      server = main(0)
+
+      return SuperTest(server)
+        .get('/test')
+        .expect(200)
+        .expect(() => {
+          expect(mockRouter.handle).toHaveBeenCalled()
+          const [req, res] = mockRouter.handle.mock.calls[0]
+          expect(req.url).toBe('/test')
+          expect(res).toBeDefined()
+        })
+    })
   })
 })

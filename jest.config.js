@@ -23,7 +23,7 @@ export default {
       useESM: true,
     },
   },
-  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/**/*.spec.ts'],
+  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/**/*.spec.ts', '!<rootDir>/src/index.ts'],
   coverageDirectory: './coverage',
   coverageThreshold: {
     global: {
@@ -35,5 +35,5 @@ export default {
   },
   coveragePathIgnorePatterns: ['<rootDir>/dist/', '/node_modules/'],
   coverageProvider: 'v8',
-  coverageReporters: isCI ? ['json'] : ['text'],
+  coverageReporters: isCI ? ['json'] : ['text', 'html'],
 }

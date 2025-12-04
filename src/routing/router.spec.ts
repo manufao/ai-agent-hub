@@ -66,6 +66,17 @@ describe('Router', function () {
       expect(handler).not.toHaveBeenCalled()
       expect(mockRes.writeHead).toHaveBeenCalledWith(404)
     })
+
+    it('should default to "/" when req.url is undefined', function () {
+      const handler = jest.fn()
+
+      router.add('/', handler)
+      mockReq.url = undefined
+
+      router.handle(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+      expect(handler).toHaveBeenCalledWith(mockReq, mockRes)
+    })
   })
 
   describe('Route Priority', function () {
