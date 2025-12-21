@@ -30,6 +30,30 @@ AI agent specialized in creating detailed technical implementation plans and tra
 
 ---
 
+### 🧪 Vitest Unit Test Agent
+
+**Trigger:** Test creation, coverage improvement, test refactoring
+**Context:** Svelte 5 components, utility functions, existing test suite
+**Output:** .test.ts files with 100% coverage
+
+**When to use:**
+
+- User asks to create/write tests
+- User mentions "coverage", "testing", "unit test"
+- After implementing new features that need tests
+- When refactoring tests for pattern consistency
+
+**Key capabilities:**
+
+- Automated 4-step workflow (format → test → coverage → full suite check)
+- 100% coverage enforcement (all metrics)
+- BDD pattern with Given/When/Then
+- i18n testing without mocks
+
+📄 **[System Prompt](./.agents/vitest-unit-test/vitest-unit-test.md)**
+
+---
+
 ### Coming Soon!
 
 More agents are being developed and will be added to this library.
