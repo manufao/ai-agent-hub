@@ -113,7 +113,10 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 - **Styling**: Tailwind CSS v4
 - **Markdown**: marked
 - **Testing**: Jest 29 with ts-jest
-- **Dev Tools**: nodemon, ESLint, Prettier, Husky
+- **Linting**: ESLint 9 with typescript-eslint 8 (flat config)
+- **Formatting**: Prettier 3
+- **Git Hooks**: Husky 9, lint-staged 15, commitlint 19
+- **Dev Server**: nodemon 3
 
 ## How to Contribute
 
