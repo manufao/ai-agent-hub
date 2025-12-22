@@ -41,14 +41,6 @@ Comprehensive explanation of the agent's purpose, capabilities, and how it fits 
 
 ## Configuration
 
-### Model Settings
-
-- **Provider:** OpenAI | Anthropic | Google | Azure | Local
-- **Model:** GPT-4 | Claude-3-Sonnet | Gemini-Pro | etc.
-- **Temperature:** 0.7 *(0.0 = deterministic, 1.0 = creative)*
-- **Max Tokens:** 2000
-- **Top P:** 1.0
-
 ### System Prompt
 
 ```

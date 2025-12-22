@@ -1,0 +1,45 @@
+{
+  "agent": "vitest-unit-test",
+  "version": "1.0.0",
+  "status": "pilot",
+  "description": "Specialized agent for creating comprehensive unit tests for Svelte 5 applications with Vitest and Testing Library",
+  "capabilities": [
+    "unit-testing",
+    "coverage-analysis",
+    "test-generation",
+    "bdd-patterns",
+    "svelte5-testing"
+  ],
+  "workflow": {
+    "steps": [
+      "format",
+      "test",
+      "coverage",
+      "full-suite-check"
+    ],
+    "coverage_target": {
+      "statements": 100,
+      "branches": 100,
+      "functions": 100,
+      "lines": 100
+    }
+  },
+  "output": {
+    "format": "typescript",
+    "naming_pattern": "{component}.test.ts"
+  },
+  "commands": {
+    "format": "npm run format",
+    "test": "npm test -- {file} --run",
+    "coverage": "npm run test:coverage -- {file} --run",
+    "full_suite": "npm test -- --run"
+  },
+  "tags": [
+    "testing",
+    "vitest",
+    "svelte5",
+    "unit-tests",
+    "coverage",
+    "ai-dlc-pilot"
+  ]
+}

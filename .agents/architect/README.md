@@ -65,14 +65,6 @@ This agent eliminates ambiguity in project planning by providing developers with
 
 ## Configuration
 
-### Model Settings
-
-- **Provider:** Anthropic
-- **Model:** claude-sonnet-4-5-20250929
-- **Temperature:** 0.3 *(Low temperature for consistent, precise planning)*
-- **Max Tokens:** 4000
-- **Top P:** 1.0
-
 ### System Prompt
 
 See [system-prompt.md](./system-prompt.md) for the complete system prompt.
