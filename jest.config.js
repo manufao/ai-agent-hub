@@ -23,7 +23,12 @@ export default {
       useESM: true,
     },
   },
-  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/**/*.spec.ts', '!<rootDir>/src/index.ts'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.ts',
+    '!<rootDir>/src/**/*.spec.ts',
+    '!<rootDir>/src/index.ts',
+    '!<rootDir>/src/**/index.ts',
+  ],
   coverageDirectory: './coverage',
   coverageThreshold: {
     global: {
