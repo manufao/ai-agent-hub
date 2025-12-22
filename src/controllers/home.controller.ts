@@ -31,6 +31,7 @@ export const homeController = (req: IncomingMessage, res: ServerResponse): void 
     const templatePath = join(rootDir, 'views', 'index.ejs')
     const html = ejs.render(readFileSync(templatePath, 'utf-8'), {
       content: htmlContent,
+      isHome: true,
     })
 
     res.setHeader('Content-Type', 'text/html;charset=utf-8')

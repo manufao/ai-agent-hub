@@ -8,10 +8,20 @@
   </head>
   <body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <% if (!isHome) { %>
+      <!-- Navigation Header -->
+      <div class="mb-4">
+        <a
+          href="/"
+          class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md"
+        >
+          Home
+        </a>
+      </div>
+      <% } %>
+
       <div class="bg-white rounded-lg shadow-lg p-8">
-        <div class="prose prose-slate max-w-none">
-          <%- content %>
-        </div>
+        <div class="prose prose-slate max-w-none"><%- content %></div>
       </div>
     </div>
   </body>

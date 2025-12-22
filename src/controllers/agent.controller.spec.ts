@@ -82,7 +82,7 @@ describe('agentController', () => {
 
       expect(mockExistsSync).toHaveBeenCalled()
       expect(mockMarkedParse).toHaveBeenCalledWith(markdownContent)
-      expect(mockEjsRender).toHaveBeenCalledWith(templateContent, { content: htmlContent })
+      expect(mockEjsRender).toHaveBeenCalledWith(templateContent, { content: htmlContent, isHome: false })
       expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html;charset=utf-8')
       expect(mockRes.writeHead).toHaveBeenCalledWith(200)
       expect(mockRes.end).toHaveBeenCalledWith(renderedHtml)
@@ -104,6 +104,7 @@ describe('agentController', () => {
         templateContent,
         expect.objectContaining({
           content: expect.stringContaining('Agent README not found'),
+          isHome: false,
         }),
       )
       expect(mockRes.writeHead).toHaveBeenCalledWith(200)

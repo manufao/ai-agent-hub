@@ -82,7 +82,7 @@ describe('homeController', () => {
 
       expect(mockExistsSync).toHaveBeenCalled()
       expect(mockMarkedParse).toHaveBeenCalledWith(markdownContent)
-      expect(mockEjsRender).toHaveBeenCalledWith(templateContent, { content: htmlContent })
+      expect(mockEjsRender).toHaveBeenCalledWith(templateContent, { content: htmlContent, isHome: true })
       expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html;charset=utf-8')
       expect(mockRes.writeHead).toHaveBeenCalledWith(200)
       expect(mockRes.end).toHaveBeenCalledWith(renderedHtml)
@@ -104,6 +104,7 @@ describe('homeController', () => {
         templateContent,
         expect.objectContaining({
           content: expect.stringContaining('AGENTS.md not found'),
+          isHome: true,
         }),
       )
       expect(mockRes.writeHead).toHaveBeenCalledWith(200)
