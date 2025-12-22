@@ -43,7 +43,7 @@ ai-agent-hub/
 - Docker Compose
 
 **Option 2 - Local Development:**
-- Node.js (v18+)
+- Node.js (v22+)
 - npm
 
 ### Quick Start with Docker
@@ -107,12 +107,13 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 
 ## Technology Stack
 
-- **Runtime**: Node.js with TypeScript
+- **Runtime**: Node.js 22 with TypeScript 5
 - **Server**: Native HTTP server (no Express)
 - **Templating**: EJS
 - **Styling**: Tailwind CSS v4
 - **Markdown**: marked
-- **Dev Tools**: nodemon, ESLint, Prettier, Husky, Jest
+- **Testing**: Jest 29 with ts-jest
+- **Dev Tools**: nodemon, ESLint, Prettier, Husky
 
 ## How to Contribute
 
