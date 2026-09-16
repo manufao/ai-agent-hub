@@ -44,7 +44,7 @@ ai-agent-hub/
 
 **Option 2 - Local Development:**
 - Node.js (v22+)
-- npm
+- pnpm (v12+)
 
 ### Quick Start with Docker
 
@@ -83,12 +83,12 @@ If you prefer to run without Docker:
 
 1. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 2. Start the development server:
 ```bash
-npm run start:dev
+pnpm run start:dev
 ```
 
 The `start:dev` script automatically builds CSS and starts the server with hot reload.
@@ -100,10 +100,11 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 - `make up` - Start Docker development environment
 - `make down` - Stop Docker environment
 - `make clean` - Clean Docker volumes
-- `npm run build` - Build for production
-- `npm test` - Run tests
-- `npm run lint` - Lint code
-- `npm run format` - Format code with Prettier
+- `pnpm run build` - Build for production
+- `pnpm test` - Run tests
+- `pnpm run lint` - Lint code
+- `pnpm run format` - Format code with Prettier
+- `pnpm run security:check` - Run dependency audit and secret scan
 
 ## Technology Stack
 
@@ -117,6 +118,8 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 - **Formatting**: Prettier 3
 - **Git Hooks**: Husky 9, lint-staged 15, commitlint 19
 - **Dev Server**: nodemon 3
+- **Package Manager**: pnpm 12
+- **Security**: pnpm audit, Gitleaks (secret scanning), Semgrep (SAST), OWASP ZAP (DAST)
 
 ## How to Contribute
 

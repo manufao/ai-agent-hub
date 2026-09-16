@@ -1,17 +1,19 @@
 # Build Stage
 # ---
-FROM node:16 AS builder
+FROM node:22 AS builder
 WORKDIR /opt/app
 
-COPY package*.json ./
-RUN npm install --omit optional
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build
-RUN rm -rf node_modules && npm i --production --ignore-scripts
+RUN pnpm run build
+RUN rm -rf node_modules && pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # Run Stage
 # ---
-FROM gcr.io/distroless/nodejs:16
+FROM gcr.io/distroless/nodejs22-debian12
 
 USER nobody
 

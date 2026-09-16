@@ -19,16 +19,20 @@ clean: ## Clean Docker Compose local development environment.
 
 .PHONY: test
 test: ## Run tests
-	@npm test
+	@pnpm run test
 
 fmt: ## Format code
-	@npm run format
+	@pnpm run format
 
 lint: ## Run static analysis
-	@npm run lint
+	@pnpm run lint
+
+security: ## Run security audit and secret scan
+	@pnpm run security:check
 
 check: ## Run all checks for this project
-	@npm run format:check
-	@npm run lint
-	@npm run test
-	@npm run build
+	@pnpm run format:check
+	@pnpm run lint
+	@pnpm run test
+	@pnpm run build
+	@pnpm run security:audit

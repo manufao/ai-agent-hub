@@ -1,0 +1,9 @@
+# pnpm reads its settings from this file, not from a "pnpm" field in
+# package.json.
+
+# pnpm blocks dependency install scripts by default, so each one has to be
+# allowed by name. These compile/download native binaries and genuinely
+# need it; every other dependency stays blocked, which is the point.
+allowBuilds:
+  '@parcel/watcher': true
+  unrs-resolver: true

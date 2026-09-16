@@ -1,34 +1,50 @@
-name: ci
+name: CI
 
 on:
   push:
     branches:
       - main
+      - master
       - '[0-9]+.x'
     tags:
       - '*'
+  pull_request:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Use Node
         id: setup-node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: '22'
+          cache: 'pnpm'
 
       - name: Deps
-        run: |
-          npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: |
-          npm run lint
+        run: pnpm run lint
+
+      - name: Format check
+        run: pnpm run format:check
 
       - name: Test
-        run: |
-          npm run test:ci
+        run: pnpm run test:ci
+
+      - name: Build
+        run: pnpm run build
