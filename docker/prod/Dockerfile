@@ -3,7 +3,7 @@
 FROM node:22 AS builder
 WORKDIR /opt/app
 
-RUN npm install -g corepack@latest && corepack enable
+RUN npm install -g --no-audit --no-fund corepack@0.36.0 && corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
