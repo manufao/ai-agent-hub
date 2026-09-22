@@ -1,12 +1,11 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
   "exclude": [
     "dist",
     "node_modules",
-    "__test",
-    "**/*.spec.ts",
-    "**/*.spec.js",
-    "*.spec.ts",
-    "**/spec.ts"
+    "**/*.spec.ts"
   ]
 }
