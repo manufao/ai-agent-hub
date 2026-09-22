@@ -6,4 +6,9 @@
 # need it; every other dependency stays blocked, which is the point.
 allowBuilds:
   '@parcel/watcher': true
+  esbuild: true
   unrs-resolver: true
+
+# Refuse to install a dependency that declares itself incompatible with the
+# running Node version. pnpm 12 does not read this from .npmrc.
+engineStrict: true
