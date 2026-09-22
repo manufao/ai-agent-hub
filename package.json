@@ -5,10 +5,10 @@
   "types": "dist/main.d.ts",
   "scripts": {
     "start": "node dist/index.js",
-    "start:dev": "pnpm run build:css && nodemon --ext js,ts,json,env,ejs --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' src/index.ts",
+    "start:dev": "pnpm run build:css && tsx watch src/index.ts",
     "prepare": "husky",
     "build": "pnpm run build:css && tsc --project tsconfig.build.json",
-    "build:clean": "rm -rf tsconfig.build.tsbuildinfo && rm -rf ./dist && rm -rf ./public/css/output.css",
+    "build:clean": "rm -rf ./dist && rm -rf ./public/css/output.css",
     "build:css": "pnpm exec tailwindcss -i ./src/input.css -o ./public/css/output.css",
     "build:css:watch": "pnpm exec tailwindcss -i ./src/input.css -o ./public/css/output.css --watch",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
@@ -28,8 +28,7 @@
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "marked": "^17.0.1",
-    "tailwindcss": "^4.1.17",
-    "tslib": "^2.3.1"
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.2.0",
@@ -48,11 +47,10 @@
     "husky": "^9.0.0",
     "jest": "^30.2.0",
     "lint-staged": "^16.2.7",
-    "nodemon": "^3.0.0",
     "prettier": "^3.0.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.4.6",
-    "ts-node": "^10.7.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0"
   }

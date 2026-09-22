@@ -33,6 +33,6 @@ security: ## Run security audit and secret scan
 check: ## Run all checks for this project
 	@pnpm run format:check
 	@pnpm run lint
-	@pnpm run test
+	@pnpm run test:coverage
 	@pnpm run build
 	@pnpm run security:audit

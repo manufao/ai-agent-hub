@@ -1,32 +1,31 @@
 import eslint from '@eslint/js'
-import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
 import tsdoc from 'eslint-plugin-tsdoc'
 import globals from 'globals'
+import tseslint from 'typescript-eslint'
 
-export default tseslint.config(
+export default defineConfig(
+  globalIgnores(['dist/**', 'coverage/**', '*.cjs', '*.d.ts']),
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+  tseslint.configs.recommended,
   {
     languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
+      globals: globals.node,
     },
     plugins: {
       tsdoc,
     },
     rules: {
       'no-console': 'error',
+      'tsdoc/syntax': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-inferrable-types': 'off',
     },
   },
   {
-    ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'scripts/**', 'cmd/**', 'tools/**', '*.cjs', '*.d.ts'],
+    files: ['**/*.spec.ts'],
+    languageOptions: {
+      globals: globals.jest,
+    },
   },
 )
