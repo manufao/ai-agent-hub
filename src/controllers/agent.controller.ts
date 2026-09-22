@@ -11,7 +11,7 @@ const rootDir = resolve(__dirname, '../..')
 
 /**
  * Controller for agent pages
- * Handles routes of type /.agents/<AGENT_NAME>/system-prompt.md
+ * Handles routes of type `/.agents/<AGENT_NAME>/system-prompt.md`
  * and displays the corresponding README.md
  * @param req - HTTP request object
  * @param res - HTTP response object
