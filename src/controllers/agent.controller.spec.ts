@@ -11,12 +11,16 @@ vi.mock('fs', () => ({
   readFileSync: vi.fn(),
 }))
 
-// Mock ejs module
-vi.mock('ejs', () => ({
-  default: {
-    render: vi.fn(),
-  },
-}))
+// Mock ejs module, keeping the real escapeXML so the escaping is exercised
+vi.mock('ejs', async () => {
+  const actual = await vi.importActual<typeof import('ejs')>('ejs')
+  return {
+    default: {
+      render: vi.fn(),
+      escapeXML: actual.escapeXML,
+    },
+  }
+})
 
 // Mock marked module
 vi.mock('marked', () => ({
@@ -88,7 +92,7 @@ describe('agentController', () => {
       expect(mockRes.end).toHaveBeenCalledWith(renderedHtml)
     })
 
-    it('should render error message when README.md does not exist', () => {
+    it('should return 404 when the agent does not exist', () => {
       const templateContent = '<html><%= content %></html>'
       const renderedHtml = '<html>error content</html>'
 
@@ -103,11 +107,36 @@ describe('agentController', () => {
       expect(mockEjsRender).toHaveBeenCalledWith(
         templateContent,
         expect.objectContaining({
-          content: expect.stringContaining('Agent README not found'),
+          content: expect.stringContaining('Agent not found'),
           isHome: false,
         }),
       )
-      expect(mockRes.writeHead).toHaveBeenCalledWith(200)
+      expect(mockRes.writeHead).toHaveBeenCalledWith(404)
+    })
+
+    it('should not disclose the server file path when the agent does not exist', () => {
+      mockExistsSync.mockReturnValue(false)
+      mockReadFileSync.mockReturnValue('<html><%= content %></html>')
+      mockEjsRender.mockReturnValue('<html>error content</html>')
+
+      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+      const { content } = mockEjsRender.mock.calls[0][1] as { content: string }
+      expect(content).not.toContain('.agents')
+      expect(content).not.toContain('README.md')
+    })
+
+    it('should escape the agent name taken from the URL', () => {
+      mockReq.url = '/.agents/<script>alert(1)</script>/system-prompt.md'
+      mockExistsSync.mockReturnValue(false)
+      mockReadFileSync.mockReturnValue('<html><%= content %></html>')
+      mockEjsRender.mockReturnValue('<html>error content</html>')
+
+      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+      const { content } = mockEjsRender.mock.calls[0][1] as { content: string }
+      expect(content).not.toContain('<script>')
+      expect(content).toContain('&lt;script&gt;')
     })
   })
 
