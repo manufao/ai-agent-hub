@@ -1,15 +1,11 @@
-import 'dotenv/config'
-
 const isCI = process.env.CI === 'true'
 
 export default {
   verbose: true,
-  collectCoverage: true,
   resetModules: true,
   restoreMocks: true,
   roots: ['<rootDir>/src/'],
   testEnvironment: 'node',
-  preset: 'ts-jest/presets/default-esm',
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['ts', 'js'],
   testRegex: '.spec.ts$',
