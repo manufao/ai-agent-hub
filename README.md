@@ -102,6 +102,8 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 - `make clean` - Clean Docker volumes
 - `pnpm run build` - Build for production
 - `pnpm test` - Run tests
+- `pnpm run test:watch` - Run tests in watch mode
+- `pnpm run test:types` - Type-check sources and tests
 - `pnpm run lint` - Lint code
 - `pnpm run format` - Format code with Prettier
 - `pnpm run security:check` - Run dependency audit and secret scan
@@ -113,7 +115,7 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 - **Templating**: EJS 6
 - **Styling**: Tailwind CSS v4
 - **Markdown**: marked 18
-- **Testing**: Jest 30 with ts-jest
+- **Testing**: Vitest 5
 - **Linting**: ESLint 10 with typescript-eslint 8 (flat config)
 - **Formatting**: Prettier 3
 - **Git Hooks**: Husky 9, lint-staged 17, commitlint 21
