@@ -1,9 +1,9 @@
 # Build Stage
 # ---
-FROM node:22 AS builder
+FROM node:24 AS builder
 WORKDIR /opt/app
 
-RUN npm install -g --no-audit --no-fund corepack@0.36.0 && corepack enable
+RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
@@ -13,7 +13,7 @@ RUN rm -rf node_modules && pnpm install --prod --frozen-lockfile --ignore-script
 
 # Run Stage
 # ---
-FROM gcr.io/distroless/nodejs22-debian12
+FROM gcr.io/distroless/nodejs24-debian12
 
 USER nobody
 
