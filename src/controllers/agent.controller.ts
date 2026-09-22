@@ -37,12 +37,18 @@ export const agentController = (req: IncomingMessage, res: ServerResponse): void
     const targetFilePath = join(agentDir, targetFilename)
 
     let htmlContent: string
+    let statusCode: number
 
     if (!existsSync(targetFilePath)) {
-      htmlContent = `<h2 class="text-3xl font-bold text-red-600">⚠️ Agent README not found</h2><p>File ${targetFilename} not found in ${agentDir}</p>`
+      // The agent name comes from the URL, so it is escaped before reaching the
+      // template, which renders content unescaped.
+      const agentName = ejs.escapeXML(parts[1])
+      htmlContent = `<h2 class="text-3xl font-bold text-red-600">⚠️ Agent not found</h2><p>No agent named ${agentName} is available.</p>`
+      statusCode = 404
     } else {
       const markdown = readFileSync(targetFilePath, 'utf-8')
       htmlContent = marked.parse(markdown) as string
+      statusCode = 200
     }
 
     const templatePath = join(rootDir, 'views', 'index.ejs')
@@ -52,7 +58,7 @@ export const agentController = (req: IncomingMessage, res: ServerResponse): void
     })
 
     res.setHeader('Content-Type', 'text/html;charset=utf-8')
-    res.writeHead(200)
+    res.writeHead(statusCode)
     res.end(html)
   } catch (error) {
     // eslint-disable-next-line no-console
