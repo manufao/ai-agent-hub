@@ -2,49 +2,49 @@
  * Test suite for Agent Controller
  */
 
-import { jest } from '@jest/globals'
+import { beforeEach, describe, expect, it, type Mock, type Mocked, vi } from 'vitest'
 import { IncomingMessage, ServerResponse } from 'http'
 
 // Mock fs module
-jest.unstable_mockModule('fs', () => ({
-  existsSync: jest.fn(),
-  readFileSync: jest.fn(),
+vi.mock('fs', () => ({
+  existsSync: vi.fn(),
+  readFileSync: vi.fn(),
 }))
 
 // Mock ejs module
-jest.unstable_mockModule('ejs', () => ({
+vi.mock('ejs', () => ({
   default: {
-    render: jest.fn(),
+    render: vi.fn(),
   },
 }))
 
 // Mock marked module
-jest.unstable_mockModule('marked', () => ({
+vi.mock('marked', () => ({
   marked: {
-    parse: jest.fn(),
+    parse: vi.fn(),
   },
 }))
 
 describe('agentController', () => {
   let agentController: typeof import('./agent.controller.js').agentController
-  let mockExistsSync: jest.Mock
-  let mockReadFileSync: jest.Mock
-  let mockEjsRender: jest.Mock
-  let mockMarkedParse: jest.Mock
+  let mockExistsSync: Mock
+  let mockReadFileSync: Mock
+  let mockEjsRender: Mock
+  let mockMarkedParse: Mock
   let mockReq: Partial<IncomingMessage>
-  let mockRes: jest.Mocked<Partial<ServerResponse>>
+  let mockRes: Mocked<Partial<ServerResponse>>
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const fs = await import('fs')
     const ejs = await import('ejs')
     const { marked } = await import('marked')
 
-    mockExistsSync = fs.existsSync as jest.Mock
-    mockReadFileSync = fs.readFileSync as jest.Mock
-    mockEjsRender = ejs.default.render as jest.Mock
-    mockMarkedParse = marked.parse as unknown as jest.Mock
+    mockExistsSync = fs.existsSync as Mock
+    mockReadFileSync = fs.readFileSync as Mock
+    mockEjsRender = ejs.default.render as Mock
+    mockMarkedParse = marked.parse as unknown as Mock
 
     mockReq = {
       url: '/.agents/architect/system-prompt.md',
@@ -52,10 +52,10 @@ describe('agentController', () => {
     }
 
     mockRes = {
-      writeHead: jest.fn().mockReturnThis(),
-      end: jest.fn().mockReturnThis(),
-      setHeader: jest.fn().mockReturnThis(),
-    } as jest.Mocked<Partial<ServerResponse>>
+      writeHead: vi.fn().mockReturnThis(),
+      end: vi.fn().mockReturnThis(),
+      setHeader: vi.fn().mockReturnThis(),
+    } as Mocked<Partial<ServerResponse>>
 
     const module = await import('./agent.controller.js')
     agentController = module.agentController

@@ -2,28 +2,28 @@
  * Test suite for main.ts
  */
 
-import { jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import SuperTest from 'supertest'
 import type { Server } from 'http'
 import type { IncomingMessage, ServerResponse } from 'http'
 
 // Mock the router
-jest.unstable_mockModule('./routing/routes.js', () => ({
+vi.mock('./routing/routes.js', () => ({
   default: {
-    handle: jest.fn(),
+    handle: vi.fn(),
   },
 }))
 
 describe('main', () => {
   let main: typeof import('./main.js').default
-  let mockRouter: { handle: jest.Mock }
+  let mockRouter: { handle: Mock }
   let server: Server
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const routerModule = await import('./routing/routes.js')
-    mockRouter = routerModule.default as unknown as { handle: jest.Mock }
+    mockRouter = routerModule.default as unknown as { handle: Mock }
 
     const module = await import('./main.js')
     main = module.default

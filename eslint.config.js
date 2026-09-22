@@ -22,10 +22,4 @@ export default defineConfig(
       '@typescript-eslint/no-inferrable-types': 'off',
     },
   },
-  {
-    files: ['**/*.spec.ts'],
-    languageOptions: {
-      globals: globals.jest,
-    },
-  },
 )

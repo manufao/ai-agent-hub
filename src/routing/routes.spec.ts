@@ -2,33 +2,36 @@
  * Test suite for Routes configuration
  */
 
-import { jest } from '@jest/globals'
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 
 // Mock the controllers before importing routes
-jest.unstable_mockModule('../controllers/index.js', () => ({
-  homeController: jest.fn(),
-  agentController: jest.fn(),
-  staticController: jest.fn(),
-  licenseController: jest.fn(),
+vi.mock('../controllers/index.js', () => ({
+  homeController: vi.fn(),
+  agentController: vi.fn(),
+  staticController: vi.fn(),
+  licenseController: vi.fn(),
 }))
 
 // Mock marked
-jest.unstable_mockModule('marked', () => ({
+vi.mock('marked', () => ({
   marked: {
-    setOptions: jest.fn(),
-    parse: jest.fn(),
+    setOptions: vi.fn(),
+    parse: vi.fn(),
   },
 }))
 
 describe('Routes Configuration', () => {
   let router: typeof import('./routes.js').default
-  let mockMarkedSetOptions: jest.Mock
+  let mockMarkedSetOptions: Mock
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+    // routes.js calls marked.setOptions when it loads, so the module has to be
+    // re-executed after the mocks are cleared for that call to be observable.
+    vi.resetModules()
 
     const { marked } = await import('marked')
-    mockMarkedSetOptions = marked.setOptions as jest.Mock
+    mockMarkedSetOptions = marked.setOptions as Mock
 
     const routesModule = await import('./routes.js')
     router = routesModule.default

@@ -2,29 +2,29 @@
  * Test suite for Static Controller
  */
 
-import { jest } from '@jest/globals'
+import { beforeEach, describe, expect, it, type Mock, type Mocked, vi } from 'vitest'
 import { IncomingMessage, ServerResponse } from 'http'
 
 // Mock fs module
-jest.unstable_mockModule('fs', () => ({
-  existsSync: jest.fn(),
-  readFileSync: jest.fn(),
+vi.mock('fs', () => ({
+  existsSync: vi.fn(),
+  readFileSync: vi.fn(),
 }))
 
 describe('Static Controllers', () => {
   let staticController: typeof import('./static.controller.js').staticController
   let licenseController: typeof import('./static.controller.js').licenseController
-  let mockExistsSync: jest.Mock
-  let mockReadFileSync: jest.Mock
+  let mockExistsSync: Mock
+  let mockReadFileSync: Mock
   let mockReq: Partial<IncomingMessage>
-  let mockRes: jest.Mocked<Partial<ServerResponse>>
+  let mockRes: Mocked<Partial<ServerResponse>>
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const fs = await import('fs')
-    mockExistsSync = fs.existsSync as jest.Mock
-    mockReadFileSync = fs.readFileSync as jest.Mock
+    mockExistsSync = fs.existsSync as Mock
+    mockReadFileSync = fs.readFileSync as Mock
 
     mockReq = {
       url: '/css/output.css',
@@ -32,10 +32,10 @@ describe('Static Controllers', () => {
     }
 
     mockRes = {
-      writeHead: jest.fn().mockReturnThis(),
-      end: jest.fn().mockReturnThis(),
-      setHeader: jest.fn().mockReturnThis(),
-    } as jest.Mocked<Partial<ServerResponse>>
+      writeHead: vi.fn().mockReturnThis(),
+      end: vi.fn().mockReturnThis(),
+      setHeader: vi.fn().mockReturnThis(),
+    } as Mocked<Partial<ServerResponse>>
 
     const module = await import('./static.controller.js')
     staticController = module.staticController
