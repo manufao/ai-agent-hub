@@ -72,6 +72,13 @@
     font-weight: 600;
   }
 
+  .nav-subtitle {
+    padding: 0.85rem 0.75rem 0.15rem;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--color-soft);
+  }
+
   .nav-count {
     border: 1px solid var(--color-rule);
     border-radius: 999px;
@@ -97,8 +104,17 @@
   }
 
   .usage-column {
+    align-self: start;
+    margin: 0 1.5rem 2.5rem;
+    border: 1px solid var(--color-rule);
     border-top: 4px solid var(--color-pine);
     background-color: color-mix(in srgb, var(--color-panel) 65%, transparent);
+  }
+
+  @media (min-width: 1024px) {
+    .usage-column {
+      margin: 2.5rem 3rem 2.5rem 0;
+    }
   }
 
   .usage-code {
@@ -243,6 +259,12 @@
   font-size: clamp(2rem, 1rem + 3vw, 2.75rem);
   font-weight: 700;
   line-height: 1.08;
+}
+
+.doc > h2:first-child {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
 }
 
 .doc h2 {

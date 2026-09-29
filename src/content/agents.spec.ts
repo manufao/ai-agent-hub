@@ -39,28 +39,67 @@ describe('agents content', () => {
   })
 
   describe('listAgents', () => {
-    it('lists .md files, skipping README.md and directories', () => {
+    const files = (contents: Record<string, string>) => {
       mockReaddirSync.mockReturnValue([
-        direntFile('architect.md'),
+        ...Object.keys(contents).map(name => direntFile(name)),
         direntFile('README.md'),
         direntDir('skills'),
-        direntFile('vitest-unit-test.md'),
       ])
-      mockReadFileSync.mockImplementation((path: unknown) =>
-        String(path).includes('architect') ? '# Architect\n\nYou plan.' : '# Vitest Unit Test Agent',
-      )
+      mockReadFileSync.mockImplementation((path: unknown) => {
+        const name = Object.keys(contents).find(key => String(path).endsWith(key))
+        return name ? contents[name] : ''
+      })
+    }
+
+    it('lists .md files, skipping README.md and directories, with group and order from the frontmatter', () => {
+      files({
+        'architect.md': '---\ngroup: produit\norder: 2\n---\n\n# Architect\n\nYou plan.',
+      })
 
       expect(listAgents()).toEqual([
-        { slug: 'architect', title: 'Architect', description: 'You plan.' },
-        { slug: 'vitest-unit-test', title: 'Vitest Unit Test Agent', description: '' },
+        {
+          slug: 'architect',
+          title: 'Architect',
+          description: 'You plan.',
+          group: 'produit',
+          groupTitle: 'Produit',
+          order: 2,
+        },
       ])
     })
 
-    it('falls back to the slug when the file has no top-level heading', () => {
-      mockReaddirSync.mockReturnValue([direntFile('architect.md')])
-      mockReadFileSync.mockReturnValue('No heading here')
+    it('sorts by group, then by order, then by title', () => {
+      files({
+        'z.md': '---\ngroup: qualite\norder: 1\n---\n# Z',
+        'b.md': '---\ngroup: produit\norder: 2\n---\n# B',
+        'a.md': '---\ngroup: produit\norder: 1\n---\n# A',
+        'y.md': '---\ngroup: qualite\n---\n# Y',
+        'x.md': '---\ngroup: qualite\n---\n# X',
+        'other.md': '# Other',
+      })
 
-      expect(listAgents()).toEqual([{ slug: 'architect', title: 'architect', description: 'No heading here' }])
+      expect(listAgents().map(agent => agent.slug)).toEqual(['a', 'b', 'z', 'x', 'y', 'other'])
+    })
+
+    it('puts agents without a group last, titled by their group slug when unknown', () => {
+      files({ 'lone.md': '---\ngroup: mystere\norder: nope\n---\n# Lone' })
+
+      expect(listAgents()[0]).toMatchObject({ group: 'mystere', groupTitle: 'mystere', order: 999 })
+    })
+
+    it('falls back to the slug when the file has no top-level heading', () => {
+      files({ 'architect.md': 'No heading here' })
+
+      expect(listAgents()).toEqual([
+        {
+          slug: 'architect',
+          title: 'architect',
+          description: 'No heading here',
+          group: 'autres',
+          groupTitle: 'autres',
+          order: 999,
+        },
+      ])
     })
   })
 
@@ -89,12 +128,15 @@ describe('agents content', () => {
 
     it('returns the agent content and title when the file exists', () => {
       mockStatSync.mockReturnValue({ isFile: () => true })
-      mockReadFileSync.mockReturnValue('# Architect\n\nBody')
+      mockReadFileSync.mockReturnValue('---\ngroup: qualite\norder: 3\n---\n# Architect\n\nBody')
 
       expect(getAgent('architect')).toEqual({
         slug: 'architect',
         title: 'Architect',
         description: 'Body',
+        group: 'qualite',
+        groupTitle: 'Qualité et revue',
+        order: 3,
         content: '# Architect\n\nBody',
       })
     })

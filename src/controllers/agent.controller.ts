@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http'
 import ejs from 'ejs'
-import { getAgent, listAgents } from '../content/agents.js'
+import { getAgent, listAgents, type AgentSummary } from '../content/agents.js'
 import { renderMarkdown } from '../content/markdown.js'
 import { agentHero, agentRelated } from '../content/pages.js'
 import { decodeSegment, pathnameOf } from '../routing/url.js'
@@ -16,15 +16,37 @@ const rewriteLinks = (html: string): string =>
       `href="/examples/${encodeURIComponent(example)}/references/${encodeURIComponent(reference)}"`,
   )
 
-const renderAgentsIndex = (): string => {
-  const items = listAgents()
-    .map(
-      agent =>
-        `<li><a class="entry-link" href="/agents/${encodeURIComponent(agent.slug)}">${ejs.escapeXML(agent.title)}</a><p class="entry-desc">${ejs.escapeXML(agent.description)}</p></li>`,
-    )
-    .join('')
+const renderAgentItem = (agent: AgentSummary): string =>
+  `<li><a class="entry-link" href="/agents/${encodeURIComponent(agent.slug)}">${ejs.escapeXML(agent.title)}</a><p class="entry-desc">${ejs.escapeXML(agent.description)}</p></li>`
 
-  return `<div class="not-prose"><h1 class="page-title">Agents</h1><ul class="entry-list">${items}</ul></div>`
+const renderAgentsIndex = (): string => {
+  const sections: string[] = []
+  let currentGroup: string | undefined
+  let items: string[] = []
+
+  const closeSection = (title: string): void => {
+    sections.push(
+      `<section class="mt-12"><h2 class="section-title">${ejs.escapeXML(title)}</h2><ul class="entry-list">${items.join('')}</ul></section>`,
+    )
+  }
+
+  let currentTitle = ''
+  for (const agent of listAgents()) {
+    if (agent.group !== currentGroup) {
+      if (currentGroup !== undefined) {
+        closeSection(currentTitle)
+      }
+      currentGroup = agent.group
+      currentTitle = agent.groupTitle
+      items = []
+    }
+    items.push(renderAgentItem(agent))
+  }
+  if (currentGroup !== undefined) {
+    closeSection(currentTitle)
+  }
+
+  return `<div class="not-prose"><h1 class="page-title">Agents</h1>${sections.join('')}</div>`
 }
 
 /**
@@ -73,7 +95,7 @@ export const agentController = (req: IncomingMessage, res: ServerResponse): void
       active: { type: 'agent', slug: agent.slug },
       hero: agentHero(agent),
       toc: headings,
-      related: agentRelated(agent.slug, listAgents()),
+      related: agentRelated(agent, listAgents()),
     })
   } catch (error) {
     // eslint-disable-next-line no-console
