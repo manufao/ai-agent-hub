@@ -1,5 +1,12 @@
 import { Router } from './router.js'
-import { homeController, agentController, staticController, licenseController } from '../controllers/index.js'
+import {
+  homeController,
+  agentController,
+  skillsController,
+  examplesController,
+  staticController,
+  licenseController,
+} from '../controllers/index.js'
 import { marked } from 'marked'
 
 // Configure marked
@@ -22,10 +29,18 @@ router.add(/^\/(css|js|images)\/.*$/, staticController)
 router.add('/LICENSE', licenseController)
 
 // 3. Agents
-// Regex: starts with /.agents/
-router.add(/^\/\.agents\/.*$/, agentController)
+// Regex: /agents, /agents/<slug>
+router.add(/^\/agents(\/.*)?$/, agentController)
 
-// 4. Home (exact match)
+// 4. Skills
+// Regex: /skills, /skills/<category>, /skills/<category>/<slug>
+router.add(/^\/skills(\/.*)?$/, skillsController)
+
+// 5. Examples
+// Regex: /examples, /examples/<slug>, /examples/<slug>/references/<name>
+router.add(/^\/examples(\/.*)?$/, examplesController)
+
+// 6. Home (exact match)
 router.add('/', homeController)
 router.add('/index.html', homeController)
 

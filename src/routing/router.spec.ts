@@ -95,6 +95,19 @@ describe('Router', function () {
     })
   })
 
+  describe('Query strings and fragments', function () {
+    it('should match a route on its path, ignoring the query string', function () {
+      const handler = vi.fn()
+
+      router.add('/about', handler)
+      mockReq.url = '/about?ref=x#top'
+
+      router.handle(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+      expect(handler).toHaveBeenCalledWith(mockReq, mockRes)
+    })
+  })
+
   describe('Multiple Routes', function () {
     it('should call the correct handler for different routes', function () {
       const homeHandler = vi.fn()

@@ -5,56 +5,61 @@
 import { beforeEach, describe, expect, it, type Mock, type Mocked, vi } from 'vitest'
 import { IncomingMessage, ServerResponse } from 'http'
 
-// Mock fs module
-vi.mock('fs', () => ({
-  existsSync: vi.fn(),
-  readFileSync: vi.fn(),
+vi.mock('../content/agents.js', () => ({
+  getAgent: vi.fn(),
+  listAgents: vi.fn(),
 }))
 
-// Mock ejs module, keeping the real escapeXML so the escaping is exercised
+vi.mock('../content/markdown.js', () => ({
+  renderMarkdown: vi.fn(),
+}))
+
+vi.mock('../content/pages.js', () => ({
+  agentHero: vi.fn(),
+  agentRelated: vi.fn(),
+}))
+
+vi.mock('../view.js', () => ({
+  renderPage: vi.fn(),
+}))
+
+// Keep the real escapeXML so the escaping is exercised
 vi.mock('ejs', async () => {
   const actual = await vi.importActual<typeof import('ejs')>('ejs')
   return {
     default: {
-      render: vi.fn(),
       escapeXML: actual.escapeXML,
     },
   }
 })
 
-// Mock marked module
-vi.mock('marked', () => ({
-  marked: {
-    parse: vi.fn(),
-  },
-}))
-
 describe('agentController', () => {
   let agentController: typeof import('./agent.controller.js').agentController
-  let mockExistsSync: Mock
-  let mockReadFileSync: Mock
-  let mockEjsRender: Mock
-  let mockMarkedParse: Mock
+  let mockGetAgent: Mock
+  let mockRenderPage: Mock
+  let mockListAgents: Mock
+  let mockRenderMarkdown: Mock
+  let mockAgentHero: Mock
+  let mockAgentRelated: Mock
   let mockReq: Partial<IncomingMessage>
   let mockRes: Mocked<Partial<ServerResponse>>
 
   beforeEach(async () => {
     vi.clearAllMocks()
 
-    const fs = await import('fs')
-    const ejs = await import('ejs')
-    const { marked } = await import('marked')
+    const { getAgent, listAgents } = await import('../content/agents.js')
+    const { renderMarkdown } = await import('../content/markdown.js')
+    const { agentHero, agentRelated } = await import('../content/pages.js')
+    const { renderPage } = await import('../view.js')
 
-    mockExistsSync = fs.existsSync as Mock
-    mockReadFileSync = fs.readFileSync as Mock
-    mockEjsRender = ejs.default.render as Mock
-    mockMarkedParse = marked.parse as unknown as Mock
+    mockGetAgent = getAgent as Mock
+    mockRenderPage = renderPage as Mock
+    mockListAgents = listAgents as Mock
+    mockRenderMarkdown = renderMarkdown as Mock
+    mockAgentHero = agentHero as Mock
+    mockAgentRelated = agentRelated as Mock
 
-    mockReq = {
-      url: '/.agents/architect/system-prompt.md',
-      method: 'GET',
-    }
-
+    mockReq = { url: '/agents/architect', method: 'GET' }
     mockRes = {
       writeHead: vi.fn().mockReturnThis(),
       end: vi.fn().mockReturnThis(),
@@ -65,121 +70,127 @@ describe('agentController', () => {
     agentController = module.agentController
   })
 
-  describe('successful rendering', () => {
-    it('should render agent README.md when file exists', () => {
-      const markdownContent = '# Architect Agent\n\nDescription'
-      const htmlContent = '<h1>Architect Agent</h1><p>Description</p>'
-      const templateContent = '<html><%= content %></html>'
-      const renderedHtml = '<html><h1>Architect Agent</h1></html>'
-
-      mockExistsSync.mockReturnValue(true)
-      mockReadFileSync.mockImplementation((path: unknown) => {
-        if (String(path).includes('README.md')) {
-          return markdownContent
-        }
-        return templateContent
-      })
-      mockMarkedParse.mockReturnValue(htmlContent)
-      mockEjsRender.mockReturnValue(renderedHtml)
-
-      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      expect(mockExistsSync).toHaveBeenCalled()
-      expect(mockMarkedParse).toHaveBeenCalledWith(markdownContent)
-      expect(mockEjsRender).toHaveBeenCalledWith(templateContent, { content: htmlContent, isHome: false })
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html;charset=utf-8')
-      expect(mockRes.writeHead).toHaveBeenCalledWith(200)
-      expect(mockRes.end).toHaveBeenCalledWith(renderedHtml)
+  it('renders the agent when it exists', () => {
+    const agent = { slug: 'architect', title: 'Architect', description: 'Plans', content: '# Architect' }
+    const agents = [{ slug: 'vitest', title: 'Vitest', description: 'Tests' }]
+    const headings = [{ id: 'scope', text: 'Scope' }]
+    const hero = { crumbs: [] }
+    const related = [{ title: 'Vitest' }]
+    mockGetAgent.mockReturnValue(agent)
+    mockListAgents.mockReturnValue(agents)
+    mockRenderMarkdown.mockReturnValue({
+      html: '<p>Body</p><a href="../examples/demo/references/guide.md">g</a>',
+      headings,
     })
+    mockAgentHero.mockReturnValue(hero)
+    mockAgentRelated.mockReturnValue(related)
 
-    it('should return 404 when the agent does not exist', () => {
-      const templateContent = '<html><%= content %></html>'
-      const renderedHtml = '<html>error content</html>'
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-      mockExistsSync.mockReturnValue(false)
-      mockReadFileSync.mockReturnValue(templateContent)
-      mockEjsRender.mockReturnValue(renderedHtml)
-
-      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      expect(mockExistsSync).toHaveBeenCalled()
-      expect(mockMarkedParse).not.toHaveBeenCalled()
-      expect(mockEjsRender).toHaveBeenCalledWith(
-        templateContent,
-        expect.objectContaining({
-          content: expect.stringContaining('Agent not found'),
-          isHome: false,
-        }),
-      )
-      expect(mockRes.writeHead).toHaveBeenCalledWith(404)
-    })
-
-    it('should not disclose the server file path when the agent does not exist', () => {
-      mockExistsSync.mockReturnValue(false)
-      mockReadFileSync.mockReturnValue('<html><%= content %></html>')
-      mockEjsRender.mockReturnValue('<html>error content</html>')
-
-      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      const { content } = mockEjsRender.mock.calls[0][1] as { content: string }
-      expect(content).not.toContain('.agents')
-      expect(content).not.toContain('README.md')
-    })
-
-    it('should escape the agent name taken from the URL', () => {
-      mockReq.url = '/.agents/<script>alert(1)</script>/system-prompt.md'
-      mockExistsSync.mockReturnValue(false)
-      mockReadFileSync.mockReturnValue('<html><%= content %></html>')
-      mockEjsRender.mockReturnValue('<html>error content</html>')
-
-      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      const { content } = mockEjsRender.mock.calls[0][1] as { content: string }
-      expect(content).not.toContain('<script>')
-      expect(content).toContain('&lt;script&gt;')
+    expect(mockGetAgent).toHaveBeenCalledWith('architect')
+    expect(mockRenderMarkdown).toHaveBeenCalledWith('# Architect', { stripTitle: true, stripSummary: true })
+    expect(mockAgentRelated).toHaveBeenCalledWith('architect', agents)
+    expect(mockRenderPage).toHaveBeenCalledWith(mockRes, {
+      statusCode: 200,
+      bodyHtml: '<p>Body</p><a href="/examples/demo/references/guide">g</a>',
+      active: { type: 'agent', slug: 'architect' },
+      hero,
+      toc: headings,
+      related,
     })
   })
 
-  describe('invalid URL handling', () => {
-    it('should return 404 for invalid agent URL format (less than 3 parts)', () => {
-      mockReq.url = '/.agents/invalid'
+  it('returns 404 when the agent does not exist', () => {
+    mockGetAgent.mockReturnValue(undefined)
 
-      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-      expect(mockRes.writeHead).toHaveBeenCalledWith(404)
-      expect(mockRes.end).toHaveBeenCalledWith('Invalid Agent URL format')
-    })
-
-    it('should handle empty URL', () => {
-      mockReq.url = ''
-
-      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      expect(mockRes.writeHead).toHaveBeenCalledWith(404)
-      expect(mockRes.end).toHaveBeenCalledWith('Invalid Agent URL format')
-    })
-
-    it('should handle undefined URL', () => {
-      mockReq.url = undefined
-
-      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      expect(mockRes.writeHead).toHaveBeenCalledWith(404)
-      expect(mockRes.end).toHaveBeenCalledWith('Invalid Agent URL format')
+    expect(mockRenderPage).toHaveBeenCalledWith(mockRes, {
+      statusCode: 404,
+      bodyHtml: expect.stringContaining('Agent introuvable'),
+      active: { type: 'agent', slug: 'architect' },
     })
   })
 
-  describe('error handling', () => {
-    it('should return 500 when an error occurs', () => {
-      mockExistsSync.mockImplementation(() => {
-        throw new Error('File system error')
-      })
+  it('escapes the agent slug taken from the URL', () => {
+    mockReq.url = '/agents/%3Cscript%3Ealert(1)%3C%2Fscript%3E'
+    mockGetAgent.mockReturnValue(undefined)
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    const call = mockRenderPage.mock.calls[0][1] as { bodyHtml: string }
+    expect(call.bodyHtml).not.toContain('<script>')
+    expect(call.bodyHtml).toContain('&lt;script&gt;')
+  })
+
+  it('renders the agents index for /agents and /agents/', () => {
+    mockListAgents.mockReturnValue([{ slug: 'architect', title: 'Architect', description: 'Plans <work>' }])
+
+    for (const url of ['/agents', '/agents/']) {
+      mockRenderPage.mockClear()
+      mockReq.url = url
 
       agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
-      expect(mockRes.writeHead).toHaveBeenCalledWith(500)
-      expect(mockRes.end).toHaveBeenCalledWith('Internal Server Error')
+      const call = mockRenderPage.mock.calls[0][1] as { statusCode: number; bodyHtml: string }
+      expect(call.statusCode).toBe(200)
+      expect(call.bodyHtml).toContain('href="/agents/architect"')
+      expect(call.bodyHtml).toContain('Plans &lt;work&gt;')
+      expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ active: { type: 'agents' } }))
+    }
+  })
+
+  it('finds the agent even when the URL carries a query string', () => {
+    mockReq.url = '/agents/architect?ref=x'
+    mockGetAgent.mockReturnValue(undefined)
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetAgent).toHaveBeenCalledWith('architect')
+  })
+
+  it('returns 404, not 500, for a malformed percent-encoded slug', () => {
+    mockReq.url = '/agents/%E0%A4%A'
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetAgent).not.toHaveBeenCalled()
+    expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ statusCode: 404 }))
+  })
+
+  it('returns 404 for a URL with more than one segment after /agents', () => {
+    mockReq.url = '/agents/a/b'
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetAgent).not.toHaveBeenCalled()
+    expect(mockRenderPage).toHaveBeenCalledWith(
+      mockRes,
+      expect.objectContaining({ statusCode: 404, active: { type: 'agent', slug: '' } }),
+    )
+  })
+
+  it('returns 404 when the URL is missing entirely', () => {
+    mockReq.url = undefined
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetAgent).not.toHaveBeenCalled()
+    expect(mockRenderPage).toHaveBeenCalledWith(
+      mockRes,
+      expect.objectContaining({ statusCode: 404, active: { type: 'agent', slug: '' } }),
+    )
+  })
+
+  it('returns 500 when an error occurs', () => {
+    mockGetAgent.mockImplementation(() => {
+      throw new Error('boom')
     })
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
+    expect(mockRes.writeHead).toHaveBeenCalledWith(500)
+    expect(mockRes.end).toHaveBeenCalledWith('Internal Server Error')
   })
 })

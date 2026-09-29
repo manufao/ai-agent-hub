@@ -8,6 +8,8 @@ import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 vi.mock('../controllers/index.js', () => ({
   homeController: vi.fn(),
   agentController: vi.fn(),
+  skillsController: vi.fn(),
+  examplesController: vi.fn(),
   staticController: vi.fn(),
   licenseController: vi.fn(),
 }))

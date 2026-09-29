@@ -6,13 +6,13 @@ An open-source collection of reusable AI agents that can be shared across differ
 
 ## Overview
 
-**AI Agent Hub** provides a minimal web interface to browse and explore AI agents. Contributors can add their own agents and benefit from community contributions.
+**AI Agent Hub** provides a web interface to browse and explore AI agents and skills, organized by category with a sidebar navigation. Contributors can add their own agents and skills and benefit from community contributions. See `.agents/README.md` for the site's own overview, and `examples/create-skill-or-agent/SKILL.md` for how to contribute one.
 
 ## Project Structure
 
 ```
 ai-agent-hub/
-├── .agents/         # Directory containing all agent definitions
+├── .agents/         # Agent personas (<name>.md) and skills (skills/<category>/<name>/SKILL.md)
 ├── docker/          # Docker configuration
 │   ├── compose/     # Docker Compose files
 │   │   ├── compose.yaml
@@ -21,16 +21,24 @@ ai-agent-hub/
 │   └── prod/        # Production environment
 │       └── Dockerfile
 ├── docs/            # Project documentation and agent-generated plans
+├── examples/        # Implementation examples (skill + references), not wired to any tool
+├── .claude/         # Claude Code wrappers: agents/ (personas), plus skills/ symlinks for real skills
+├── .codex/          # Codex CLI wrappers: agents/*.toml
+├── .cursor/         # Cursor wrappers: rules/*.mdc
 ├── src/             # Server source code
-│   ├── main.ts      # HTTP server with EJS rendering
+│   ├── main.ts      # HTTP server
 │   ├── config.ts    # Configuration
+│   ├── view.ts      # Shared page renderer (sidebar layout)
+│   ├── content/     # Loaders for agents, skills and overview (read from .agents/)
+│   ├── controllers/ # Home, agent, skills and static controllers
+│   ├── routing/     # Minimal router and route table
 │   └── input.css    # Tailwind CSS input
 ├── views/           # EJS templates
-│   └── index.ejs    # Main page template
+│   └── index.ejs    # Site layout (sidebar + content)
 ├── public/          # Static assets
 │   └── css/         # Generated CSS
 ├── .dockerignore    # Docker ignore patterns
-├── AGENTS.md        # List of available agents (displayed on web)
+├── AGENTS.md        # Repo-wide instructions for coding agents (Claude Code, Codex, ...)
 └── README.md        # This file
 ```
 
@@ -95,8 +103,18 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 
 3. Open your browser at [http://localhost:3000](http://localhost:3000)
 
+### Site Pages
+
+Once the server is running:
+
+- `/` - Overview (`.agents/README.md`)
+- `/agents/<name>` - An agent persona (`.agents/<name>.md`)
+- `/skills`, `/skills/<category>`, `/skills/<category>/<name>` - Skills, grouped by category
+- `/examples/<name>` - Implementation examples (`examples/<name>/SKILL.md`)
+
 ### Other Available Commands
 
+- `make check` - Run every CI check (format, lint, types, coverage, build, audit)
 - `make up` - Start Docker development environment
 - `make down` - Stop Docker environment
 - `make clean` - Clean Docker volumes
@@ -128,11 +146,10 @@ The `start:dev` script automatically builds CSS and starts the server with hot r
 We welcome contributions! Here's how you can help:
 
 1. Fork this repository
-2. Create a new branch for your agent or feature
-3. Add your agent definition to the `agents/` directory
-4. Document your agent in `AGENTS.md`
-5. Test your changes locally
-6. Submit a pull request
+2. Create a new branch for your agent or skill
+3. Follow `examples/create-skill-or-agent/SKILL.md` to add a new agent (`.agents/<name>.md`) or skill (`.agents/skills/<category>/<name>/SKILL.md`)
+4. Test your changes locally
+5. Submit a pull request
 
 
 ## License

@@ -5,52 +5,38 @@
 import { beforeEach, describe, expect, it, type Mock, type Mocked, vi } from 'vitest'
 import { IncomingMessage, ServerResponse } from 'http'
 
-// Mock fs module
-vi.mock('fs', () => ({
-  existsSync: vi.fn(),
-  readFileSync: vi.fn(),
+vi.mock('../content/overview.js', () => ({
+  getOverview: vi.fn(),
 }))
 
-// Mock ejs module
-vi.mock('ejs', () => ({
-  default: {
-    render: vi.fn(),
-  },
+vi.mock('../view.js', () => ({
+  renderPage: vi.fn(),
 }))
 
-// Mock marked module
-vi.mock('marked', () => ({
-  marked: {
-    parse: vi.fn(),
-  },
+vi.mock('../content/markdown.js', () => ({
+  renderMarkdown: vi.fn(),
 }))
 
 describe('homeController', () => {
   let homeController: typeof import('./home.controller.js').homeController
-  let mockExistsSync: Mock
-  let mockReadFileSync: Mock
-  let mockEjsRender: Mock
-  let mockMarkedParse: Mock
+  let mockGetOverview: Mock
+  let mockRenderPage: Mock
+  let mockRenderMarkdown: Mock
   let mockReq: Partial<IncomingMessage>
   let mockRes: Mocked<Partial<ServerResponse>>
 
   beforeEach(async () => {
     vi.clearAllMocks()
 
-    const fs = await import('fs')
-    const ejs = await import('ejs')
-    const { marked } = await import('marked')
+    const { getOverview } = await import('../content/overview.js')
+    const { renderPage } = await import('../view.js')
+    const { renderMarkdown } = await import('../content/markdown.js')
 
-    mockExistsSync = fs.existsSync as Mock
-    mockReadFileSync = fs.readFileSync as Mock
-    mockEjsRender = ejs.default.render as Mock
-    mockMarkedParse = marked.parse as unknown as Mock
+    mockGetOverview = getOverview as Mock
+    mockRenderPage = renderPage as Mock
+    mockRenderMarkdown = renderMarkdown as Mock
 
-    mockReq = {
-      url: '/',
-      method: 'GET',
-    }
-
+    mockReq = { url: '/', method: 'GET' }
     mockRes = {
       writeHead: vi.fn().mockReturnThis(),
       end: vi.fn().mockReturnThis(),
@@ -61,67 +47,47 @@ describe('homeController', () => {
     homeController = module.homeController
   })
 
-  describe('successful rendering', () => {
-    it('should render AGENTS.md when file exists', () => {
-      const markdownContent = '# Agents\n\nList of agents'
-      const htmlContent = '<h1>Agents</h1><p>List of agents</p>'
-      const templateContent = '<html><%= content %></html>'
-      const renderedHtml = '<html><h1>Agents</h1><p>List of agents</p></html>'
+  it('renders the overview content when .agents/README.md exists', () => {
+    mockGetOverview.mockReturnValue('# Overview')
+    const headings = [{ id: 'intro', text: 'Intro' }]
+    mockRenderMarkdown.mockReturnValue({ html: '<h1>Overview</h1>', headings })
 
-      mockExistsSync.mockReturnValue(true)
-      mockReadFileSync.mockImplementation((path: unknown) => {
-        if (String(path).includes('AGENTS.md')) {
-          return markdownContent
-        }
-        return templateContent
-      })
-      mockMarkedParse.mockReturnValue(htmlContent)
-      mockEjsRender.mockReturnValue(renderedHtml)
+    homeController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-      homeController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      expect(mockExistsSync).toHaveBeenCalled()
-      expect(mockMarkedParse).toHaveBeenCalledWith(markdownContent)
-      expect(mockEjsRender).toHaveBeenCalledWith(templateContent, { content: htmlContent, isHome: true })
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html;charset=utf-8')
-      expect(mockRes.writeHead).toHaveBeenCalledWith(200)
-      expect(mockRes.end).toHaveBeenCalledWith(renderedHtml)
-    })
-
-    it('should render error message when AGENTS.md does not exist', () => {
-      const templateContent = '<html><%= content %></html>'
-      const renderedHtml = '<html>error content</html>'
-
-      mockExistsSync.mockReturnValue(false)
-      mockReadFileSync.mockReturnValue(templateContent)
-      mockEjsRender.mockReturnValue(renderedHtml)
-
-      homeController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-      expect(mockExistsSync).toHaveBeenCalled()
-      expect(mockMarkedParse).not.toHaveBeenCalled()
-      expect(mockEjsRender).toHaveBeenCalledWith(
-        templateContent,
-        expect.objectContaining({
-          content: expect.stringContaining('AGENTS.md not found'),
-          isHome: true,
-        }),
-      )
-      expect(mockRes.writeHead).toHaveBeenCalledWith(200)
+    expect(mockRenderMarkdown).toHaveBeenCalledWith('# Overview')
+    expect(mockRenderPage).toHaveBeenCalledWith(mockRes, {
+      statusCode: 200,
+      bodyHtml: '<h1>Overview</h1>',
+      active: { type: 'overview' },
+      toc: headings,
     })
   })
 
-  describe('error handling', () => {
-    it('should return 500 when an error occurs', () => {
-      mockExistsSync.mockImplementation(() => {
-        throw new Error('File system error')
-      })
+  it('renders a fallback message when .agents/README.md is missing', () => {
+    mockGetOverview.mockReturnValue(undefined)
 
-      homeController(mockReq as IncomingMessage, mockRes as ServerResponse)
+    homeController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
-      expect(mockRes.writeHead).toHaveBeenCalledWith(500)
-      expect(mockRes.end).toHaveBeenCalledWith('Internal Server Error')
+    expect(mockRenderMarkdown).not.toHaveBeenCalled()
+    expect(mockRenderPage).toHaveBeenCalledWith(
+      mockRes,
+      expect.objectContaining({
+        statusCode: 200,
+        bodyHtml: expect.stringContaining('.agents/README.md introuvable'),
+        active: { type: 'overview' },
+      }),
+    )
+  })
+
+  it('returns 500 when an error occurs', () => {
+    mockGetOverview.mockImplementation(() => {
+      throw new Error('boom')
     })
+
+    homeController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
+    expect(mockRes.writeHead).toHaveBeenCalledWith(500)
+    expect(mockRes.end).toHaveBeenCalledWith('Internal Server Error')
   })
 })

@@ -1,59 +1,25 @@
-# AI Agent Hub
+# Repository Instructions
 
-Welcome to the **AI Agent Hub** - an open-source collection of reusable AI agents for various projects.
+Node.js/TypeScript application (native HTTP server, no framework) + EJS + Tailwind CSS. It serves a site presenting the AI agents and skills defined in `.agents/`:
 
-## Available Agents
+- `.agents/README.md` — homepage content
+- `.agents/<name>.md` — an agent (canonical persona), rendered at `/agents/<name>`
+- `.agents/skills/<category>/<name>/SKILL.md` — a skill in the open [Agent Skills](https://agentskills.io) format, rendered at `/skills/<category>/<name>`
+- `examples/<name>/` — implementation examples (a `SKILL.md` plus `references/`), rendered at `/examples/<name>`. They live outside `.agents/skills/` on purpose: no tool discovers them and they have no wrappers or symlinks
 
-### 🏗️ Architect
-**Status:** Pilot | **Version:** 1.0.0
+The site UI and the content shown on it (homepage, agents, skills) are in French. Repository documentation (this file, `README.md`, `examples/`) is in English.
 
-AI agent specialized in creating detailed technical implementation plans and tracking project progress through structured markdown documentation.
+Before adding an agent or a skill, read `examples/create-skill-or-agent/SKILL.md`. It documents the convention (one canonical file plus a thin wrapper per tool) that avoids duplication across Claude Code, Codex CLI, Cursor and Gemini CLI.
 
-**Key Features:**
-- 70% technical depth (architecture, patterns, implementation details)
-- 30% business context (user value, milestones)
-- Acceptance criteria generation for every task
-- Progress tracking with Definition of Done checklists
-- Retrospective reports on completion
-- Automatic archival workflow
+## Useful commands
 
-**Use Cases:**
-- New feature development planning
-- System refactoring roadmaps
-- Architecture design documentation
-- Sprint planning with technical breakdowns
-- Project tracking and progress monitoring
+- `pnpm run start:dev` — dev server (CSS build + hot reload)
+- `make check` — format, lint, type-check, tests with coverage (100% required), build. This is the CI gate; make it pass before any PR
+- `pnpm test:watch` — tests in watch mode
 
-**Output:** Markdown files in `docs/` directory with complete project plans
+## Conventions
 
-🤖 **[System Prompt](./.agents/architect/system-prompt.md)**
-
----
-
-### 🧪 Vitest Unit Test Agent
-
-**Trigger:** Test creation, coverage improvement, test refactoring
-**Context:** Svelte 5 components, utility functions, existing test suite
-**Output:** .test.ts files with 100% coverage
-
-**When to use:**
-
-- User asks to create/write tests
-- User mentions "coverage", "testing", "unit test"
-- After implementing new features that need tests
-- When refactoring tests for pattern consistency
-
-**Key capabilities:**
-
-- Automated 4-step workflow (format → test → coverage → full suite check)
-- 100% coverage enforcement (all metrics)
-- BDD pattern with Given/When/Then
-- i18n testing without mocks
-
-📄 **[System Prompt](./.agents/vitest-unit-test/vitest-unit-test.md)**
-
----
-
-### Coming Soon!
-
-More agents are being developed and will be added to this library.
+- 100% test coverage on all of `src/**/*.ts` (thresholds in `vitest.config.ts`) — every new controller/module must be tested accordingly
+- No front-end framework: rendering is server-side with EJS, see `views/`
+- Routing is a home-grown mini-router (`src/routing/router.ts`) with no named parameters — each controller parses `req.url` itself
+- Skills are discovered natively from `.agents/skills/` by Codex CLI, Cursor and Gemini CLI. Claude Code only scans `.claude/skills/`, so each skill also needs a symlink there
