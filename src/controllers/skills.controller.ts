@@ -55,7 +55,7 @@ export const skillsController = (req: IncomingMessage, res: ServerResponse): voi
     const skillSlug = match?.[2] === undefined ? '' : decodeSegment(match[2])
 
     if (!match || categorySlug === undefined || skillSlug === undefined) {
-      renderPage(res, { statusCode: 404, bodyHtml: notFound('Invalid skills URL'), active: { type: 'skills' } })
+      renderPage(res, { statusCode: 404, bodyHtml: notFound('URL de skill invalide'), active: { type: 'skills' } })
       return
     }
 
