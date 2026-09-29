@@ -25,7 +25,11 @@ describe('agentHero', () => {
   it('describes the agent and how to invoke it in each tool', () => {
     const hero = agentHero({ slug: 'architect', title: 'Architect', description: 'Plans work', content: '' })
 
-    expect(hero).toMatchObject({ eyebrow: 'Agent', title: 'Architect', description: 'Plans work' })
+    expect(hero).toMatchObject({
+      crumbs: [{ label: 'Agents', href: '/agents' }],
+      title: 'Architect',
+      description: 'Plans work',
+    })
     expect(hero.usage.map(row => row.label)).toEqual(['Claude Code', 'Codex CLI', 'Cursor'])
     expect(hero.usage[2].value).toBe('@architect')
   })
@@ -35,7 +39,10 @@ describe('skillHero', () => {
   it('uses the markdown title, the category and the slash command', () => {
     const hero = skillHero(skill)
 
-    expect(hero.eyebrow).toBe('Ingénierie · /creer-un-skill')
+    expect(hero.crumbs).toEqual([
+      { label: 'Skills', href: '/skills' },
+      { label: 'Ingénierie', href: '/skills/ingenierie' },
+    ])
     expect(hero.title).toBe('Create a skill')
     expect(hero.description).toBe('Explains how to create a skill')
     expect(hero.usage).toEqual([
@@ -85,7 +92,7 @@ const example = {
 describe('exampleHero', () => {
   it('has no usage panel content', () => {
     expect(exampleHero(example)).toEqual({
-      eyebrow: 'Exemple',
+      crumbs: [{ label: 'Exemples', href: '/examples' }],
       title: 'Demo title',
       description: 'A demo',
       usageTitle: '',
@@ -97,7 +104,10 @@ describe('exampleHero', () => {
 describe('referenceHero', () => {
   it('names the parent example in the eyebrow', () => {
     expect(referenceHero(example, { slug: 'a', title: 'Ref A', content: '' })).toMatchObject({
-      eyebrow: 'Exemple · demo',
+      crumbs: [
+        { label: 'Exemples', href: '/examples' },
+        { label: 'demo', href: '/examples/demo' },
+      ],
       title: 'Ref A',
     })
   })

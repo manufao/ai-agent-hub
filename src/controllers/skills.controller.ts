@@ -9,40 +9,37 @@ import { renderPage } from '../view.js'
 const SKILLS_URL = /^\/skills(?:\/([^/]+))?(?:\/([^/]+))?\/?$/
 
 const notFound = (message: string): string =>
-  `<h2 class="text-3xl font-bold text-red-600">⚠️ Introuvable</h2><p>${ejs.escapeXML(message)}</p>`
+  `<div class="not-prose"><h2 class="alert-title">Introuvable</h2><p class="mt-3">${ejs.escapeXML(message)}</p></div>`
 
 const renderSkillList = (category: CategorySummary): string => {
   if (category.skills.length === 0) {
-    return '<p class="mt-2 italic text-gray-500">Aucun skill pour l\'instant.</p>'
+    return '<p class="empty-note">Aucun skill pour l\'instant.</p>'
   }
 
   const skillItems = category.skills
     .map(
       skill =>
-        `<li><a class="text-blue-600 hover:underline" href="/skills/${encodeURIComponent(category.slug)}/${encodeURIComponent(skill.slug)}">${ejs.escapeXML(skill.name)}</a> — ${ejs.escapeXML(skill.description)}</li>`,
+        `<li><a class="entry-link" href="/skills/${encodeURIComponent(category.slug)}/${encodeURIComponent(skill.slug)}">${ejs.escapeXML(skill.name)}</a><p class="entry-desc">${ejs.escapeXML(skill.description)}</p></li>`,
     )
     .join('')
 
-  return `<ul class="list-disc pl-6 mt-2">${skillItems}</ul>`
+  return `<ul class="entry-list">${skillItems}</ul>`
 }
 
-const renderCategoryCard = (category: CategorySummary): string => `<section class="mb-8">
-    <h2 class="text-2xl font-semibold">
-      <a class="hover:underline" href="/skills/${encodeURIComponent(category.slug)}">${ejs.escapeXML(category.title)}</a>
-    </h2>
-    ${category.description ? `<p class="mt-1 text-gray-600">${ejs.escapeXML(category.description)}</p>` : ''}
+const renderDescription = (category: CategorySummary): string =>
+  category.description ? `<p class="entry-desc">${ejs.escapeXML(category.description)}</p>` : ''
+
+const renderCategorySection = (category: CategorySummary): string => `<section class="mt-12">
+    <h2 class="section-title"><a href="/skills/${encodeURIComponent(category.slug)}">${ejs.escapeXML(category.title)}</a></h2>
+    ${renderDescription(category)}
     ${renderSkillList(category)}
   </section>`
 
-const renderSkillsIndex = (): string => {
-  const categories = listCategories()
-  return `<h1 class="text-3xl font-bold mb-6">Skills</h1>${categories.map(renderCategoryCard).join('')}`
-}
+const renderSkillsIndex = (): string =>
+  `<div class="not-prose"><h1 class="page-title">Skills</h1>${listCategories().map(renderCategorySection).join('')}</div>`
 
 const renderCategoryPage = (category: CategorySummary): string =>
-  `<h1 class="text-3xl font-bold mb-2">${ejs.escapeXML(category.title)}</h1>${
-    category.description ? `<p class="text-gray-600 mb-6">${ejs.escapeXML(category.description)}</p>` : ''
-  }${renderSkillList(category)}`
+  `<div class="not-prose"><h1 class="page-title">${ejs.escapeXML(category.title)}</h1>${renderDescription(category)}${renderSkillList(category)}</div>`
 
 /**
  * Controller for the skills section.

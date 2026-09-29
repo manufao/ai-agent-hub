@@ -20,11 +20,11 @@ const renderAgentsIndex = (): string => {
   const items = listAgents()
     .map(
       agent =>
-        `<li><a class="text-blue-600 hover:underline" href="/agents/${encodeURIComponent(agent.slug)}">${ejs.escapeXML(agent.title)}</a> — ${ejs.escapeXML(agent.description)}</li>`,
+        `<li><a class="entry-link" href="/agents/${encodeURIComponent(agent.slug)}">${ejs.escapeXML(agent.title)}</a><p class="entry-desc">${ejs.escapeXML(agent.description)}</p></li>`,
     )
     .join('')
 
-  return `<h1 class="text-3xl font-bold mb-6">Agents</h1><ul class="list-disc pl-6">${items}</ul>`
+  return `<div class="not-prose"><h1 class="page-title">Agents</h1><ul class="entry-list">${items}</ul></div>`
 }
 
 /**
@@ -41,7 +41,7 @@ export const agentController = (req: IncomingMessage, res: ServerResponse): void
     if (!match || requestedSlug === undefined) {
       renderPage(res, {
         statusCode: 404,
-        bodyHtml: '<h2 class="text-3xl font-bold text-red-600">⚠️ URL d\'agent invalide</h2>',
+        bodyHtml: '<div class="not-prose"><h2 class="alert-title">URL d\'agent invalide</h2></div>',
         active: { type: 'agent', slug: '' },
       })
       return
@@ -60,13 +60,13 @@ export const agentController = (req: IncomingMessage, res: ServerResponse): void
       const safeSlug = ejs.escapeXML(requestedSlug)
       renderPage(res, {
         statusCode: 404,
-        bodyHtml: `<h2 class="text-3xl font-bold text-red-600">⚠️ Agent introuvable</h2><p>Aucun agent nommé ${safeSlug} n'est disponible.</p>`,
+        bodyHtml: `<div class="not-prose"><h2 class="alert-title">Agent introuvable</h2><p class="mt-3">Aucun agent nommé ${safeSlug} n'est disponible.</p></div>`,
         active: { type: 'agent', slug: requestedSlug },
       })
       return
     }
 
-    const { html, headings } = renderMarkdown(agent.content, { stripTitle: true })
+    const { html, headings } = renderMarkdown(agent.content, { stripTitle: true, stripSummary: true })
     renderPage(res, {
       statusCode: 200,
       bodyHtml: rewriteLinks(html),

@@ -13,10 +13,13 @@ export interface RenderedMarkdown {
 export interface RenderOptions {
   /** Drop the leading `<h1>` (the page hero already displays the title). */
   stripTitle?: boolean
+  /** Drop the first paragraph (the hero already shows it as the description). */
+  stripSummary?: boolean
 }
 
 const TITLE_LINE = /^#\s+(.+)$/m
 const LEADING_H1 = /^\s*<h1[^>]*>[\s\S]*?<\/h1>\s*/
+const LEADING_PARAGRAPH = /^\s*<p>[\s\S]*?<\/p>\s*/
 const H2 = /<h2>([\s\S]*?)<\/h2>/g
 const NON_PARAGRAPH_START = /^(#|>|[-*]\s|\d+\.\s|```|\|)/
 
@@ -49,6 +52,10 @@ export function renderMarkdown(markdown: string, options: RenderOptions = {}): R
   let html = marked.parse(markdown) as string
   if (options.stripTitle) {
     html = html.replace(LEADING_H1, '')
+  }
+
+  if (options.stripSummary) {
+    html = html.replace(LEADING_PARAGRAPH, '')
   }
 
   const headings: Heading[] = []

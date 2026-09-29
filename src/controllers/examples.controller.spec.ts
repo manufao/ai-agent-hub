@@ -83,7 +83,7 @@ describe('examplesController', () => {
 
   it('renders an example and rewrites its relative links for the site', () => {
     mockReq = { url: '/examples/demo' }
-    const hero = { eyebrow: 'Exemple' }
+    const hero = { crumbs: [] }
     const related = [{ title: 'Ref' }]
     mockGetExample.mockReturnValue(example)
     mockRenderMarkdown.mockReturnValue({
@@ -120,7 +120,7 @@ describe('examplesController', () => {
 
   it('renders a reference of an example', () => {
     mockReq = { url: '/examples/demo/references/guide' }
-    const hero = { eyebrow: 'Exemple · demo' }
+    const hero = { crumbs: [] }
     const related = [{ title: 'demo' }]
     const reference = { slug: 'guide', title: 'Guide', content: '# Guide' }
     mockGetExample.mockReturnValue(example)

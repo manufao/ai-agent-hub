@@ -9,7 +9,7 @@ import { renderPage } from '../view.js'
 const EXAMPLES_URL = /^\/examples(?:\/([^/]+))?(?:\/references\/([^/]+))?\/?$/
 
 const notFound = (message: string): string =>
-  `<h2 class="text-3xl font-bold text-red-600">⚠️ Introuvable</h2><p>${ejs.escapeXML(message)}</p>`
+  `<div class="not-prose"><h2 class="alert-title">Introuvable</h2><p class="mt-3">${ejs.escapeXML(message)}</p></div>`
 
 /** Makes the relative links of an example (its references and the agent files) work on the site. */
 const rewriteLinks = (html: string, exampleSlug: string): string =>
@@ -28,11 +28,11 @@ const renderExamplesIndex = (): string => {
   const items = listExamples()
     .map(
       example =>
-        `<li><a class="text-blue-600 hover:underline" href="/examples/${encodeURIComponent(example.slug)}">${ejs.escapeXML(example.name)}</a> — ${ejs.escapeXML(example.description)}</li>`,
+        `<li><a class="entry-link" href="/examples/${encodeURIComponent(example.slug)}">${ejs.escapeXML(example.name)}</a><p class="entry-desc">${ejs.escapeXML(example.description)}</p></li>`,
     )
     .join('')
 
-  return `<h1 class="text-3xl font-bold mb-6">Exemples</h1><ul class="list-disc pl-6">${items}</ul>`
+  return `<div class="not-prose"><h1 class="page-title">Exemples</h1><ul class="entry-list">${items}</ul></div>`
 }
 
 /**

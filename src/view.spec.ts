@@ -107,7 +107,7 @@ describe('renderPage', () => {
     mockListCategories.mockReturnValue([])
     mockReadFileSync.mockReturnValue('<html></html>')
     mockEjsRender.mockReturnValue('<html>rendered</html>')
-    const hero = { eyebrow: 'Agent', title: 'Architect', description: 'Plans', usageTitle: 'Use', usage: [] }
+    const hero = { crumbs: [], title: 'Architect', description: 'Plans', usageTitle: 'Use', usage: [] }
     const toc = [{ id: 'scope', text: 'Scope' }]
     const related = [{ title: 'Vitest', href: '/agents/vitest', description: 'Tests' }]
 

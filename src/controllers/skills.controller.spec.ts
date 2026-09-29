@@ -183,7 +183,7 @@ describe('skillsController', () => {
       content: '# Créer un skill',
     }
     const headings = [{ id: 'usage', text: 'Usage' }]
-    const hero = { eyebrow: 'Ingénierie' }
+    const hero = { crumbs: [] }
     const related = [{ title: 'Autre' }]
     mockGetSkill.mockReturnValue(skill)
     mockGetCategory.mockReturnValue(sampleCategory)

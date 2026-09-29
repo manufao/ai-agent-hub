@@ -74,7 +74,7 @@ describe('agentController', () => {
     const agent = { slug: 'architect', title: 'Architect', description: 'Plans', content: '# Architect' }
     const agents = [{ slug: 'vitest', title: 'Vitest', description: 'Tests' }]
     const headings = [{ id: 'scope', text: 'Scope' }]
-    const hero = { eyebrow: 'Agent' }
+    const hero = { crumbs: [] }
     const related = [{ title: 'Vitest' }]
     mockGetAgent.mockReturnValue(agent)
     mockListAgents.mockReturnValue(agents)
@@ -88,7 +88,7 @@ describe('agentController', () => {
     agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
     expect(mockGetAgent).toHaveBeenCalledWith('architect')
-    expect(mockRenderMarkdown).toHaveBeenCalledWith('# Architect', { stripTitle: true })
+    expect(mockRenderMarkdown).toHaveBeenCalledWith('# Architect', { stripTitle: true, stripSummary: true })
     expect(mockAgentRelated).toHaveBeenCalledWith('architect', agents)
     expect(mockRenderPage).toHaveBeenCalledWith(mockRes, {
       statusCode: 200,

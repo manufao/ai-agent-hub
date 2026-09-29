@@ -17,7 +17,7 @@ export const homeController = (req: IncomingMessage, res: ServerResponse): void 
       renderPage(res, {
         statusCode: 200,
         bodyHtml:
-          '<h1 class="text-3xl font-bold text-red-600">⚠️ .agents/README.md introuvable</h1><p class="mt-4 text-gray-600">Merci de créer un fichier .agents/README.md.</p>',
+          '<div class="not-prose"><h1 class="alert-title">.agents/README.md introuvable</h1><p class="mt-3">Créez un fichier .agents/README.md pour alimenter la page d\'accueil.</p></div>',
         active: { type: 'overview' },
       })
       return

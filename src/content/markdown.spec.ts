@@ -61,6 +61,16 @@ describe('renderMarkdown', () => {
     expect(renderMarkdown('# Title\n\ntext').html).toContain('<h1>Title</h1>')
   })
 
+  it('removes the first paragraph when stripSummary is set', () => {
+    const { html } = renderMarkdown('# Title\n\nSummary.\n\nSecond paragraph.', {
+      stripTitle: true,
+      stripSummary: true,
+    })
+
+    expect(html).not.toContain('Summary.')
+    expect(html).toContain('Second paragraph.')
+  })
+
   it('removes the leading h1 when stripTitle is set', () => {
     expect(renderMarkdown('# Title\n\ntext', { stripTitle: true }).html).not.toContain('<h1>')
   })

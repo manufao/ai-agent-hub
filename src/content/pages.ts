@@ -8,8 +8,13 @@ export interface UsageRow {
   value: string
 }
 
+export interface Crumb {
+  label: string
+  href: string
+}
+
 export interface Hero {
-  eyebrow: string
+  crumbs: Crumb[]
   title: string
   description: string
   usageTitle: string
@@ -24,7 +29,7 @@ export interface RelatedItem {
 
 export function agentHero(agent: Agent): Hero {
   return {
-    eyebrow: 'Agent',
+    crumbs: [{ label: 'Agents', href: '/agents' }],
     title: agent.title,
     description: agent.description,
     usageTitle: 'Utiliser cet agent',
@@ -38,7 +43,10 @@ export function agentHero(agent: Agent): Hero {
 
 export function skillHero(skill: Skill): Hero {
   return {
-    eyebrow: `${categoryTitle(skill.category)} · /${skill.slug}`,
+    crumbs: [
+      { label: 'Skills', href: '/skills' },
+      { label: categoryTitle(skill.category), href: `/skills/${encodeURIComponent(skill.category)}` },
+    ],
     title: extractTitle(skill.content, skill.name),
     description: skill.description,
     usageTitle: 'Utiliser ce skill',
@@ -74,7 +82,7 @@ export function skillRelated(current: Skill, siblings: SkillSummary[]): RelatedI
 
 export function exampleHero(example: Example): Hero {
   return {
-    eyebrow: 'Exemple',
+    crumbs: [{ label: 'Exemples', href: '/examples' }],
     title: extractTitle(example.content, example.name),
     description: example.description,
     usageTitle: '',
@@ -84,7 +92,10 @@ export function exampleHero(example: Example): Hero {
 
 export function referenceHero(example: Example, reference: Reference): Hero {
   return {
-    eyebrow: `Exemple · ${example.name}`,
+    crumbs: [
+      { label: 'Exemples', href: '/examples' },
+      { label: example.name, href: `/examples/${encodeURIComponent(example.slug)}` },
+    ],
     title: reference.title,
     description: '',
     usageTitle: '',
