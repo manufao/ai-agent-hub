@@ -1,0 +1,8 @@
+---
+description: Planification technique détaillée et suivi de projet — à utiliser pour découper une fonctionnalité en tâches avec critères d'acceptation
+alwaysApply: false
+---
+
+@../../.agents/architect.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
