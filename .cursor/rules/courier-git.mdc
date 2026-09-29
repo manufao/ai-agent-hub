@@ -1,0 +1,8 @@
+---
+description: "Livraison Git : commits au format Conventional Commits, push et pull request GitHub"
+alwaysApply: false
+---
+
+@../../.agents/courier-git.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

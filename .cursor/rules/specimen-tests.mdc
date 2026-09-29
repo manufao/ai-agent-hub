@@ -1,0 +1,8 @@
+---
+description: "Test strategist : stratégie de tests unitaires, intégration, E2E, cas limites et non-régression"
+alwaysApply: false
+---
+
+@../../.agents/specimen-tests.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

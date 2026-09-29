@@ -1,0 +1,8 @@
+---
+description: "Expert refactoring : plan de refactoring progressif et peu risqué à partir d'une dette identifiée"
+alwaysApply: false
+---
+
+@../../.agents/refactor-planner.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

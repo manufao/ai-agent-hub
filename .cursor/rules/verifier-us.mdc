@@ -1,0 +1,8 @@
+---
+description: "Relecteur d'US : vérifie qu'une User Story est complète, testable et sans ambiguïté"
+alwaysApply: false
+---
+
+@../../.agents/verifier-us.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

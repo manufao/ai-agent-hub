@@ -1,8 +1,0 @@
----
-description: Écriture de tests unitaires Vitest avec objectif 100% de couverture — à utiliser pour créer ou compléter des tests sur un fichier ou module donné
-alwaysApply: false
----
-
-@../../.agents/vitest-unit-test.md
-
-Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

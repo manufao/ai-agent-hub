@@ -1,0 +1,8 @@
+---
+description: "Documentation technique : architecture, ADR, API, onboarding, README et changelog"
+alwaysApply: false
+---
+
+@../../.agents/scribe-docs.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

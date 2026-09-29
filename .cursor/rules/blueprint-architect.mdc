@@ -1,0 +1,8 @@
+---
+description: "Architecte logiciel : structure front/back, contrats API, choix techniques et compromis"
+alwaysApply: false
+---
+
+@../../.agents/blueprint-architect.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

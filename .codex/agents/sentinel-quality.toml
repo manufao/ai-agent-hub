@@ -1,0 +1,6 @@
+name = "sentinel-quality"
+description = "Gardien de maintenabilité : SOLID, séparation des responsabilités, dette technique, duplication et lisibilité"
+
+developer_instructions = """
+Lis et applique la persona définie dans .agents/sentinel-quality.md avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
+"""
