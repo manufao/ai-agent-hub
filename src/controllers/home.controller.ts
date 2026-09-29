@@ -1,45 +1,33 @@
 import { IncomingMessage, ServerResponse } from 'http'
-import { join, resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { readFileSync, existsSync } from 'fs'
-import ejs from 'ejs'
-import { marked } from 'marked'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const rootDir = resolve(__dirname, '../..')
+import { renderMarkdown } from '../content/markdown.js'
+import { getOverview } from '../content/overview.js'
+import { renderPage } from '../view.js'
 
 /**
- * Controller for the home page
- * Displays the content of AGENTS.md rendered as HTML
+ * Controller for the home page.
+ * Displays `.agents/README.md` (the site's overview content) rendered as HTML.
  * @param req - HTTP request object
  * @param res - HTTP response object
  */
 export const homeController = (req: IncomingMessage, res: ServerResponse): void => {
   try {
-    const agentsPath = join(rootDir, 'AGENTS.md')
-    let htmlContent: string
+    const overview = getOverview()
 
-    if (!existsSync(agentsPath)) {
-      htmlContent =
-        '<h1 class="text-3xl font-bold text-red-600">⚠️ AGENTS.md not found</h1><p class="mt-4 text-gray-600">Please create an AGENTS.md file in the root directory.</p>'
-    } else {
-      const markdown = readFileSync(agentsPath, 'utf-8')
-      htmlContent = marked.parse(markdown) as string
+    if (overview === undefined) {
+      renderPage(res, {
+        statusCode: 200,
+        bodyHtml:
+          '<h1 class="text-3xl font-bold text-red-600">⚠️ .agents/README.md introuvable</h1><p class="mt-4 text-gray-600">Merci de créer un fichier .agents/README.md.</p>',
+        active: { type: 'overview' },
+      })
+      return
     }
 
-    const templatePath = join(rootDir, 'views', 'index.ejs')
-    const html = ejs.render(readFileSync(templatePath, 'utf-8'), {
-      content: htmlContent,
-      isHome: true,
-    })
-
-    res.setHeader('Content-Type', 'text/html;charset=utf-8')
-    res.writeHead(200)
-    res.end(html)
+    const { html, headings } = renderMarkdown(overview)
+    renderPage(res, { statusCode: 200, bodyHtml: html, active: { type: 'overview' }, toc: headings })
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Error rendering page:', error)
+    console.error('Error rendering home page:', error)
     res.setHeader('Content-Type', 'text/plain;charset=utf-8')
     res.writeHead(500)
     res.end('Internal Server Error')

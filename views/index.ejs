@@ -1,28 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Agent Hub</title>
+    <title><%= hero ? hero.title + ' · Agents & Skills Hub' : 'Agents & Skills Hub' %></title>
     <link rel="stylesheet" href="/css/output.css" />
   </head>
-  <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-      <% if (!isHome) { %>
-      <!-- Navigation Header -->
-      <div class="mb-4">
-        <a
-          href="/"
-          class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md"
-        >
-          Home
-        </a>
-      </div>
-      <% } %>
+  <body class="bg-white text-slate-900 antialiased">
+    <div class="mx-auto flex min-h-screen max-w-[1456px] flex-col md:flex-row">
+      <aside
+        class="w-full shrink-0 border-b border-slate-200 md:sticky md:top-0 md:h-screen md:w-72 md:overflow-y-auto md:border-b-0 md:border-r"
+      >
+        <nav class="space-y-6 px-6 py-6 text-[13px] leading-snug" aria-label="Navigation principale">
+          <a href="/" class="block text-base font-semibold tracking-tight">Agents &amp; Skills Hub</a>
 
-      <div class="bg-white rounded-lg shadow-lg p-8">
-        <div class="prose prose-slate max-w-none"><%- content %></div>
-      </div>
+          <a
+            href="/"
+            class="block <%= active.type === 'overview' ? 'font-medium text-blue-600' : 'text-slate-700 hover:text-slate-900' %>"
+          >
+            Aperçu
+          </a>
+
+          <details open>
+            <summary
+              class="cursor-pointer font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500 select-none"
+            >
+              Agents
+            </summary>
+            <ul class="mt-2 space-y-1">
+              <% nav.agents.forEach(function (agent) { %>
+              <li>
+                <a
+                  href="/agents/<%= agent.slug %>"
+                  class="block rounded-sm py-1 <%= active.type === 'agent' && active.slug === agent.slug ? 'font-medium text-blue-600' : 'text-slate-600 hover:text-slate-900' %>"
+                >
+                  <%= agent.title %>
+                </a>
+              </li>
+              <% }) %>
+            </ul>
+          </details>
+
+          <details open>
+            <summary
+              class="cursor-pointer font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500 select-none"
+            >
+              Skills
+            </summary>
+            <% nav.categories.forEach(function (category) { %>
+            <%
+              var categoryIsActive =
+                (active.type === 'category' && active.slug === category.slug) ||
+                (active.type === 'skill' && active.category === category.slug)
+            %>
+            <div class="mt-3">
+              <a
+                href="/skills/<%= category.slug %>"
+                class="block font-medium <%= categoryIsActive ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900' %>"
+              >
+                <%= category.title %>
+              </a>
+              <% if (category.skills.length > 0) { %>
+              <ul class="mt-1 ml-1 space-y-1 border-l border-slate-200 pl-3">
+                <% category.skills.forEach(function (skill) { %>
+                <li>
+                  <a
+                    href="/skills/<%= category.slug %>/<%= skill.slug %>"
+                    class="block py-1 <%= active.type === 'skill' && active.category === category.slug && active.slug === skill.slug ? 'font-medium text-blue-600' : 'text-slate-500 hover:text-slate-900' %>"
+                  >
+                    <%= skill.name %>
+                  </a>
+                </li>
+                <% }) %>
+              </ul>
+              <% } %>
+            </div>
+            <% }) %>
+          </details>
+
+          <details open>
+            <summary
+              class="cursor-pointer font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500 select-none"
+            >
+              Exemples
+            </summary>
+            <ul class="mt-2 space-y-1">
+              <% nav.examples.forEach(function (example) { %>
+              <li>
+                <a
+                  href="/examples/<%= example.slug %>"
+                  class="block rounded-sm py-1 <%= active.type === 'example' && active.slug === example.slug ? 'font-medium text-blue-600' : 'text-slate-600 hover:text-slate-900' %>"
+                >
+                  <%= example.name %>
+                </a>
+              </li>
+              <% }) %>
+            </ul>
+          </details>
+        </nav>
+      </aside>
+
+      <main class="min-w-0 flex-1">
+        <article class="flex flex-col [&>*+*]:-mt-px [&>*+*]:border-t [&>*+*]:border-slate-200">
+          <% if (hero) { %>
+          <header class="grid <%= hero.usage.length > 0 ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]' : '' %>">
+            <div class="px-6 py-8 sm:px-10 sm:py-10">
+              <p class="font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                <%= hero.eyebrow %>
+              </p>
+              <h1 class="mt-3 text-[2rem] font-bold leading-[1.06] tracking-tight sm:text-[2.5rem]">
+                <%= hero.title %>
+              </h1>
+              <% if (hero.description) { %>
+              <p class="mt-4 max-w-[60ch] text-lg text-slate-600"><%= hero.description %></p>
+              <% } %>
+            </div>
+            <% if (hero.usage.length > 0) { %>
+            <section
+              aria-label="<%= hero.usageTitle %>""
+              class="border-t border-slate-200 bg-slate-50 px-6 py-8 sm:px-10 lg:border-l lg:border-t-0"
+            >
+              <h2 class="font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                <%= hero.usageTitle %>
+              </h2>
+              <dl class="mt-4 space-y-4 text-sm">
+                <% hero.usage.forEach(function (row) { %>
+                <div>
+                  <dt class="font-medium text-slate-700"><%= row.label %></dt>
+                  <dd class="mt-1">
+                    <code
+                      class="block overflow-x-auto rounded border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-800"
+                      ><%= row.value %></code
+                    >
+                  </dd>
+                </div>
+                <% }) %>
+              </dl>
+            </section>
+            <% } %>
+          </header>
+          <% } %>
+
+          <div class="px-6 py-10 sm:px-10">
+            <div class="prose prose-slate max-w-[70ch] lg:prose-lg"><%- content %></div>
+          </div>
+
+          <% if (related.length > 0) { %>
+          <section aria-label="À lire aussi" class="bg-slate-50 px-6 py-8 sm:px-10">
+            <h2 class="mb-4 font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500">À lire aussi</h2>
+            <div class="grid gap-px overflow-hidden rounded border border-slate-200 bg-slate-200 md:grid-cols-2">
+              <% related.forEach(function (item) { %>
+              <a href="<%= item.href %>" class="block bg-white p-5 hover:bg-slate-50">
+                <span class="block font-semibold"><%= item.title %></span>
+                <% if (item.description) { %>
+                <span class="mt-1 block text-sm text-slate-600"><%= item.description %></span>
+                <% } %>
+              </a>
+              <% }) %>
+            </div>
+          </section>
+          <% } %>
+        </article>
+      </main>
+
+      <% if (toc.length > 0) { %>
+      <aside class="hidden w-64 shrink-0 border-l border-slate-200 xl:block">
+        <nav class="sticky top-0 px-6 py-8 text-[13px]" aria-label="Sur cette page">
+          <p class="mb-3 font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500">Sur cette page</p>
+          <ul class="space-y-2">
+            <% toc.forEach(function (heading) { %>
+            <li><a href="#<%= heading.id %>" class="text-slate-600 hover:text-slate-900"><%- heading.text %></a></li>
+            <% }) %>
+          </ul>
+        </nav>
+      </aside>
+      <% } %>
     </div>
   </body>
 </html>
