@@ -73,7 +73,7 @@ describe('skills content', () => {
         return '---\nname: create-skill-or-agent\ndescription: Comment créer un skill\n---\nBody'
       }
       if (path.includes('README.md')) {
-        return 'Skills liés au développement logiciel'
+        return 'Skills liés au développement logiciel\n\n_Second paragraph._'
       }
       return ''
     })
@@ -145,6 +145,16 @@ describe('skills content', () => {
           ],
         },
       ])
+    })
+
+    it('leaves the description undefined when the category README has no paragraph', () => {
+      mockReaddirSync.mockImplementation((dirPath: unknown) =>
+        String(dirPath).endsWith('skills') ? [direntDir('ingenierie')] : [],
+      )
+      mockExistsSync.mockReturnValue(true)
+      mockReadFileSync.mockReturnValue('# Only a title')
+
+      expect(listCategories()[0].description).toBeUndefined()
     })
 
     it('skips a skill directory that has no SKILL.md', () => {

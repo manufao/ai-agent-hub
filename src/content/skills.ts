@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { skillsDir, isSafeSegment } from './paths.js'
 import { parseFrontmatter } from './frontmatter.js'
+import { extractSummary } from './markdown.js'
 
 export interface SkillSummary {
   category: string
@@ -33,7 +34,7 @@ export function categoryTitle(slug: string): string {
 
 function readCategoryDescription(categoryDir: string): string | undefined {
   const readmePath = join(categoryDir, 'README.md')
-  return existsSync(readmePath) ? readFileSync(readmePath, 'utf-8').trim() : undefined
+  return existsSync(readmePath) ? extractSummary(readFileSync(readmePath, 'utf-8')) || undefined : undefined
 }
 
 function readSkillSummary(category: string, slug: string, skillDir: string): SkillSummary | undefined {
@@ -46,40 +47,37 @@ function readSkillSummary(category: string, slug: string, skillDir: string): Ski
   return { category, slug, name: data.name ?? slug, description: data.description ?? '' }
 }
 
+function readCategory(slug: string): CategorySummary {
+  const categoryDir = join(skillsDir, slug)
+  const skills = readdirSync(categoryDir, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(skillEntry => readSkillSummary(slug, skillEntry.name, join(categoryDir, skillEntry.name)))
+    .filter((skill): skill is SkillSummary => skill !== undefined)
+    .sort((a, b) => a.name.localeCompare(b.name))
+
+  return {
+    slug,
+    title: categoryTitle(slug),
+    description: readCategoryDescription(categoryDir),
+    skills,
+  }
+}
+
 /** Lists every skill category under `.agents/skills/`, each with its skills (empty categories included). */
 export function listCategories(): CategorySummary[] {
   return readdirSync(skillsDir, { withFileTypes: true })
     .filter(entry => entry.isDirectory())
-    .map(categoryEntry => {
-      const categoryDir = join(skillsDir, categoryEntry.name)
-      const skills = readdirSync(categoryDir, { withFileTypes: true })
-        .filter(entry => entry.isDirectory())
-        .map(skillEntry => readSkillSummary(categoryEntry.name, skillEntry.name, join(categoryDir, skillEntry.name)))
-        .filter((skill): skill is SkillSummary => skill !== undefined)
-        .sort((a, b) => a.name.localeCompare(b.name))
-
-      return {
-        slug: categoryEntry.name,
-        title: categoryTitle(categoryEntry.name),
-        description: readCategoryDescription(categoryDir),
-        skills,
-      }
-    })
+    .map(entry => readCategory(entry.name))
     .sort((a, b) => a.title.localeCompare(b.title))
 }
 
-/** Reads a single category's summary (metadata + skill list), without requiring a full listing. */
+/** Reads a single category (metadata + skills) by slug, scanning only that category. */
 export function getCategory(category: string): CategorySummary | undefined {
-  if (!isSafeSegment(category)) {
+  if (!isSafeSegment(category) || !existsSync(join(skillsDir, category))) {
     return undefined
   }
 
-  const categoryDir = join(skillsDir, category)
-  if (!existsSync(categoryDir)) {
-    return undefined
-  }
-
-  return listCategories().find(c => c.slug === category)
+  return readCategory(category)
 }
 
 /** Reads a single skill by category and slug. Returns undefined for an unknown or unsafe path. */

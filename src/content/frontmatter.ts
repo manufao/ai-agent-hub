@@ -4,10 +4,19 @@ export interface ParsedFrontmatter {
 }
 
 const FRONTMATTER_BLOCK = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/
+const KEY_LINE = /^([A-Za-z0-9_-]+):[ \t]*(.*)$/
+const BLOCK_SCALAR = /^([>|])[+-]?$/
+
+function unquote(value: string): string {
+  const match = /^"(.*)"$|^'(.*)'$/.exec(value)
+  return match ? (match[1] ?? match[2]) : value
+}
 
 /**
- * Minimal YAML frontmatter parser for flat `key: value` pairs, which is all
- * SKILL.md's `name`/`description` fields need. Not a general YAML parser.
+ * Minimal YAML frontmatter parser for what SKILL.md needs: top-level
+ * `key: value` pairs, quoted values, multi-line plain values and block
+ * scalars (`>` folds lines into spaces, `|` keeps line breaks). Not a general
+ * YAML parser.
  */
 export function parseFrontmatter(raw: string): ParsedFrontmatter {
   const match = FRONTMATTER_BLOCK.exec(raw)
@@ -16,22 +25,36 @@ export function parseFrontmatter(raw: string): ParsedFrontmatter {
   }
 
   const data: Record<string, string> = {}
-  for (const line of match[1].split(/\r?\n/)) {
-    const separatorIndex = line.indexOf(':')
-    if (separatorIndex === -1) {
-      continue
+  let key: string | undefined
+  let indicator = ''
+  let lines: string[] = []
+
+  const flush = (): void => {
+    if (key === undefined) {
+      return
     }
 
-    const key = line.slice(0, separatorIndex).trim()
-    const value = line
-      .slice(separatorIndex + 1)
-      .trim()
-      .replace(/^["'](.*)["']$/, '$1')
+    const separator = indicator === '|' ? '\n' : ' '
+    const value = lines
+      .map(line => line.trim())
+      .filter(line => line !== '')
+      .join(separator)
+    data[key] = indicator === '' ? unquote(value) : value
+  }
 
-    if (key) {
-      data[key] = value
+  for (const line of match[1].split(/\r?\n/)) {
+    const keyLine = KEY_LINE.exec(line)
+    if (keyLine) {
+      flush()
+      key = keyLine[1]
+      const block = BLOCK_SCALAR.exec(keyLine[2].trim())
+      indicator = block ? block[1] : ''
+      lines = block ? [] : [keyLine[2]]
+    } else if (/^\s/.test(line)) {
+      lines.push(line)
     }
   }
+  flush()
 
   return { data, content: raw.slice(match[0].length) }
 }

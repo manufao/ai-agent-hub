@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 vi.mock('fs', () => ({
   readdirSync: vi.fn(),
   readFileSync: vi.fn(),
-  existsSync: vi.fn(),
+  statSync: vi.fn(),
 }))
 
 function direntFile(name: string) {
@@ -23,7 +23,7 @@ describe('agents content', () => {
   let getAgent: typeof import('./agents.js').getAgent
   let mockReaddirSync: Mock
   let mockReadFileSync: Mock
-  let mockExistsSync: Mock
+  let mockStatSync: Mock
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -31,7 +31,7 @@ describe('agents content', () => {
     const fs = await import('fs')
     mockReaddirSync = fs.readdirSync as Mock
     mockReadFileSync = fs.readFileSync as Mock
-    mockExistsSync = fs.existsSync as Mock
+    mockStatSync = fs.statSync as Mock
 
     const module = await import('./agents.js')
     listAgents = module.listAgents
@@ -67,17 +67,28 @@ describe('agents content', () => {
   describe('getAgent', () => {
     it('returns undefined for an unsafe slug', () => {
       expect(getAgent('../secrets')).toBeUndefined()
-      expect(mockExistsSync).not.toHaveBeenCalled()
+      expect(mockStatSync).not.toHaveBeenCalled()
+    })
+
+    it('returns undefined for the README, which is not an agent', () => {
+      expect(getAgent('README')).toBeUndefined()
+      expect(mockStatSync).not.toHaveBeenCalled()
     })
 
     it('returns undefined when the agent file does not exist', () => {
-      mockExistsSync.mockReturnValue(false)
+      mockStatSync.mockReturnValue(undefined)
 
       expect(getAgent('unknown')).toBeUndefined()
     })
 
+    it('returns undefined when the path is a directory', () => {
+      mockStatSync.mockReturnValue({ isFile: () => false })
+
+      expect(getAgent('folder')).toBeUndefined()
+    })
+
     it('returns the agent content and title when the file exists', () => {
-      mockExistsSync.mockReturnValue(true)
+      mockStatSync.mockReturnValue({ isFile: () => true })
       mockReadFileSync.mockReturnValue('# Architect\n\nBody')
 
       expect(getAgent('architect')).toEqual({

@@ -38,7 +38,7 @@ export function agentHero(agent: Agent): Hero {
 
 export function skillHero(skill: Skill): Hero {
   return {
-    eyebrow: `${categoryTitle(skill.category)} · /${skill.name}`,
+    eyebrow: `${categoryTitle(skill.category)} · /${skill.slug}`,
     title: extractTitle(skill.content, skill.name),
     description: skill.description,
     usageTitle: 'Utiliser ce skill',

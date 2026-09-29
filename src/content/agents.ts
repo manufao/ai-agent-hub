@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, existsSync } from 'fs'
+import { readdirSync, readFileSync, statSync } from 'fs'
 import { join } from 'path'
 import { agentsDir, isSafeSegment } from './paths.js'
 import { extractSummary, extractTitle } from './markdown.js'
@@ -27,12 +27,12 @@ export function listAgents(): AgentSummary[] {
 
 /** Reads a single agent persona by slug. Returns undefined for an unknown or unsafe slug. */
 export function getAgent(slug: string): Agent | undefined {
-  if (!isSafeSegment(slug)) {
+  if (!isSafeSegment(slug) || slug === 'README') {
     return undefined
   }
 
   const filePath = join(agentsDir, `${slug}.md`)
-  if (!existsSync(filePath)) {
+  if (!statSync(filePath, { throwIfNoEntry: false })?.isFile()) {
     return undefined
   }
 
