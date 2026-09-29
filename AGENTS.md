@@ -7,7 +7,7 @@ Node.js/TypeScript application (native HTTP server, no framework) + EJS + Tailwi
 - `.agents/skills/<category>/<name>/SKILL.md` — a skill in the open [Agent Skills](https://agentskills.io) format, rendered at `/skills/<category>/<name>`
 - `examples/<name>/` — implementation examples (a `SKILL.md` plus `references/`), rendered at `/examples/<name>`. They live outside `.agents/skills/` on purpose: no tool discovers them and they have no wrappers or symlinks
 
-The site UI and the content shown on it (homepage, agents, skills) are in French. Repository documentation (this file, `README.md`, `examples/`) is in English.
+The site UI and everything shown on it (homepage, agents, skills, examples) are in French. Repository documentation (this file, `README.md`) is in English.
 
 Before adding an agent or a skill, read `examples/create-skill-or-agent/SKILL.md`. It documents the convention (one canonical file plus a thin wrapper per tool) that avoids duplication across Claude Code, Codex CLI, Cursor and Gemini CLI.
 
