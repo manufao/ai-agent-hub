@@ -1,1 +1,1 @@
-Skills pour accélérer le travail au quotidien : organisation, rédaction, automatisation de tâches répétitives.
+Skills de cadrage et de rédaction : User Stories, critères d'acceptation, découpage, documentation et changelog.
