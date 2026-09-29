@@ -7,11 +7,12 @@ import { ServerResponse } from 'http'
 
 vi.mock('fs', () => ({
   readFileSync: vi.fn(),
+  statSync: vi.fn(),
 }))
 
 vi.mock('ejs', () => ({
   default: {
-    render: vi.fn(),
+    compile: vi.fn(),
   },
 }))
 
@@ -30,6 +31,8 @@ vi.mock('./content/examples.js', () => ({
 describe('renderPage', () => {
   let renderPage: typeof import('./view.js').renderPage
   let mockReadFileSync: Mock
+  let mockStatSync: Mock
+  let mockEjsCompile: Mock
   let mockEjsRender: Mock
   let mockListAgents: Mock
   let mockListCategories: Mock
@@ -38,6 +41,7 @@ describe('renderPage', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    vi.resetModules()
 
     const fs = await import('fs')
     const ejs = await import('ejs')
@@ -46,7 +50,11 @@ describe('renderPage', () => {
     const { listExamples } = await import('./content/examples.js')
 
     mockReadFileSync = fs.readFileSync as Mock
-    mockEjsRender = ejs.default.render as Mock
+    mockStatSync = fs.statSync as Mock
+    mockEjsCompile = ejs.default.compile as Mock
+    mockEjsRender = vi.fn()
+    mockEjsCompile.mockReturnValue(mockEjsRender)
+    mockStatSync.mockReturnValue({ mtimeMs: 1 })
     mockListAgents = listAgents as Mock
     mockListCategories = listCategories as Mock
     mockListExamples = listExamples as Mock
@@ -78,7 +86,10 @@ describe('renderPage', () => {
       active: { type: 'overview' },
     })
 
-    expect(mockEjsRender).toHaveBeenCalledWith('<html><%= content %></html>', {
+    expect(mockEjsCompile).toHaveBeenCalledWith('<html><%= content %></html>', {
+      filename: expect.stringContaining('index.ejs'),
+    })
+    expect(mockEjsRender).toHaveBeenCalledWith({
       content: '<p>Hello</p>',
       nav: { agents, categories, examples },
       active: { type: 'overview' },
@@ -109,7 +120,35 @@ describe('renderPage', () => {
       related,
     })
 
-    expect(mockEjsRender).toHaveBeenCalledWith('<html></html>', expect.objectContaining({ hero, toc, related }))
+    expect(mockEjsRender).toHaveBeenCalledWith(expect.objectContaining({ hero, toc, related }))
+  })
+
+  describe('template cache', () => {
+    const render = () =>
+      renderPage(mockRes as ServerResponse, { statusCode: 200, bodyHtml: '', active: { type: 'overview' } })
+
+    beforeEach(() => {
+      mockListAgents.mockReturnValue([])
+      mockListCategories.mockReturnValue([])
+      mockReadFileSync.mockReturnValue('<html></html>')
+      mockEjsRender.mockReturnValue('<html></html>')
+    })
+
+    it('compiles the template only once while the file is unchanged', () => {
+      render()
+      render()
+
+      expect(mockEjsCompile).toHaveBeenCalledTimes(1)
+      expect(mockEjsRender).toHaveBeenCalledTimes(2)
+    })
+
+    it('compiles the template again when the file changes on disk', () => {
+      render()
+      mockStatSync.mockReturnValue({ mtimeMs: 2 })
+      render()
+
+      expect(mockEjsCompile).toHaveBeenCalledTimes(2)
+    })
   })
 
   it('propagates the given status code (e.g. for a 404 page)', () => {

@@ -3,6 +3,7 @@ import ejs from 'ejs'
 import { listCategories, getCategory, getSkill, type CategorySummary } from '../content/skills.js'
 import { renderMarkdown } from '../content/markdown.js'
 import { skillHero, skillRelated } from '../content/pages.js'
+import { decodeSegment, pathnameOf } from '../routing/url.js'
 import { renderPage } from '../view.js'
 
 const SKILLS_URL = /^\/skills(?:\/([^/]+))?(?:\/([^/]+))?\/?$/
@@ -52,16 +53,14 @@ const renderCategoryPage = (category: CategorySummary): string =>
  */
 export const skillsController = (req: IncomingMessage, res: ServerResponse): void => {
   try {
-    const url = req.url || ''
-    const match = SKILLS_URL.exec(url)
+    const match = SKILLS_URL.exec(pathnameOf(req.url || ''))
+    const categorySlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
+    const skillSlug = match?.[2] === undefined ? '' : decodeSegment(match[2])
 
-    if (!match) {
+    if (!match || categorySlug === undefined || skillSlug === undefined) {
       renderPage(res, { statusCode: 404, bodyHtml: notFound('Invalid skills URL'), active: { type: 'skills' } })
       return
     }
-
-    const categorySlug = match[1] ? decodeURIComponent(match[1]) : undefined
-    const skillSlug = match[2] ? decodeURIComponent(match[2]) : undefined
 
     if (!categorySlug) {
       renderPage(res, { statusCode: 200, bodyHtml: renderSkillsIndex(), active: { type: 'skills' } })

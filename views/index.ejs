@@ -31,7 +31,7 @@
               <% nav.agents.forEach(function (agent) { %>
               <li>
                 <a
-                  href="/agents/<%= agent.slug %>"
+                  href="/agents/<%= encodeURIComponent(agent.slug) %>"
                   class="block rounded-sm py-1 <%= active.type === 'agent' && active.slug === agent.slug ? 'font-medium text-blue-600' : 'text-slate-600 hover:text-slate-900' %>"
                 >
                   <%= agent.title %>
@@ -55,7 +55,7 @@
             %>
             <div class="mt-3">
               <a
-                href="/skills/<%= category.slug %>"
+                href="/skills/<%= encodeURIComponent(category.slug) %>"
                 class="block font-medium <%= categoryIsActive ? 'text-blue-600' : 'text-slate-700 hover:text-slate-900' %>"
               >
                 <%= category.title %>
@@ -65,7 +65,7 @@
                 <% category.skills.forEach(function (skill) { %>
                 <li>
                   <a
-                    href="/skills/<%= category.slug %>/<%= skill.slug %>"
+                    href="/skills/<%= encodeURIComponent(category.slug) %>/<%= encodeURIComponent(skill.slug) %>"
                     class="block py-1 <%= active.type === 'skill' && active.category === category.slug && active.slug === skill.slug ? 'font-medium text-blue-600' : 'text-slate-500 hover:text-slate-900' %>"
                   >
                     <%= skill.name %>
@@ -88,7 +88,7 @@
               <% nav.examples.forEach(function (example) { %>
               <li>
                 <a
-                  href="/examples/<%= example.slug %>"
+                  href="/examples/<%= encodeURIComponent(example.slug) %>"
                   class="block rounded-sm py-1 <%= active.type === 'example' && active.slug === example.slug ? 'font-medium text-blue-600' : 'text-slate-600 hover:text-slate-900' %>"
                 >
                   <%= example.name %>
@@ -117,7 +117,7 @@
             </div>
             <% if (hero.usage.length > 0) { %>
             <section
-              aria-label="<%= hero.usageTitle %>""
+              aria-label="<%= hero.usageTitle %>"
               class="border-t border-slate-200 bg-slate-50 px-6 py-8 sm:px-10 lg:border-l lg:border-t-0"
             >
               <h2 class="font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500">
@@ -169,7 +169,7 @@
           <p class="mb-3 font-mono text-[11px] font-medium uppercase tracking-wide text-slate-500">Sur cette page</p>
           <ul class="space-y-2">
             <% toc.forEach(function (heading) { %>
-            <li><a href="#<%= heading.id %>" class="text-slate-600 hover:text-slate-900"><%- heading.text %></a></li>
+            <li><a href="#<%= encodeURIComponent(heading.id) %>" class="text-slate-600 hover:text-slate-900"><%- heading.text %></a></li>
             <% }) %>
           </ul>
         </nav>

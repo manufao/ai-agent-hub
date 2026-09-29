@@ -128,6 +128,28 @@ describe('skillsController', () => {
     expect(call.bodyHtml).not.toContain('Tests, revue de code')
   })
 
+  it('finds the skill even when the URL carries a query string', () => {
+    mockReq = { url: '/skills/ingenierie?ref=x' }
+    mockGetCategory.mockReturnValue(undefined)
+
+    skillsController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetCategory).toHaveBeenCalledWith('ingenierie')
+  })
+
+  it('returns 404, not 500, for a malformed percent-encoded category or skill', () => {
+    for (const url of ['/skills/%zz', '/skills/ingenierie/%E0%A4%A']) {
+      mockRenderPage.mockClear()
+      mockReq = { url }
+
+      skillsController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+      expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ statusCode: 404 }))
+    }
+    expect(mockGetCategory).not.toHaveBeenCalled()
+    expect(mockGetSkill).not.toHaveBeenCalled()
+  })
+
   it('returns 404 when the URL is missing entirely', () => {
     mockReq = { url: undefined }
 

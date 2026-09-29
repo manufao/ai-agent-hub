@@ -1,5 +1,5 @@
 import { ServerResponse } from 'http'
-import { readFileSync } from 'fs'
+import { readFileSync, statSync } from 'fs'
 import { join } from 'path'
 import ejs from 'ejs'
 import { rootDir } from './content/paths.js'
@@ -17,6 +17,7 @@ export interface NavData {
 
 export type ActiveSection =
   | { type: 'overview' }
+  | { type: 'agents' }
   | { type: 'agent'; slug: string }
   | { type: 'skills' }
   | { type: 'category'; slug: string }
@@ -33,6 +34,18 @@ export interface RenderPageOptions {
   related?: RelatedItem[]
 }
 
+const templatePath = join(rootDir, 'views', 'index.ejs')
+let cachedTemplate: { mtimeMs: number; render: ejs.TemplateFunction } | undefined
+
+/** Compiles the layout once, and again only when the template file changes on disk. */
+const loadTemplate = (): ejs.TemplateFunction => {
+  const { mtimeMs } = statSync(templatePath)
+  if (!cachedTemplate || cachedTemplate.mtimeMs !== mtimeMs) {
+    cachedTemplate = { mtimeMs, render: ejs.compile(readFileSync(templatePath, 'utf-8'), { filename: templatePath }) }
+  }
+  return cachedTemplate.render
+}
+
 /**
  * Renders a page inside the shared site layout (sidebar navigation, optional
  * hero, content, table of contents and related items), and writes it to the
@@ -41,8 +54,7 @@ export interface RenderPageOptions {
  */
 export const renderPage = (res: ServerResponse, options: RenderPageOptions): void => {
   const nav: NavData = { agents: listAgents(), categories: listCategories(), examples: listExamples() }
-  const templatePath = join(rootDir, 'views', 'index.ejs')
-  const html = ejs.render(readFileSync(templatePath, 'utf-8'), {
+  const html = loadTemplate()({
     content: options.bodyHtml,
     nav,
     active: options.active,

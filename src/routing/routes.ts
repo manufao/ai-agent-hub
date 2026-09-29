@@ -29,8 +29,8 @@ router.add(/^\/(css|js|images)\/.*$/, staticController)
 router.add('/LICENSE', licenseController)
 
 // 3. Agents
-// Regex: /agents/<slug>
-router.add(/^\/agents\/.*$/, agentController)
+// Regex: /agents, /agents/<slug>
+router.add(/^\/agents(\/.*)?$/, agentController)
 
 // 4. Skills
 // Regex: /skills, /skills/<category>, /skills/<category>/<slug>

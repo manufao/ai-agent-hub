@@ -171,6 +171,27 @@ describe('examplesController', () => {
     )
   })
 
+  it('finds the example even when the URL carries a query string', () => {
+    mockReq = { url: '/examples/demo?ref=x' }
+    mockGetExample.mockReturnValue(undefined)
+
+    examplesController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetExample).toHaveBeenCalledWith('demo')
+  })
+
+  it('returns 404, not 500, for a malformed percent-encoded example or reference', () => {
+    for (const url of ['/examples/%zz', '/examples/demo/references/%E0%A4%A']) {
+      mockRenderPage.mockClear()
+      mockReq = { url }
+
+      examplesController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+      expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ statusCode: 404 }))
+    }
+    expect(mockGetExample).not.toHaveBeenCalled()
+  })
+
   it('returns 404 when the URL is missing entirely', () => {
     mockReq = { url: undefined }
 

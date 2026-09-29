@@ -123,8 +123,43 @@ describe('agentController', () => {
     expect(call.bodyHtml).toContain('&lt;script&gt;')
   })
 
-  it('returns 404 for a URL with no slug segment', () => {
-    mockReq.url = '/agents/'
+  it('renders the agents index for /agents and /agents/', () => {
+    mockListAgents.mockReturnValue([{ slug: 'architect', title: 'Architect', description: 'Plans <work>' }])
+
+    for (const url of ['/agents', '/agents/']) {
+      mockRenderPage.mockClear()
+      mockReq.url = url
+
+      agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+      const call = mockRenderPage.mock.calls[0][1] as { statusCode: number; bodyHtml: string }
+      expect(call.statusCode).toBe(200)
+      expect(call.bodyHtml).toContain('href="/agents/architect"')
+      expect(call.bodyHtml).toContain('Plans &lt;work&gt;')
+      expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ active: { type: 'agents' } }))
+    }
+  })
+
+  it('finds the agent even when the URL carries a query string', () => {
+    mockReq.url = '/agents/architect?ref=x'
+    mockGetAgent.mockReturnValue(undefined)
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetAgent).toHaveBeenCalledWith('architect')
+  })
+
+  it('returns 404, not 500, for a malformed percent-encoded slug', () => {
+    mockReq.url = '/agents/%E0%A4%A'
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    expect(mockGetAgent).not.toHaveBeenCalled()
+    expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ statusCode: 404 }))
+  })
+
+  it('returns 404 for a URL with more than one segment after /agents', () => {
+    mockReq.url = '/agents/a/b'
 
     agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
 

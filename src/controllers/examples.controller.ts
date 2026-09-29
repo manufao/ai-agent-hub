@@ -3,6 +3,7 @@ import ejs from 'ejs'
 import { getExample, getReference, listExamples } from '../content/examples.js'
 import { renderMarkdown } from '../content/markdown.js'
 import { exampleHero, exampleRelated, referenceHero } from '../content/pages.js'
+import { decodeSegment, pathnameOf } from '../routing/url.js'
 import { renderPage } from '../view.js'
 
 const EXAMPLES_URL = /^\/examples(?:\/([^/]+))?(?:\/references\/([^/]+))?\/?$/
@@ -15,9 +16,13 @@ const rewriteLinks = (html: string, exampleSlug: string): string =>
   html
     .replace(
       /href="references\/([^"/]+)\.md"/g,
-      (_match, name: string) => `href="/examples/${exampleSlug}/references/${name}"`,
+      (_match, name: string) =>
+        `href="/examples/${encodeURIComponent(exampleSlug)}/references/${encodeURIComponent(name)}"`,
     )
-    .replace(/href="(?:\.\.\/)+\.agents\/([^"/]+)\.md"/g, (_match, agent: string) => `href="/agents/${agent}"`)
+    .replace(
+      /href="(?:\.\.\/)+\.agents\/([^"/]+)\.md"/g,
+      (_match, agent: string) => `href="/agents/${encodeURIComponent(agent)}"`,
+    )
 
 const renderExamplesIndex = (): string => {
   const items = listExamples()
@@ -39,9 +44,11 @@ const renderExamplesIndex = (): string => {
  */
 export const examplesController = (req: IncomingMessage, res: ServerResponse): void => {
   try {
-    const match = EXAMPLES_URL.exec(req.url || '')
+    const match = EXAMPLES_URL.exec(pathnameOf(req.url || ''))
+    const exampleSlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
+    const referenceSlug = match?.[2] === undefined ? '' : decodeSegment(match[2])
 
-    if (!match) {
+    if (!match || exampleSlug === undefined || referenceSlug === undefined) {
       renderPage(res, {
         statusCode: 404,
         bodyHtml: notFound("URL d'exemple invalide"),
@@ -49,9 +56,6 @@ export const examplesController = (req: IncomingMessage, res: ServerResponse): v
       })
       return
     }
-
-    const exampleSlug = match[1] ? decodeURIComponent(match[1]) : undefined
-    const referenceSlug = match[2] ? decodeURIComponent(match[2]) : undefined
 
     if (!exampleSlug) {
       renderPage(res, { statusCode: 200, bodyHtml: renderExamplesIndex(), active: { type: 'examples' } })

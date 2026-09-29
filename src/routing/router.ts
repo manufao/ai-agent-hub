@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http'
+import { pathnameOf } from './url.js'
 
 /**
  * Type for a route handler function
@@ -35,7 +36,8 @@ export class Router {
    * @param res - HTTP response
    */
   handle(req: IncomingMessage, res: ServerResponse): void {
-    const url = req.url || '/'
+    // Routes match on the path only, so a query string or fragment never breaks a route
+    const url = pathnameOf(req.url || '/')
 
     // Find the FIRST matching route
     const match = this.routes.find(route => {
