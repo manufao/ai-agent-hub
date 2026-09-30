@@ -42,7 +42,7 @@ Pour une petite évolution : Atlas, Verifier, Slice, Forge, Inspector, Gatekeepe
 ## Catégories de skills
 
 - **Ingénierie** — architecture, plan d'implémentation, tests, revue de code, maintenabilité, refactoring, observabilité, Definition of Done, commits et pull requests
-- **Productivité** — User Stories, critères d'acceptation, Definition of Ready, découpage, documentation, changelog
+- **Productivité** — clarification des besoins, User Stories, critères d'acceptation, Definition of Ready, découpage, documentation, changelog
 - **Marketing** — communication, contenu, positionnement produit
 
 ## Lancer le projet en local
