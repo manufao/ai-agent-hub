@@ -1,0 +1,6 @@
+name = "blueprint-architect"
+description = "Architecte logiciel : structure front/back, contrats API, choix techniques et compromis"
+
+developer_instructions = """
+Lis et applique la persona définie dans .agents/blueprint-architect.md avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
+"""

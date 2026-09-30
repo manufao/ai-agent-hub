@@ -1,83 +1,83 @@
 ---
 name: create-skill-or-agent
-description: Explains how to add a new skill (Agent Skills format) or a new agent (canonical persona) to this repository, compatible with Claude Code, Codex CLI, Cursor and Gemini CLI. Use when packaging a new reusable expertise or persona.
+description: "Explique comment ajouter un nouveau skill (format Agent Skills) ou un nouvel agent (persona canonique) à ce dépôt, compatible avec Claude Code, Codex CLI, Cursor et Gemini CLI. À utiliser pour packager une nouvelle expertise ou un nouveau persona réutilisable."
 ---
 
-# Create a skill or an agent in this repository
+# Créer un skill ou un agent dans ce dépôt
 
-> This is an implementation **example**, not a live skill: it lives in `examples/`, outside `.agents/skills/`, so no tool discovers it and it has no wrapper or symlink.
+> Ceci est un **exemple** d'implémentation, pas un skill actif : il vit dans `examples/`, en dehors de `.agents/skills/`, donc aucun outil ne le détecte et il n'a ni wrapper ni lien symbolique.
 
-This repository follows two distinct conventions, deliberately kept separate:
+Ce dépôt suit deux conventions distinctes, volontairement séparées :
 
-- **An agent** (`.agents/<name>.md`): a complete persona (role, scope, process) invoked explicitly or delegated to automatically. There is no common standard across tools, so each agent has one canonical file plus a small wrapper per tool that references it.
-- **A skill** (`.agents/skills/<category>/<name>/SKILL.md`): a packaged expertise or procedure in the open [Agent Skills](https://agentskills.io) format. One file is enough, readable as-is by Claude Code, Codex, Cursor and Gemini CLI (all scan `.agents/skills/`, except Claude Code, see below).
+- **Un agent** (`.agents/<nom>.md`) : un persona complet (rôle, périmètre, processus), invoqué explicitement ou sollicité automatiquement. Il n'existe pas de standard commun entre les outils : chaque agent a donc un fichier canonique, plus un petit wrapper par outil qui le référence.
+- **Un skill** (`.agents/skills/<catégorie>/<nom>/SKILL.md`) : une expertise ou une procédure packagée au format ouvert [Agent Skills](https://agentskills.io). Un seul fichier suffit, lisible tel quel par Claude Code, Codex, Cursor et Gemini CLI (tous scannent `.agents/skills/`, sauf Claude Code, voir plus bas).
 
-## When to create a skill rather than an agent
+## Quand créer un skill plutôt qu'un agent
 
-- A procedure you repeat ("review this kind of PR", "generate this kind of report") → **skill**
-- A full role with its own limits and output format, invoked like a dedicated collaborator → **agent**
+- Une procédure qu'on répète (« relire ce type de PR », « générer ce type de rapport ») → **skill**
+- Un rôle complet, avec ses propres limites et son format de sortie, invoqué comme un collaborateur dédié → **agent**
 
-## Create a skill
+## Créer un skill
 
-1. Pick an existing category (`ingenierie`, `productivite`, `marketing`) or propose a new one
-2. Create `.agents/skills/<category>/<kebab-case-name>/SKILL.md`:
+1. Choisir une catégorie existante (`ingenierie`, `productivite`, `marketing`) ou en proposer une nouvelle
+2. Créer `.agents/skills/<catégorie>/<nom-en-kebab-case>/SKILL.md` :
 
    ```yaml
    ---
-   name: my-skill
-   description: What the skill does, AND when to use it, main case first (this is the only trigger signal).
+   name: mon-skill
+   description: "Ce que fait le skill, ET quand l'utiliser, cas principal en premier (c'est le seul signal de déclenchement). À mettre entre guillemets s'il contient un deux-points."
    ---
 
-   # Skill title
+   # Titre du skill
 
-   [One paragraph: what the skill does and why to package it instead of retyping the instructions each time.]
+   [Un paragraphe : ce que fait le skill et pourquoi le packager plutôt que retaper les instructions à chaque fois.]
 
-   ## When to use
+   ## Quand l'utiliser
 
-   - [Concrete trigger 1]
-   - [Concrete trigger 2]
+   - [Déclencheur concret 1]
+   - [Déclencheur concret 2]
 
    ## Instructions
 
-   1. [Step]
-   2. [Step]
-   3. [Step that verifies the result]
+   1. [Étape]
+   2. [Étape]
+   3. [Étape qui vérifie le résultat]
 
-   ## Output
+   ## Format de sortie
 
-   [Exact shape of what should be returned.]
+   [Forme exacte de ce qui doit être renvoyé.]
    ```
 
-3. Optional extra files: `scripts/`, `references/`, `assets/` next to `SKILL.md`, referenced by name in the body (never loaded automatically)
-4. **For Claude Code only**: Claude Code does not scan `.agents/skills/`, only `.claude/skills/`. Create a symlink (once per skill):
+3. Fichiers annexes facultatifs : `scripts/`, `references/`, `assets/` à côté de `SKILL.md`, référencés par leur nom dans le corps (jamais chargés automatiquement)
+4. **Pour Claude Code uniquement** : Claude Code ne scanne pas `.agents/skills/`, seulement `.claude/skills/`. Créer un lien symbolique (une fois par skill) :
 
    ```bash
-   ln -s ../../.agents/skills/<category>/<name> .claude/skills/<name>
+   ln -s ../../.agents/skills/<catégorie>/<nom> .claude/skills/<nom>
    ```
 
-   Codex CLI, Cursor and Gemini CLI discover `.agents/skills/` natively, so they need no extra step.
+   Codex CLI, Cursor et Gemini CLI découvrent `.agents/skills/` nativement : aucune étape supplémentaire pour eux.
 
-## Create an agent
+## Créer un agent
 
-1. Create `.agents/<name>.md` with this structure: Role (one sentence, no "and" hiding a second role) → Scope → Out of scope → Process → Output contract
-2. Keep it short and high-level — a persona that tries to cover every case becomes brittle and expensive to maintain. See [`.agents/architect.md`](../../.agents/architect.md) or [`.agents/vitest-unit-test.md`](../../.agents/vitest-unit-test.md) as examples
-3. Create one wrapper per tool you use, referencing the canonical file instead of duplicating it:
-   - Claude Code: `.claude/agents/<name>.md` — see [`references/how-use-agent-in-claude.md`](references/how-use-agent-in-claude.md)
-   - Codex CLI: `.codex/agents/<name>.toml` — see [`references/how-use-agent-in-codex.md`](references/how-use-agent-in-codex.md)
-   - Cursor: `.cursor/rules/<name>.mdc` — see [`references/how-use-agent-in-cursor.md`](references/how-use-agent-in-cursor.md)
+1. Créer `.agents/<nom>.md` avec cette structure : Rôle (une phrase, sans « et » qui cacherait un second rôle) → Périmètre → Hors périmètre → Processus → Contrat de sortie
+2. Rester court et de haut niveau : un persona qui tente de couvrir tous les cas devient fragile et coûteux à maintenir. Voir [`.agents/atlas-product.md`](../../.agents/atlas-product.md) ou [`.agents/inspector-review.md`](../../.agents/inspector-review.md) comme exemples
+3. Créer un wrapper pour chaque outil utilisé, qui référence le fichier canonique au lieu de le dupliquer :
+   - Claude Code : `.claude/agents/<nom>.md` — voir [`references/how-use-agent-in-claude.md`](references/how-use-agent-in-claude.md)
+   - Codex CLI : `.codex/agents/<nom>.toml` — voir [`references/how-use-agent-in-codex.md`](references/how-use-agent-in-codex.md)
+   - Cursor : `.cursor/rules/<nom>.mdc` — voir [`references/how-use-agent-in-cursor.md`](references/how-use-agent-in-cursor.md)
 
-## Before creating anything: is it really needed?
+## Avant de créer quoi que ce soit : est-ce vraiment nécessaire ?
 
-| Need | Solution |
+| Besoin | Solution |
 |---|---|
-| A rule that must always be enforced, no exceptions | A hook / permission rule |
-| Contextual knowledge applied with judgment | A **skill** |
-| A self-contained task worth its own context window | An **agent** |
-| Guidance for every session in this repository | `AGENTS.md` at the root, kept short |
+| Une règle à appliquer toujours, sans exception | Un hook ou une règle de permission |
+| Une connaissance contextuelle appliquée avec jugement | Un **skill** |
+| Une tâche autonome qui mérite sa propre fenêtre de contexte | Un **agent** |
+| Une consigne valable pour toute session dans ce dépôt | `AGENTS.md` à la racine, court |
 
-## Checklist before shipping
+## Checklist avant livraison
 
-- [ ] `name` and `description` set (skill), or Role/Scope/Out of scope/Process/Output contract filled in (agent)
-- [ ] `description` states clearly WHEN to use it, main case first
-- [ ] Bulky content moved to a supporting file instead of inflating the main file
-- [ ] Wrapper created for each targeted tool (agent), or symlink created for Claude Code (skill)
+- [ ] `name` et `description` renseignés (skill), ou Rôle / Périmètre / Hors périmètre / Processus / Contrat de sortie remplis (agent)
+- [ ] `description` dit clairement QUAND l'utiliser, cas principal en premier
+- [ ] Contenu volumineux déplacé dans un fichier annexe plutôt que d'alourdir le fichier principal
+- [ ] Wrapper créé pour chaque outil visé (agent), ou lien symbolique créé pour Claude Code (skill)

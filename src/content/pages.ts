@@ -60,9 +60,10 @@ export function skillHero(skill: Skill): Hero {
   }
 }
 
-export function agentRelated(currentSlug: string, agents: AgentSummary[]): RelatedItem[] {
+/** The other agents of the same group as the current one. */
+export function agentRelated(current: AgentSummary, agents: AgentSummary[]): RelatedItem[] {
   return agents
-    .filter(agent => agent.slug !== currentSlug)
+    .filter(agent => agent.group === current.group && agent.slug !== current.slug)
     .map(agent => ({
       title: agent.title,
       href: `/agents/${encodeURIComponent(agent.slug)}`,

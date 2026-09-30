@@ -23,7 +23,15 @@ const skill = {
 
 describe('agentHero', () => {
   it('describes the agent and how to invoke it in each tool', () => {
-    const hero = agentHero({ slug: 'architect', title: 'Architect', description: 'Plans work', content: '' })
+    const hero = agentHero({
+      slug: 'architect',
+      title: 'Architect',
+      description: 'Plans work',
+      group: 'produit',
+      groupTitle: 'Produit',
+      order: 1,
+      content: '',
+    })
 
     expect(hero).toMatchObject({
       crumbs: [{ label: 'Agents', href: '/agents' }],
@@ -53,14 +61,20 @@ describe('skillHero', () => {
 })
 
 describe('agentRelated', () => {
-  it('lists the other agents only', () => {
-    const agents = [
-      { slug: 'architect', title: 'Architect', description: 'Plans' },
-      { slug: 'vitest', title: 'Vitest', description: 'Tests' },
-    ]
+  const summary = (slug: string, group: string) => ({
+    slug,
+    title: slug,
+    description: `About ${slug}`,
+    group,
+    groupTitle: group,
+    order: 1,
+  })
 
-    expect(agentRelated('architect', agents)).toEqual([
-      { title: 'Vitest', href: '/agents/vitest', description: 'Tests' },
+  it('lists the other agents of the same group only', () => {
+    const agents = [summary('architect', 'produit'), summary('vitest', 'produit'), summary('shield', 'qualite')]
+
+    expect(agentRelated(agents[0], agents)).toEqual([
+      { title: 'vitest', href: '/agents/vitest', description: 'About vitest' },
     ])
   })
 })

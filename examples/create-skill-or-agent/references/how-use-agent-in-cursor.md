@@ -1,43 +1,43 @@
-# Using a canonical agent with Cursor
+# Utiliser un agent canonique avec Cursor
 
-Cursor has no direct "subagent file" equivalent like Claude Code or Codex. The closest mechanism for packaging a reusable persona is a scoped Rule (`.mdc`).
+Cursor n'a pas d'équivalent direct à un « fichier de subagent » comme Claude Code ou Codex. Le mécanisme le plus proche pour packager un persona réutilisable est une règle à portée définie (`.mdc`).
 
-## Why not duplicate
+## Pourquoi ne pas dupliquer
 
-Cursor `.mdc` rules support `@file` mentions: Cursor automatically attaches that file's content to the rule's context when the rule loads. This is a native feature, not a workaround, so the rule can never drift from its source.
+Les règles `.mdc` de Cursor supportent la mention `@fichier` : Cursor attache automatiquement le contenu de ce fichier au contexte de la règle quand elle se charge. C'est une fonctionnalité native, pas un contournement : la règle ne peut donc jamais diverger de sa source.
 
-`description` must stay written out: it is what Cursor's agent reads to decide whether the rule is relevant, before attaching anything.
+`description` doit rester écrite en clair : c'est ce que l'agent de Cursor lit pour décider si la règle est pertinente, avant d'attacher quoi que ce soit.
 
-## Steps
+## Étapes
 
-1. Frontmatter:
+1. Frontmatter :
 
    ```yaml
    ---
-   description: Detailed technical planning and project tracking — use to break a feature into tasks with acceptance criteria
+   description: "Product Owner : transforme une idée ou une demande en User Stories exploitables"
    alwaysApply: false
    ---
    ```
 
-   Leave `globs` unset unless the persona should only apply to specific files.
+   Ne pas renseigner `globs` sauf si le persona ne doit s'appliquer qu'à certains fichiers.
 
-2. Body — reference the canonical file instead of pasting it:
+2. Corps : référencer le fichier canonique plutôt que de le coller :
 
    ```markdown
-   @../../.agents/architect.md
+   @../../.agents/atlas-product.md
 
-   Apply the persona above as-is: its Scope, Out of scope, Process and Output contract.
+   Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
    ```
 
-3. Location: `.cursor/rules/<name>.mdc`
+3. Emplacement : `.cursor/rules/<nom>.mdc`
 
-## Usage
+## Utilisation
 
-- **Agent-Requested**: Cursor reads `description` and decides on its own whether to load the rule
-- **Manual**: mention it explicitly in chat with `@<name>`
+- **Agent-Requested** : Cursor lit `description` et décide seul de charger la règle
+- **Manuel** : mention explicite `@<nom>` dans le chat
 
-## Difference from Claude Code / Codex
+## Différence avec Claude Code et Codex
 
-A Cursor rule injects content into the *current* agent's context — it does not run in an isolated context window like a Claude Code subagent or a Codex agent.
+Une règle Cursor injecte du contenu dans le contexte de l'agent *courant* : elle ne s'exécute pas dans une fenêtre de contexte isolée comme un subagent Claude Code ou un agent Codex.
 
-The `@file` syntax inside rules has behaved inconsistently across Cursor versions — verify before relying on it: https://cursor.com/docs/context/skills
+La syntaxe `@fichier` dans les règles s'est comportée de façon incohérente selon les versions de Cursor — à vérifier avant de s'y fier : https://cursor.com/docs/context/skills

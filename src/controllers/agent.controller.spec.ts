@@ -89,7 +89,7 @@ describe('agentController', () => {
 
     expect(mockGetAgent).toHaveBeenCalledWith('architect')
     expect(mockRenderMarkdown).toHaveBeenCalledWith('# Architect', { stripTitle: true, stripSummary: true })
-    expect(mockAgentRelated).toHaveBeenCalledWith('architect', agents)
+    expect(mockAgentRelated).toHaveBeenCalledWith(agent, agents)
     expect(mockRenderPage).toHaveBeenCalledWith(mockRes, {
       statusCode: 200,
       bodyHtml: '<p>Body</p><a href="/examples/demo/references/guide">g</a>',
@@ -123,8 +123,20 @@ describe('agentController', () => {
     expect(call.bodyHtml).toContain('&lt;script&gt;')
   })
 
-  it('renders the agents index for /agents and /agents/', () => {
-    mockListAgents.mockReturnValue([{ slug: 'architect', title: 'Architect', description: 'Plans <work>' }])
+  it('renders the agents index grouped by level for /agents and /agents/', () => {
+    const agent = (slug: string, title: string, group: string, groupTitle: string) => ({
+      slug,
+      title,
+      description: `Plans <${slug}>`,
+      group,
+      groupTitle,
+      order: 1,
+    })
+    mockListAgents.mockReturnValue([
+      agent('atlas', 'Atlas', 'produit', 'Produit'),
+      agent('verifier', 'Verifier', 'produit', 'Produit'),
+      agent('inspector', 'Inspector', 'qualite', 'Qualité et revue'),
+    ])
 
     for (const url of ['/agents', '/agents/']) {
       mockRenderPage.mockClear()
@@ -134,10 +146,22 @@ describe('agentController', () => {
 
       const call = mockRenderPage.mock.calls[0][1] as { statusCode: number; bodyHtml: string }
       expect(call.statusCode).toBe(200)
-      expect(call.bodyHtml).toContain('href="/agents/architect"')
-      expect(call.bodyHtml).toContain('Plans &lt;work&gt;')
+      expect(call.bodyHtml).toContain('href="/agents/atlas"')
+      expect(call.bodyHtml).toContain('Plans &lt;atlas&gt;')
+      expect(call.bodyHtml.match(/<section/g)).toHaveLength(2)
+      expect(call.bodyHtml).toContain('Qualité et revue')
       expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ active: { type: 'agents' } }))
     }
+  })
+
+  it('renders an agents index without sections when there is no agent', () => {
+    mockListAgents.mockReturnValue([])
+    mockReq.url = '/agents'
+
+    agentController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+    const call = mockRenderPage.mock.calls[0][1] as { bodyHtml: string }
+    expect(call.bodyHtml).not.toContain('<section')
   })
 
   it('finds the agent even when the URL carries a query string', () => {

@@ -1,1 +1,1 @@
-Skills liés au développement logiciel : créer des tests, revoir du code, faire évoluer l'architecture, outiller le dépôt.
+Skills liés au développement logiciel : décider de l'architecture, planifier l'implémentation, tester, relire le code, garder le code maintenable et livrer proprement.

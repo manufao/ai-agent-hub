@@ -1,0 +1,8 @@
+---
+description: "Quality gate : contrôle la Definition of Done avant merge ou livraison"
+alwaysApply: false
+---
+
+@../../.agents/gatekeeper-done.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

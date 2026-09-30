@@ -1,0 +1,8 @@
+---
+description: "Découpe fonctionnelle et technique : transforme une US validée en tranches et tâches livrables"
+alwaysApply: false
+---
+
+@../../.agents/slice-planner.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

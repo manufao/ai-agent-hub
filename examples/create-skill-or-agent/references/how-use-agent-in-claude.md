@@ -1,38 +1,40 @@
-# Using a canonical agent with Claude Code
+# Utiliser un agent canonique avec Claude Code
 
-How to turn a canonical persona (`.agents/<name>.md`) into a Claude Code subagent **without copying its content**.
+Comment transformer un persona canonique (`.agents/<nom>.md`) en subagent Claude Code **sans en copier le contenu**.
 
-## Why not duplicate
+## Pourquoi ne pas dupliquer
 
-Claude Code has no include syntax for a subagent's body. But the agent has the `Read` tool, so the wrapper can simply tell it to read the canonical file itself instead of maintaining a copy.
+Claude Code n'a pas de syntaxe d'inclusion pour le corps d'un subagent. Mais l'agent dispose de l'outil `Read` : le wrapper peut donc simplement lui demander de lire lui-même le fichier canonique, au lieu d'en maintenir une copie.
 
-Only `description` (and `name`) must be written out in the wrapper: it is the only signal Claude uses to decide whether to delegate to this agent automatically, before it has read any file.
+Seuls `description` (et `name`) doivent être écrits en clair dans le wrapper : c'est le seul signal que Claude utilise pour décider de déléguer automatiquement à cet agent, avant d'avoir lu le moindre fichier.
 
-## Steps
+## Étapes
 
-1. YAML frontmatter, with an explicit `description`:
+1. Frontmatter YAML, avec une `description` explicite :
 
    ```yaml
    ---
-   name: architect
-   description: Detailed technical planning and project tracking. Use to break a feature into tasks with acceptance criteria.
-   tools: Read, Write
+   name: atlas-product
+   description: "Product Owner : transforme une idée ou une demande en User Stories exploitables."
+   tools: Read, Grep, Glob
    model: inherit
    ---
    ```
 
-2. Body: a single line pointing at the canonical file, nothing more:
+   Mettre `description` entre guillemets dès qu'elle contient un deux-points, sinon le YAML est invalide.
+
+2. Corps : une seule ligne qui pointe vers le fichier canonique, rien de plus :
 
    ```markdown
-   Read and apply the persona defined in `.agents/architect.md`. Follow its Scope, Out of scope, Process and Output contract exactly.
+   Lis et applique la persona définie dans `.agents/atlas-product.md`. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
    ```
 
-3. Location: `.claude/agents/<name>.md` (shared with the team through git) or `~/.claude/agents/<name>.md` (personal).
+3. Emplacement : `.claude/agents/<nom>.md` (partagé avec l'équipe via git) ou `~/.claude/agents/<nom>.md` (personnel).
 
-## Usage
+## Utilisation
 
-- Claude can delegate automatically by reading `description`
-- Or invoke it explicitly: "Use the `architect` agent to..."
-- On startup the agent first reads the canonical file, then applies it — one extra tool call, but the persona never drifts between wrapper and source
+- Claude peut déléguer automatiquement en lisant `description`
+- Ou invocation explicite : « Utilise l'agent `atlas-product` pour… »
+- Au démarrage, l'agent lit d'abord le fichier canonique, puis l'applique : un appel d'outil de plus, mais le persona ne diverge jamais entre le wrapper et la source
 
-Source — check current field names before relying on this: https://code.claude.com/docs/en/sub-agents
+Source — vérifier les noms de champs actuels avant de s'y fier : https://code.claude.com/docs/en/sub-agents

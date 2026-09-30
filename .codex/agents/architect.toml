@@ -1,6 +1,0 @@
-name = "architect"
-description = "Planification technique détaillée et suivi de projet"
-
-developer_instructions = """
-Lis et applique la persona définie dans .agents/architect.md avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
-"""

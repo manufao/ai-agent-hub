@@ -1,0 +1,8 @@
+---
+description: "Code reviewer : revue structurée de code ou de PR (bugs, sécurité, performance, maintenabilité)"
+alwaysApply: false
+---
+
+@../../.agents/inspector-review.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

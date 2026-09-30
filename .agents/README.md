@@ -4,15 +4,45 @@ Bienvenue sur le hub d'agents et de skills IA de ce projet — une collection de
 
 ## Deux briques, deux formats
 
-- **Agents** (menu de gauche) : des personas complets — un rôle, un périmètre clair, un processus, un format de sortie. Utile pour un rôle autonome qu'on invoque comme un collaborateur dédié (planification, tests...).
-- **Skills** (menu de gauche, par catégorie) : des expertises et procédures packagées au format ouvert [Agent Skills](https://agentskills.io), reconnu nativement par la plupart des outils agentiques du marché.
+- **Agents** (menu de gauche) : des personas complets — un rôle, un périmètre clair, un processus, un format de sortie. Chacun raisonne, arbitre et rend une décision : valider une story, choisir une architecture, relire du code.
+- **Skills** (menu de gauche, par catégorie) : des procédures répétables packagées au format ouvert [Agent Skills](https://agentskills.io), reconnu nativement par la plupart des outils agentiques du marché. Un agent s'appuie sur ses skills : par exemple Verifier applique `definition-of-ready` et `user-story-quality-check`.
 
-Envie d'en créer un ? L'exemple [Create a skill or an agent](/examples/create-skill-or-agent) documente la marche à suivre, catégorie par catégorie.
+Envie d'en créer un ? L'exemple [Créer un skill ou un agent](/examples/create-skill-or-agent) documente la marche à suivre, catégorie par catégorie.
+
+## L'équipe
+
+Treize agents couvrent le cycle de développement, de l'idée à la pull request. Ils sont regroupés par niveau dans le menu, et on ne les lance pas tous à chaque fois.
+
+- **Produit** : Atlas (User Stories), Verifier (validation), Slice (découpe)
+- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Pulse (observabilité), Scribe (documentation)
+- **Qualité et revue** : Specimen (tests), Inspector (revue de code), Sentinel (maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
+- **Livraison** : Courier (commits, push et pull request)
+
+```text
+Demande métier ou idée
+  → Atlas       formalise une User Story
+  → Verifier    valide clarté, risques et critères d'acceptation
+  → Slice       découpe en tranches livrables
+  → Blueprint   décide de l'architecture si nécessaire
+  → Forge       prépare le plan d'implémentation
+  → Pulse       prévoit logs, métriques et alertes si la fonctionnalité part en production
+  → Specimen    définit la stratégie de tests
+  → Développement
+  → Inspector   relit le code
+  → Sentinel    contrôle la maintenabilité
+  → Gatekeeper  valide la Definition of Done
+  → Scribe      met la documentation à jour
+  → Courier     commite, pousse et ouvre la pull request
+```
+
+Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone que Sentinel juge à refactorer.
+
+Pour une petite évolution : Atlas, Verifier, Slice, Forge, Inspector, Gatekeeper, Courier. Pour une fonctionnalité sensible (paiement, authentification, donnée personnelle), ajoutez Blueprint, Specimen et Pulse.
 
 ## Catégories de skills
 
-- **Ingénierie** — tests, revue de code, architecture, outillage du dépôt
-- **Productivité** — organisation, rédaction, automatisation de tâches répétitives
+- **Ingénierie** — architecture, plan d'implémentation, tests, revue de code, maintenabilité, refactoring, observabilité, Definition of Done, commits et pull requests
+- **Productivité** — clarification des besoins, User Stories, critères d'acceptation, Definition of Ready, découpage, documentation, changelog
 - **Marketing** — communication, contenu, positionnement produit
 
 ## Lancer le projet en local
