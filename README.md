@@ -18,7 +18,7 @@ ai-agent-hub/
 │   │   └── docker-compose.dev.yml
 │   └── prod/        # Production environment
 │       └── Dockerfile
-├── docs/            # Project documentation and agent-generated plans
+├── docs/            # Project documentation; agent plans live in docs/plans/
 ├── examples/        # Implementation examples (skill + references), not wired to any tool
 ├── .claude/         # Claude Code wrappers: agents/ (personas), plus skills/ symlinks for real skills
 ├── .codex/          # Codex CLI wrappers: agents/*.toml
