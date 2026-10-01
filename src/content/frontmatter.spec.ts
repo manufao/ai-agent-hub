@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { parseFrontmatter } from './frontmatter.js'
+import { hasUnterminatedFrontmatter, parseFrontmatter } from './frontmatter.js'
 
 describe('parseFrontmatter', () => {
   it('returns the raw content untouched when there is no frontmatter block', () => {
@@ -67,5 +67,16 @@ describe('parseFrontmatter', () => {
 
   it('returns no data for a block with only unusable lines', () => {
     expect(parseFrontmatter('---\n  indented but no key\n---\nBody').data).toEqual({})
+  })
+})
+
+describe('hasUnterminatedFrontmatter', () => {
+  it('detects a frontmatter block that is opened but never closed', () => {
+    expect(hasUnterminatedFrontmatter('---\nname: x\n\n# Body')).toBe(true)
+  })
+
+  it('accepts a closed block and a file without frontmatter', () => {
+    expect(hasUnterminatedFrontmatter('---\nname: x\n---\nBody')).toBe(false)
+    expect(hasUnterminatedFrontmatter('# Body')).toBe(false)
   })
 })

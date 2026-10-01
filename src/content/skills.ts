@@ -1,8 +1,9 @@
-import { readdirSync, readFileSync, existsSync } from 'fs'
+import { readdirSync, existsSync } from 'fs'
 import { join } from 'path'
 import { skillsDir, isSafeSegment } from './paths.js'
 import { parseFrontmatter } from './frontmatter.js'
 import { extractSummary } from './markdown.js'
+import { readContentFile, skipUnreadable } from './read-file.js'
 
 export interface SkillSummary {
   category: string
@@ -34,7 +35,9 @@ export function categoryTitle(slug: string): string {
 
 function readCategoryDescription(categoryDir: string): string | undefined {
   const readmePath = join(categoryDir, 'README.md')
-  return existsSync(readmePath) ? extractSummary(readFileSync(readmePath, 'utf-8')) || undefined : undefined
+  return existsSync(readmePath)
+    ? skipUnreadable(readmePath, () => extractSummary(readContentFile(readmePath)) || undefined)
+    : undefined
 }
 
 function readSkillSummary(category: string, slug: string, skillDir: string): SkillSummary | undefined {
@@ -43,8 +46,10 @@ function readSkillSummary(category: string, slug: string, skillDir: string): Ski
     return undefined
   }
 
-  const { data } = parseFrontmatter(readFileSync(skillPath, 'utf-8'))
-  return { category, slug, name: data.name ?? slug, description: data.description ?? '' }
+  return skipUnreadable(skillPath, (): SkillSummary => {
+    const { data } = parseFrontmatter(readContentFile(skillPath))
+    return { category, slug, name: data.name ?? slug, description: data.description ?? '' }
+  })
 }
 
 function readCategory(slug: string): CategorySummary {
@@ -91,6 +96,6 @@ export function getSkill(category: string, slug: string): Skill | undefined {
     return undefined
   }
 
-  const { data, content } = parseFrontmatter(readFileSync(skillPath, 'utf-8'))
+  const { data, content } = parseFrontmatter(readContentFile(skillPath))
   return { category, slug, name: data.name ?? slug, description: data.description ?? '', content }
 }

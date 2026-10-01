@@ -3,6 +3,8 @@
  */
 
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { logger } from '../logging/logger.js'
+import { resetReportedProblems } from './read-file.js'
 
 vi.mock('fs', () => ({
   readdirSync: vi.fn(),
@@ -242,6 +244,29 @@ describe('skills content', () => {
         description: '',
         content: 'Body without frontmatter',
       })
+    })
+  })
+
+  describe('an unreadable file', () => {
+    it('is skipped and logged, so the readable skills and the category are still listed', () => {
+      resetReportedProblems()
+      const logError = vi.spyOn(logger, 'error')
+      mockExistsSync.mockReturnValue(true)
+      mockReaddirSync.mockImplementation((path: string) =>
+        path.endsWith('skills') ? [direntDir('cat')] : [direntDir('broken'), direntDir('ok')],
+      )
+      mockReadFileSync.mockImplementation((path: string) => {
+        if (path.includes('broken') || path.endsWith('README.md')) {
+          throw Object.assign(new Error('EACCES'), { code: 'EACCES' })
+        }
+        return '---\nname: ok\n---\nBody'
+      })
+
+      const [category] = listCategories()
+
+      expect(category.skills.map(skill => skill.slug)).toEqual(['ok'])
+      expect(category.description).toBeUndefined()
+      expect(logError).toHaveBeenCalledTimes(2)
     })
   })
 })

@@ -58,3 +58,8 @@ export function parseFrontmatter(raw: string): ParsedFrontmatter {
 
   return { data, content: raw.slice(match[0].length) }
 }
+
+/** True when the text opens a frontmatter block with `---` but never closes it. */
+export function hasUnterminatedFrontmatter(raw: string): boolean {
+  return /^---\r?\n/.test(raw) && !FRONTMATTER_BLOCK.test(raw)
+}

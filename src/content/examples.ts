@@ -1,8 +1,9 @@
-import { readdirSync, readFileSync, existsSync } from 'fs'
+import { readdirSync, existsSync } from 'fs'
 import { join } from 'path'
 import { examplesDir, isSafeSegment } from './paths.js'
 import { parseFrontmatter } from './frontmatter.js'
 import { extractTitle } from './markdown.js'
+import { readContentFile, skipUnreadable } from './read-file.js'
 
 export interface ReferenceSummary {
   slug: string
@@ -34,8 +35,13 @@ function listReferences(exampleDir: string): ReferenceSummary[] {
     .filter(entry => entry.isFile() && entry.name.endsWith('.md'))
     .map(entry => {
       const slug = entry.name.replace(/\.md$/, '')
-      return { slug, title: extractTitle(readFileSync(join(referencesDir, entry.name), 'utf-8'), slug) }
+      const filePath = join(referencesDir, entry.name)
+      return skipUnreadable(filePath, (): ReferenceSummary => ({
+        slug,
+        title: extractTitle(readContentFile(filePath), slug),
+      }))
     })
+    .filter((reference): reference is ReferenceSummary => reference !== undefined)
     .sort((a, b) => a.title.localeCompare(b.title))
 }
 
@@ -49,8 +55,10 @@ export function listExamples(): ExampleSummary[] {
         return undefined
       }
 
-      const { data } = parseFrontmatter(readFileSync(skillPath, 'utf-8'))
-      return { slug: entry.name, name: data.name ?? entry.name, description: data.description ?? '' }
+      return skipUnreadable(skillPath, (): ExampleSummary => {
+        const { data } = parseFrontmatter(readContentFile(skillPath))
+        return { slug: entry.name, name: data.name ?? entry.name, description: data.description ?? '' }
+      })
     })
     .filter((example): example is ExampleSummary => example !== undefined)
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -68,7 +76,7 @@ export function getExample(slug: string): Example | undefined {
     return undefined
   }
 
-  const { data, content } = parseFrontmatter(readFileSync(skillPath, 'utf-8'))
+  const { data, content } = parseFrontmatter(readContentFile(skillPath))
   return {
     slug,
     name: data.name ?? slug,
@@ -89,6 +97,6 @@ export function getReference(exampleSlug: string, referenceSlug: string): Refere
     return undefined
   }
 
-  const content = readFileSync(referencePath, 'utf-8')
+  const content = readContentFile(referencePath)
   return { slug: referenceSlug, title: extractTitle(content, referenceSlug), content }
 }

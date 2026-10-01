@@ -3,6 +3,8 @@
  */
 
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { logger } from '../logging/logger.js'
+import { resetReportedProblems } from './read-file.js'
 
 vi.mock('fs', () => ({
   readdirSync: vi.fn(),
@@ -139,6 +141,29 @@ describe('agents content', () => {
         order: 3,
         content: '# Architect\n\nBody',
       })
+    })
+  })
+
+  describe('an unreadable file', () => {
+    it('is skipped and logged once, so the other agents are still listed', () => {
+      resetReportedProblems()
+      const logError = vi.spyOn(logger, 'error')
+      mockReaddirSync.mockReturnValue([direntFile('broken.md'), direntFile('ok.md')])
+      mockReadFileSync.mockImplementation((path: string) => {
+        if (path.endsWith('broken.md')) {
+          throw Object.assign(new Error('EACCES'), { code: 'EACCES' })
+        }
+        return '# Ok\n\nSummary.'
+      })
+
+      expect(listAgents().map(agent => agent.slug)).toEqual(['ok'])
+      listAgents()
+
+      expect(logError).toHaveBeenCalledTimes(1)
+      expect(logError).toHaveBeenCalledWith(
+        expect.objectContaining({ file: '.agents/broken.md' }),
+        'content.unreadable',
+      )
     })
   })
 })
