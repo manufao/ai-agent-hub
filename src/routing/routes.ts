@@ -6,6 +6,7 @@ import {
   examplesController,
   staticController,
   licenseController,
+  healthController,
 } from '../controllers/index.js'
 import { marked } from 'marked'
 
@@ -20,6 +21,9 @@ marked.setOptions({
  * Defines the mapping between URLs and controllers
  */
 const router = new Router()
+
+// 0. Health check (does not go through the site layout, so it still answers when the content is broken)
+router.add('/health', healthController)
 
 // 1. Static files (CSS, JS, Images)
 // Regex: starts with /css/, /js/ or /images/
