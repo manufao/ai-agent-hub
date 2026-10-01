@@ -28,8 +28,11 @@ ai-agent-hub/
 │   ├── config.ts    # Configuration
 │   ├── view.ts      # Shared page renderer (sidebar layout)
 │   ├── content/     # Loaders for agents, skills and overview (read from .agents/)
-│   ├── controllers/ # Home, agent, skills and static controllers
+│   ├── controllers/ # Home, agent, skills, static and health controllers
+│   ├── http/        # Static 404 and 500 pages
+│   ├── logging/     # Structured logger (pino) and log helpers
 │   ├── routing/     # Minimal router and route table
+│   ├── start.ts     # Startup checks, then listen
 │   └── input.css    # Tailwind CSS input
 ├── views/           # EJS templates
 │   └── index.ejs    # Site layout (sidebar + content)
@@ -109,6 +112,7 @@ Once the server is running:
 - `/agents/<name>` - An agent persona (`.agents/<name>.md`)
 - `/skills`, `/skills/<category>`, `/skills/<category>/<name>` - Skills, grouped by category
 - `/examples/<name>` - Implementation examples (`examples/<name>/SKILL.md`)
+- `/health` - Health check: `200 ok` when `.agents/` is readable, `503` otherwise
 
 ### Other Available Commands
 
@@ -124,6 +128,23 @@ Once the server is running:
 - `pnpm run format` - Format code with Prettier
 - `pnpm run security:check` - Run dependency audit and secret scan
 
+### Observability and troubleshooting
+
+The server writes one JSON line per event on stdout (`docker compose logs` or `pnpm start`). Set `LOG_LEVEL` (`debug`, `info`, `warn`, `error`, `silent`; default `info`) to change the verbosity. Logs never contain user-supplied values or file contents: a 404 is logged with its route family only, and a request URL is logged without its query string.
+
+| Event | Level | Meaning | What to do |
+| --- | --- | --- | --- |
+| `startup.listening` | info | The server is up | Nothing |
+| `startup.port_in_use` | error | The port is already taken | Stop the other process or change `PORT` |
+| `startup.invalid_port` | error | `PORT` is not an integer between 0 and 65535 | Fix `PORT` |
+| `startup.content_dir_missing` | error | `.agents/`, `.agents/skills/` or `examples/` is missing (see `missing`) | Restore the folder; the server did not start |
+| `content.unreadable` | error | A content file cannot be read (see `file`); the site skips it and keeps running | Fix the permissions or the file |
+| `content.frontmatter_invalid` | warn | A frontmatter block is opened with `---` but never closed (see `file`) | Close it with `---` |
+| `http.not_found` | info | A page does not exist (see `route`) | Nothing if isolated; look for a broken link if frequent |
+| `http.unhandled` | error | An unexpected error; the visitor got a generic 500 page (stack in `err`) | Read the stack, reproduce with the logged `url` |
+
+The two content events are logged once per file until the server restarts. Out of scope for now: response-time metrics and alerting, which only make sense once the site is deployed and monitored.
+
 ## Technology Stack
 
 - **Runtime**: Node.js 24 with TypeScript 6
@@ -131,6 +152,7 @@ Once the server is running:
 - **Templating**: EJS 6
 - **Styling**: Tailwind CSS v4
 - **Markdown**: marked 18
+- **Logging**: pino 10 (JSON lines on stdout)
 - **Testing**: Vitest 5
 - **Linting**: ESLint 10 with typescript-eslint 8 (flat config)
 - **Formatting**: Prettier 3
