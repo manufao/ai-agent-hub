@@ -56,7 +56,7 @@ ai-agent-hub/
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/manufao/ai-agent-hub.git
 cd ai-agent-hub
 ```
 
