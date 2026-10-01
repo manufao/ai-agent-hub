@@ -34,6 +34,8 @@ Demande métier ou idée
   → Courier     commite, pousse et ouvre la pull request
 ```
 
+Forge, Pulse et Specimen enregistrent chacun leur plan dans `docs/plans/<date>-<sujet>/` : c'est la trace de ce qui a été décidé avant de coder.
+
 Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone qu'Inspector juge à refactorer lors d'un audit.
 
 Pour une petite évolution : Atlas, Verifier, Slice, Forge, Junior, Inspector, Gatekeeper, Courier. Pour une fonctionnalité sensible (paiement, authentification, donnée personnelle), ajoutez Blueprint, Specimen et Pulse.

@@ -1,7 +1,7 @@
 ---
 name: specimen-tests
 description: "Test strategist : stratégie de tests unitaires, intégration, E2E, cas limites et non-régression"
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, Write
 model: inherit
 ---
 

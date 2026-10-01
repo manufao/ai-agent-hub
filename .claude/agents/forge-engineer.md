@@ -1,7 +1,7 @@
 ---
 name: forge-engineer
 description: "Lead engineer : plan d'implémentation concret, ordonné, avec les fichiers à modifier"
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, Write
 model: inherit
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: pulse-observability
 description: "Prépare les logs, métriques et alertes pour diagnostiquer une fonctionnalité en production"
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, Write
 model: inherit
 ---
 
