@@ -1,8 +1,9 @@
-import { readdirSync, readFileSync, statSync } from 'fs'
+import { readdirSync, statSync } from 'fs'
 import { join } from 'path'
 import { agentsDir, isSafeSegment } from './paths.js'
 import { parseFrontmatter } from './frontmatter.js'
 import { extractSummary, extractTitle } from './markdown.js'
+import { readContentFile, skipUnreadable } from './read-file.js'
 
 export interface AgentSummary {
   slug: string
@@ -60,16 +61,20 @@ export function listAgents(): AgentSummary[] {
   return readdirSync(agentsDir, { withFileTypes: true })
     .filter(entry => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'README.md')
     .map(entry => {
-      const agent = readAgent(entry.name.replace(/\.md$/, ''), readFileSync(join(agentsDir, entry.name), 'utf-8'))
-      return {
-        slug: agent.slug,
-        title: agent.title,
-        description: agent.description,
-        group: agent.group,
-        groupTitle: agent.groupTitle,
-        order: agent.order,
-      }
+      const filePath = join(agentsDir, entry.name)
+      return skipUnreadable(filePath, (): AgentSummary => {
+        const agent = readAgent(entry.name.replace(/\.md$/, ''), readContentFile(filePath))
+        return {
+          slug: agent.slug,
+          title: agent.title,
+          description: agent.description,
+          group: agent.group,
+          groupTitle: agent.groupTitle,
+          order: agent.order,
+        }
+      })
     })
+    .filter((agent): agent is AgentSummary => agent !== undefined)
     .sort((a, b) => groupRank(a.group) - groupRank(b.group) || a.order - b.order || a.title.localeCompare(b.title))
 }
 
@@ -84,5 +89,5 @@ export function getAgent(slug: string): Agent | undefined {
     return undefined
   }
 
-  return readAgent(slug, readFileSync(filePath, 'utf-8'))
+  return readAgent(slug, readContentFile(filePath))
 }

@@ -3,6 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import type { IncomingMessage, ServerResponse } from 'http'
 
 // Mock the controllers before importing routes
 vi.mock('../controllers/index.js', () => ({
@@ -12,6 +13,7 @@ vi.mock('../controllers/index.js', () => ({
   examplesController: vi.fn(),
   staticController: vi.fn(),
   licenseController: vi.fn(),
+  healthController: vi.fn(),
 }))
 
 // Mock marked
@@ -43,6 +45,16 @@ describe('Routes Configuration', () => {
     it('should have router defined', () => {
       expect(router).toBeDefined()
       expect(router.handle).toBeDefined()
+    })
+  })
+
+  describe('health check', () => {
+    it('should route /health to the health controller', async () => {
+      const { healthController } = await import('../controllers/index.js')
+
+      router.handle({ url: '/health', method: 'GET' } as IncomingMessage, {} as ServerResponse)
+
+      expect(healthController).toHaveBeenCalled()
     })
   })
 

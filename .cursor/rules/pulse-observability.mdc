@@ -1,5 +1,5 @@
 ---
-description: "Observabilité et fiabilité : logs, métriques, alertes, gestion des erreurs et diagnostic en production"
+description: "Prépare les logs, métriques et alertes pour diagnostiquer une fonctionnalité en production"
 alwaysApply: false
 ---
 

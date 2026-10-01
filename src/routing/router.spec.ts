@@ -6,6 +6,7 @@
 import { afterEach, beforeEach, describe, expect, it, type Mocked, vi } from 'vitest'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Router } from './index.js'
+import { logger } from '../logging/logger.js'
 
 describe('Router', function () {
   let router: Router
@@ -65,6 +66,7 @@ describe('Router', function () {
 
       expect(handler).not.toHaveBeenCalled()
       expect(mockRes.writeHead).toHaveBeenCalledWith(404)
+      expect(mockRes.end).toHaveBeenCalledWith(expect.stringContaining('Page introuvable'))
     })
 
     it('should default to "/" when req.url is undefined', function () {
@@ -175,19 +177,22 @@ describe('Router', function () {
       expect(handler).toHaveBeenCalledWith(mockReq, mockRes)
     })
 
-    it('should allow errors to propagate from handlers', function () {
+    it('should answer 500 and log the error when a handler throws', function () {
+      const error = new Error('Handler error')
       const errorHandler = vi.fn(() => {
-        throw new Error('Handler error')
+        throw error
       })
+      const logError = vi.spyOn(logger, 'error')
 
       router.add('/error', errorHandler)
-      mockReq.url = '/error'
+      mockReq.url = '/error?secret=1'
 
-      expect(() => {
-        router.handle(mockReq as IncomingMessage, mockRes as ServerResponse)
-      }).toThrow('Handler error')
+      router.handle(mockReq as IncomingMessage, mockRes as ServerResponse)
 
       expect(errorHandler).toHaveBeenCalled()
+      expect(mockRes.writeHead).toHaveBeenCalledWith(500)
+      expect(mockRes.end).toHaveBeenCalledWith(expect.stringContaining('Erreur du serveur'))
+      expect(logError).toHaveBeenCalledWith({ err: error, method: 'GET', url: '/error' }, 'http.unhandled')
     })
   })
 })

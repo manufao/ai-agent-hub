@@ -43,72 +43,64 @@ const renderExamplesIndex = (): string => {
  * @param res - HTTP response object
  */
 export const examplesController = (req: IncomingMessage, res: ServerResponse): void => {
-  try {
-    const match = EXAMPLES_URL.exec(pathnameOf(req.url || ''))
-    const exampleSlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
-    const referenceSlug = match?.[2] === undefined ? '' : decodeSegment(match[2])
+  const match = EXAMPLES_URL.exec(pathnameOf(req.url || ''))
+  const exampleSlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
+  const referenceSlug = match?.[2] === undefined ? '' : decodeSegment(match[2])
 
-    if (!match || exampleSlug === undefined || referenceSlug === undefined) {
-      renderPage(res, {
-        statusCode: 404,
-        bodyHtml: notFound("URL d'exemple invalide"),
-        active: { type: 'examples' },
-      })
-      return
-    }
+  if (!match || exampleSlug === undefined || referenceSlug === undefined) {
+    renderPage(res, {
+      statusCode: 404,
+      bodyHtml: notFound("URL d'exemple invalide"),
+      active: { type: 'examples' },
+    })
+    return
+  }
 
-    if (!exampleSlug) {
-      renderPage(res, { statusCode: 200, bodyHtml: renderExamplesIndex(), active: { type: 'examples' } })
-      return
-    }
+  if (!exampleSlug) {
+    renderPage(res, { statusCode: 200, bodyHtml: renderExamplesIndex(), active: { type: 'examples' } })
+    return
+  }
 
-    const example = getExample(exampleSlug)
-    if (!example) {
-      renderPage(res, {
-        statusCode: 404,
-        bodyHtml: notFound(`Aucun exemple nommé ${exampleSlug} n'est disponible.`),
-        active: { type: 'example', slug: exampleSlug },
-      })
-      return
-    }
+  const example = getExample(exampleSlug)
+  if (!example) {
+    renderPage(res, {
+      statusCode: 404,
+      bodyHtml: notFound(`Aucun exemple nommé ${exampleSlug} n'est disponible.`),
+      active: { type: 'example', slug: exampleSlug },
+    })
+    return
+  }
 
-    if (!referenceSlug) {
-      const { html, headings } = renderMarkdown(example.content, { stripTitle: true })
-      renderPage(res, {
-        statusCode: 200,
-        bodyHtml: rewriteLinks(html, example.slug),
-        active: { type: 'example', slug: example.slug },
-        hero: exampleHero(example),
-        toc: headings,
-        related: exampleRelated(example),
-      })
-      return
-    }
-
-    const reference = getReference(example.slug, referenceSlug)
-    if (!reference) {
-      renderPage(res, {
-        statusCode: 404,
-        bodyHtml: notFound(`Aucune référence nommée ${referenceSlug} n'est disponible dans ${exampleSlug}.`),
-        active: { type: 'example', slug: example.slug, reference: referenceSlug },
-      })
-      return
-    }
-
-    const { html, headings } = renderMarkdown(reference.content, { stripTitle: true })
+  if (!referenceSlug) {
+    const { html, headings } = renderMarkdown(example.content, { stripTitle: true })
     renderPage(res, {
       statusCode: 200,
       bodyHtml: rewriteLinks(html, example.slug),
-      active: { type: 'example', slug: example.slug, reference: reference.slug },
-      hero: referenceHero(example, reference),
+      active: { type: 'example', slug: example.slug },
+      hero: exampleHero(example),
       toc: headings,
-      related: exampleRelated(example, reference.slug),
+      related: exampleRelated(example),
     })
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error rendering examples page:', error)
-    res.setHeader('Content-Type', 'text/plain;charset=utf-8')
-    res.writeHead(500)
-    res.end('Internal Server Error')
+    return
   }
+
+  const reference = getReference(example.slug, referenceSlug)
+  if (!reference) {
+    renderPage(res, {
+      statusCode: 404,
+      bodyHtml: notFound(`Aucune référence nommée ${referenceSlug} n'est disponible dans ${exampleSlug}.`),
+      active: { type: 'example', slug: example.slug, reference: referenceSlug },
+    })
+    return
+  }
+
+  const { html, headings } = renderMarkdown(reference.content, { stripTitle: true })
+  renderPage(res, {
+    statusCode: 200,
+    bodyHtml: rewriteLinks(html, example.slug),
+    active: { type: 'example', slug: example.slug, reference: reference.slug },
+    hero: referenceHero(example, reference),
+    toc: headings,
+    related: exampleRelated(example, reference.slug),
+  })
 }

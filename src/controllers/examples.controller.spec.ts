@@ -200,16 +200,13 @@ describe('examplesController', () => {
     expect(mockRenderPage).toHaveBeenCalledWith(mockRes, expect.objectContaining({ statusCode: 404 }))
   })
 
-  it('returns 500 when an error occurs', () => {
+  it('lets an unexpected error reach the router, which answers 500', () => {
     mockReq = { url: '/examples' }
     mockListExamples.mockImplementation(() => {
       throw new Error('boom')
     })
 
-    examplesController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-    expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
-    expect(mockRes.writeHead).toHaveBeenCalledWith(500)
-    expect(mockRes.end).toHaveBeenCalledWith('Internal Server Error')
+    expect(() => examplesController(mockReq as IncomingMessage, mockRes as ServerResponse)).toThrow('boom')
+    expect(mockRes.writeHead).not.toHaveBeenCalled()
   })
 })
