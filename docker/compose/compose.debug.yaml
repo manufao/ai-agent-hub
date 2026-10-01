@@ -1,6 +1,6 @@
 services:
-  agenttraining:
-    image: agenttraining
+  ai-agent-hub:
+    image: ai-agent-hub
     build:
       context: .
       dockerfile: ./Dockerfile
