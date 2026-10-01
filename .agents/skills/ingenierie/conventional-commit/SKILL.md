@@ -1,40 +1,41 @@
 ---
 name: conventional-commit
-description: "À utiliser pour rédiger un message de commit au format Conventional Commits et découper les changements en commits atomiques, avant chaque `git commit`."
+description: "À utiliser pour rédiger un message de commit ou un titre de pull request au format Conventional Commits et découper les changements en commits atomiques, avant chaque `git commit` et à l'ouverture d'une pull request."
 ---
 
 # Commit au format Conventional Commits
 
-Un historique lisible se relit comme un journal : un commit, un sujet, un message qui dit pourquoi. Ce format est aussi vérifié automatiquement par `commitlint` dans ce dépôt.
+Un historique lisible se relit comme un journal : un commit, un sujet, un titre qui dit quoi. Ce format est aussi vérifié automatiquement par `commitlint` dans ce dépôt.
 
 ## Quand l'utiliser
 
-- Avant chaque `git commit`
-- Pour découper un gros lot de changements en plusieurs commits
+- Avant chaque `git commit`, pour découper un lot de changements et écrire le message
+- À l'ouverture d'une pull request, pour son titre
 
 ## Instructions
 
 1. Regarder `git status`, `git diff` et `git log -5` : le style existant et la langue des messages du dépôt s'imposent (anglais ici).
 2. Regrouper les changements par sujet. Un commit contient un seul sujet et laisse le dépôt cohérent.
-3. Indexer les fichiers un par un avec `git add <fichier>`. Ne jamais utiliser `git add -A` ni `git add .`, qui peuvent embarquer un fichier sensible.
+3. Indexer les fichiers un par un avec `git add <fichier>`, jamais `git add -A` ni `git add .`.
 4. Écrire l'en-tête : `type(portée): sujet`.
    - Types : `feat` (nouvelle capacité), `fix` (correction), `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
    - Portée : facultative, en un mot, le module concerné.
    - Sujet : à l'impératif, en minuscules, sans point final, 72 caractères au maximum.
-5. Ajouter un corps si le pourquoi n'est pas évident : ligne vide, puis le motif et le contexte, pas la liste des fichiers.
-6. Signaler un changement cassant par `!` après le type ou un pied `BREAKING CHANGE: <effet et marche à suivre>`.
-7. Ajouter en dernier pied de message la ligne d'attribution que la session ou le projet demande, s'il y en a une.
-8. Committer avec un message passé par un heredoc pour conserver le formatage. Ne jamais contourner les hooks avec `--no-verify`. Si un hook échoue, corriger la cause et créer un nouveau commit ; ne jamais modifier un commit déjà créé ou poussé.
+   - Un changement cassant se signale par `!` après le type.
+5. N'écrire rien d'autre : pas de corps, pas de pied, pas de ligne d'attribution (`Co-Authored-By`, mention d'un outil), même si la session en demande une. Le message est l'en-tête seul.
+6. Committer avec `git commit -m "<en-tête>"`. Si un hook échoue, corriger la cause et refaire le commit.
+
+## Pull request
+
+Une pull request n'a qu'un titre : ni description, ni plan de test, ni ligne d'attribution.
+
+1. Écrire le titre au même format, moins de 70 caractères, qui décrit l'ensemble de la branche (`git log <défaut>..HEAD`).
+2. Ouvrir avec `gh pr create --base <défaut> --title "<titre>" --body ""`, puis rendre l'adresse renvoyée.
 
 ## Format de sortie
 
 ```text
 type(portée): sujet à l'impératif
-
-Corps facultatif : pourquoi ce changement, en phrases courtes.
-
-BREAKING CHANGE: facultatif
-[Ligne d'attribution, si demandée]
 ```
 
 Exemples : `feat(site): add an agents index page`, `fix(router): ignore the query string when matching`.
