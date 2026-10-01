@@ -14,8 +14,8 @@ Envie d'en créer un ? L'exemple [Créer un skill ou un agent](/examples/create-
 Treize agents couvrent le cycle de développement, de l'idée à la pull request. Ils sont regroupés par niveau dans le menu, et on ne les lance pas tous à chaque fois.
 
 - **Produit** : Atlas (User Stories), Verifier (validation), Slice (découpe)
-- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Pulse (observabilité), Scribe (documentation)
-- **Qualité et revue** : Specimen (tests), Inspector (revue de code), Sentinel (maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
+- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Pulse (observabilité), Specimen (plan de tests), Scribe (documentation)
+- **Qualité et revue** : Inspector (revue de code), Sentinel (maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
 - **Livraison** : Courier (commits, push et pull request)
 
 ```text
@@ -23,10 +23,10 @@ Demande métier ou idée
   → Atlas       formalise une User Story
   → Verifier    valide clarté, risques et critères d'acceptation
   → Slice       découpe en tranches livrables
-  → Blueprint   décide de l'architecture si nécessaire
+  → Blueprint   décide de l'architecture                            (si fonctionnalité sensible)
   → Forge       prépare le plan d'implémentation
-  → Pulse       prévoit logs, métriques et alertes si la fonctionnalité part en production
-  → Specimen    définit la stratégie de tests
+  → Pulse       prévoit logs, métriques et alertes                  (si mise en production)
+  → Specimen    prépare le plan de tests avant le code              (si fonctionnalité sensible)
   → Développement
   → Inspector   relit le code
   → Sentinel    contrôle la maintenabilité
