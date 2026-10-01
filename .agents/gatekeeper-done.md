@@ -1,6 +1,6 @@
 ---
 group: qualite
-order: 5
+order: 4
 ---
 
 # Gatekeeper

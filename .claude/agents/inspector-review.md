@@ -1,6 +1,6 @@
 ---
 name: inspector-review
-description: "Code reviewer : revue structurée de code ou de PR (bugs, sécurité, performance, maintenabilité)"
+description: "Code reviewer : revue structurée de code ou de PR (bugs, sécurité, performance) ou audit de maintenabilité d'une zone"
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---

@@ -1,8 +1,0 @@
----
-description: "Gardien de maintenabilité : SOLID, séparation des responsabilités, dette technique, duplication et lisibilité"
-alwaysApply: false
----
-
-@../../.agents/sentinel-quality.md
-
-Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
