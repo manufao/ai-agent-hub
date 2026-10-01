@@ -14,8 +14,8 @@ Envie d'en créer un ? L'exemple [Créer un skill ou un agent](/examples/create-
 Treize agents couvrent le cycle de développement, de l'idée à la pull request. Ils sont regroupés par niveau dans le menu, et on ne les lance pas tous à chaque fois.
 
 - **Produit** : Atlas (User Stories), Verifier (validation), Slice (découpe)
-- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Pulse (observabilité), Specimen (plan de tests), Scribe (documentation)
-- **Qualité et revue** : Inspector (revue de code), Sentinel (maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
+- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Specimen (plan de tests), Pulse (observabilité), Junior (implémentation du plan), Scribe (documentation)
+- **Qualité et revue** : Inspector (revue de code et audit de maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
 - **Livraison** : Courier (commits, push et pull request)
 
 ```text
@@ -25,19 +25,18 @@ Demande métier ou idée
   → Slice       découpe en tranches livrables
   → Blueprint   décide de l'architecture                            (si fonctionnalité sensible)
   → Forge       prépare le plan d'implémentation
-  → Pulse       prévoit logs, métriques et alertes                  (si mise en production)
   → Specimen    prépare le plan de tests avant le code              (si fonctionnalité sensible)
-  → Développement
+  → Pulse       prévoit logs, métriques et alertes                  (si mise en production)
+  → Junior      implémente le plan de Forge à la lettre
   → Inspector   relit le code
-  → Sentinel    contrôle la maintenabilité
   → Gatekeeper  valide la Definition of Done
   → Scribe      met la documentation à jour
   → Courier     commite, pousse et ouvre la pull request
 ```
 
-Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone que Sentinel juge à refactorer.
+Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone qu'Inspector juge à refactorer lors d'un audit.
 
-Pour une petite évolution : Atlas, Verifier, Slice, Forge, Inspector, Gatekeeper, Courier. Pour une fonctionnalité sensible (paiement, authentification, donnée personnelle), ajoutez Blueprint, Specimen et Pulse.
+Pour une petite évolution : Atlas, Verifier, Slice, Forge, Junior, Inspector, Gatekeeper, Courier. Pour une fonctionnalité sensible (paiement, authentification, donnée personnelle), ajoutez Blueprint, Specimen et Pulse.
 
 ## Catégories de skills
 

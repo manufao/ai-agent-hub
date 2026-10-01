@@ -1,6 +1,6 @@
 ---
 group: architecture
-order: 5
+order: 6
 ---
 
 # Scribe
