@@ -56,52 +56,44 @@ const renderAgentsIndex = (): string => {
  * @param res - HTTP response object
  */
 export const agentController = (req: IncomingMessage, res: ServerResponse): void => {
-  try {
-    const match = AGENT_URL.exec(pathnameOf(req.url || ''))
-    const requestedSlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
+  const match = AGENT_URL.exec(pathnameOf(req.url || ''))
+  const requestedSlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
 
-    if (!match || requestedSlug === undefined) {
-      renderPage(res, {
-        statusCode: 404,
-        bodyHtml: '<div class="not-prose"><h2 class="alert-title">URL d\'agent invalide</h2></div>',
-        active: { type: 'agent', slug: '' },
-      })
-      return
-    }
-
-    if (requestedSlug === '') {
-      renderPage(res, { statusCode: 200, bodyHtml: renderAgentsIndex(), active: { type: 'agents' } })
-      return
-    }
-
-    const agent = getAgent(requestedSlug)
-
-    if (!agent) {
-      // The agent name comes from the URL, so it is escaped before reaching the
-      // template, which renders content unescaped.
-      const safeSlug = ejs.escapeXML(requestedSlug)
-      renderPage(res, {
-        statusCode: 404,
-        bodyHtml: `<div class="not-prose"><h2 class="alert-title">Agent introuvable</h2><p class="mt-3">Aucun agent nommé ${safeSlug} n'est disponible.</p></div>`,
-        active: { type: 'agent', slug: requestedSlug },
-      })
-      return
-    }
-
-    const { html, headings } = renderMarkdown(agent.content, { stripTitle: true, stripSummary: true })
+  if (!match || requestedSlug === undefined) {
     renderPage(res, {
-      statusCode: 200,
-      bodyHtml: rewriteLinks(html),
-      active: { type: 'agent', slug: agent.slug },
-      hero: agentHero(agent),
-      toc: headings,
-      related: agentRelated(agent, listAgents()),
+      statusCode: 404,
+      bodyHtml: '<div class="not-prose"><h2 class="alert-title">URL d\'agent invalide</h2></div>',
+      active: { type: 'agent', slug: '' },
     })
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error rendering agent page:', error)
-    res.setHeader('Content-Type', 'text/plain;charset=utf-8')
-    res.writeHead(500)
-    res.end('Internal Server Error')
+    return
   }
+
+  if (requestedSlug === '') {
+    renderPage(res, { statusCode: 200, bodyHtml: renderAgentsIndex(), active: { type: 'agents' } })
+    return
+  }
+
+  const agent = getAgent(requestedSlug)
+
+  if (!agent) {
+    // The agent name comes from the URL, so it is escaped before reaching the
+    // template, which renders content unescaped.
+    const safeSlug = ejs.escapeXML(requestedSlug)
+    renderPage(res, {
+      statusCode: 404,
+      bodyHtml: `<div class="not-prose"><h2 class="alert-title">Agent introuvable</h2><p class="mt-3">Aucun agent nommé ${safeSlug} n'est disponible.</p></div>`,
+      active: { type: 'agent', slug: requestedSlug },
+    })
+    return
+  }
+
+  const { html, headings } = renderMarkdown(agent.content, { stripTitle: true, stripSummary: true })
+  renderPage(res, {
+    statusCode: 200,
+    bodyHtml: rewriteLinks(html),
+    active: { type: 'agent', slug: agent.slug },
+    hero: agentHero(agent),
+    toc: headings,
+    related: agentRelated(agent, listAgents()),
+  })
 }

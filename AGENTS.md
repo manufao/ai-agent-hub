@@ -21,5 +21,6 @@ Before adding an agent or a skill, read `examples/create-skill-or-agent/SKILL.md
 
 - 100% test coverage on all of `src/**/*.ts` (thresholds in `vitest.config.ts`) — every new controller/module must be tested accordingly
 - No front-end framework: rendering is server-side with EJS, see `views/`
+- Log through `src/logging/logger.ts`, never `console.*`. Never log user-supplied values or file contents, and log URLs without their query string (`loggableUrl`). Unexpected errors are not caught in controllers: they reach the router, which logs them and answers a static 500 page
 - Routing is a home-grown mini-router (`src/routing/router.ts`) with no named parameters — each controller parses `req.url` itself
 - Skills are discovered natively from `.agents/skills/` by Codex CLI, Cursor and Gemini CLI. Claude Code only scans `.claude/skills/`, so each skill also needs a symlink there

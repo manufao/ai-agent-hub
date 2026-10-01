@@ -9,13 +9,18 @@ import { IncomingMessage, ServerResponse } from 'http'
 vi.mock('fs', () => ({
   existsSync: vi.fn(),
   readFileSync: vi.fn(),
+  statSync: vi.fn(),
 }))
+
+const file = { isFile: () => true }
+const directory = { isFile: () => false }
 
 describe('Static Controllers', () => {
   let staticController: typeof import('./static.controller.js').staticController
   let licenseController: typeof import('./static.controller.js').licenseController
   let mockExistsSync: Mock
   let mockReadFileSync: Mock
+  let mockStatSync: Mock
   let mockReq: Partial<IncomingMessage>
   let mockRes: Mocked<Partial<ServerResponse>>
 
@@ -25,6 +30,7 @@ describe('Static Controllers', () => {
     const fs = await import('fs')
     mockExistsSync = fs.existsSync as Mock
     mockReadFileSync = fs.readFileSync as Mock
+    mockStatSync = fs.statSync as Mock
 
     mockReq = {
       url: '/css/output.css',
@@ -44,171 +50,129 @@ describe('Static Controllers', () => {
 
   describe('staticController', () => {
     describe('serving static files', () => {
-      it('should serve CSS files with correct MIME type', () => {
-        const cssContent = Buffer.from('body { color: red; }')
+      const cases: Array<[string, string, string]> = [
+        ['CSS', '/css/output.css', 'text/css'],
+        ['JS', '/js/app.js', 'text/javascript'],
+        ['JSON', '/data/config.json', 'application/json'],
+        ['PNG', '/images/logo.png', 'image/png'],
+        ['JPG', '/images/photo.jpg', 'image/jpeg'],
+        ['GIF', '/images/animation.gif', 'image/gif'],
+        ['SVG', '/images/icon.svg', 'image/svg+xml'],
+        ['unknown', '/files/data.bin', 'application/octet-stream'],
+      ]
 
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(cssContent)
-        mockReq.url = '/css/output.css'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/css')
-        expect(mockRes.writeHead).toHaveBeenCalledWith(200)
-        expect(mockRes.end).toHaveBeenCalledWith(cssContent)
-      })
-
-      it('should serve JS files with correct MIME type', () => {
-        const jsContent = Buffer.from('console.log("hello")')
-
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(jsContent)
-        mockReq.url = '/js/app.js'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/javascript')
-        expect(mockRes.writeHead).toHaveBeenCalledWith(200)
-      })
-
-      it('should serve JSON files with correct MIME type', () => {
-        const jsonContent = Buffer.from('{"key": "value"}')
-
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(jsonContent)
-        mockReq.url = '/data/config.json'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json')
-      })
-
-      it('should serve PNG images with correct MIME type', () => {
-        const imageContent = Buffer.from('fake png data')
-
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(imageContent)
-        mockReq.url = '/images/logo.png'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'image/png')
-      })
-
-      it('should serve JPG images with correct MIME type', () => {
-        const imageContent = Buffer.from('fake jpg data')
-
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(imageContent)
-        mockReq.url = '/images/photo.jpg'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'image/jpeg')
-      })
-
-      it('should serve GIF images with correct MIME type', () => {
-        const imageContent = Buffer.from('fake gif data')
-
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(imageContent)
-        mockReq.url = '/images/animation.gif'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'image/gif')
-      })
-
-      it('should serve SVG images with correct MIME type', () => {
-        const svgContent = Buffer.from('<svg></svg>')
-
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(svgContent)
-        mockReq.url = '/images/icon.svg'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'image/svg+xml')
-      })
-
-      it('should use octet-stream for unknown file types', () => {
-        const binaryContent = Buffer.from('binary data')
-
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(binaryContent)
-        mockReq.url = '/files/data.bin'
-
-        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'application/octet-stream')
-      })
-
-      it('should handle undefined URL by using default path', () => {
+      it.each(cases)('should serve %s files with the right MIME type', (_label, url, contentType) => {
         const content = Buffer.from('content')
-
-        mockExistsSync.mockReturnValue(true)
+        mockStatSync.mockReturnValue(file)
         mockReadFileSync.mockReturnValue(content)
-        mockReq.url = undefined
+        mockReq.url = url
 
         staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-        expect(mockExistsSync).toHaveBeenCalled()
+        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', contentType)
+        expect(mockRes.writeHead).toHaveBeenCalledWith(200)
+        expect(mockRes.end).toHaveBeenCalledWith(content)
+      })
+
+      it('should ignore the query string when looking for the file', () => {
+        mockStatSync.mockReturnValue(file)
+        mockReadFileSync.mockReturnValue(Buffer.from('css'))
+        mockReq.url = '/css/output.css?v=2'
+
+        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+        expect(mockStatSync.mock.calls[0][0]).toMatch(/public\/css\/output\.css$/)
+        expect(mockRes.writeHead).toHaveBeenCalledWith(200)
       })
     })
 
     describe('file not found', () => {
-      it('should return 404 when file does not exist', () => {
-        mockExistsSync.mockReturnValue(false)
+      it('should return a French 404 when the file does not exist', () => {
+        mockStatSync.mockReturnValue(undefined)
         mockReq.url = '/css/nonexistent.css'
 
         staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
         expect(mockRes.writeHead).toHaveBeenCalledWith(404)
-        expect(mockRes.end).toHaveBeenCalledWith('File not found')
+        expect(mockRes.end).toHaveBeenCalledWith(expect.stringContaining('Page introuvable'))
+      })
+
+      it('should return 404 for a directory instead of failing to read it', () => {
+        mockStatSync.mockReturnValue(directory)
+        mockReq.url = '/css/'
+
+        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+        expect(mockRes.writeHead).toHaveBeenCalledWith(404)
+        expect(mockReadFileSync).not.toHaveBeenCalled()
+      })
+
+      it('should return 404 when the URL is undefined', () => {
+        mockReq.url = undefined
+
+        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+        expect(mockRes.writeHead).toHaveBeenCalledWith(404)
+        expect(mockStatSync).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('path traversal', () => {
+      const attacks = [
+        '/css/../../package.json',
+        '/css/../../../../etc/passwd',
+        '/css/..%2f..%2fpackage.json',
+        '/css/%2e%2e/%2e%2e/package.json',
+        '/css/%zz',
+        '/css/output.css%00.png',
+      ]
+
+      it.each(attacks)('should answer 404 without touching the filesystem for %s', url => {
+        mockStatSync.mockReturnValue(file)
+        mockReq.url = url
+
+        staticController(mockReq as IncomingMessage, mockRes as ServerResponse)
+
+        expect(mockRes.writeHead).toHaveBeenCalledWith(404)
+        expect(mockStatSync).not.toHaveBeenCalled()
+        expect(mockReadFileSync).not.toHaveBeenCalled()
       })
     })
   })
 
   describe('licenseController', () => {
-    describe('serving LICENSE file', () => {
-      it('should serve LICENSE file when it exists', () => {
-        const licenseContent = 'MIT License\n\nCopyright...'
+    it('should serve LICENSE file when it exists', () => {
+      const licenseContent = 'MIT License\n\nCopyright...'
 
-        mockExistsSync.mockReturnValue(true)
-        mockReadFileSync.mockReturnValue(licenseContent)
-        mockReq.url = '/LICENSE'
+      mockExistsSync.mockReturnValue(true)
+      mockReadFileSync.mockReturnValue(licenseContent)
+      mockReq.url = '/LICENSE'
 
-        licenseController(mockReq as IncomingMessage, mockRes as ServerResponse)
+      licenseController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
-        expect(mockRes.writeHead).toHaveBeenCalledWith(200)
-        expect(mockRes.end).toHaveBeenCalledWith(licenseContent)
-      })
-
-      it('should return 404 when LICENSE file does not exist', () => {
-        mockExistsSync.mockReturnValue(false)
-        mockReq.url = '/LICENSE'
-
-        licenseController(mockReq as IncomingMessage, mockRes as ServerResponse)
-
-        expect(mockRes.writeHead).toHaveBeenCalledWith(404)
-        expect(mockRes.end).toHaveBeenCalledWith('LICENSE file not found')
-      })
+      expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
+      expect(mockRes.writeHead).toHaveBeenCalledWith(200)
+      expect(mockRes.end).toHaveBeenCalledWith(licenseContent)
     })
 
-    describe('error handling', () => {
-      it('should return 500 when an error occurs', () => {
-        mockExistsSync.mockImplementation(() => {
-          throw new Error('File system error')
-        })
-        mockReq.url = '/LICENSE'
+    it('should return a French 404 when LICENSE file does not exist', () => {
+      mockExistsSync.mockReturnValue(false)
+      mockReq.url = '/LICENSE'
 
-        licenseController(mockReq as IncomingMessage, mockRes as ServerResponse)
+      licenseController(mockReq as IncomingMessage, mockRes as ServerResponse)
 
-        expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain;charset=utf-8')
-        expect(mockRes.writeHead).toHaveBeenCalledWith(500)
-        expect(mockRes.end).toHaveBeenCalledWith('Internal Server Error')
+      expect(mockRes.writeHead).toHaveBeenCalledWith(404)
+      expect(mockRes.end).toHaveBeenCalledWith(expect.stringContaining('Page introuvable'))
+    })
+
+    it('should let a read error reach the router, which answers 500', () => {
+      mockExistsSync.mockImplementation(() => {
+        throw new Error('File system error')
       })
+
+      expect(() => licenseController(mockReq as IncomingMessage, mockRes as ServerResponse)).toThrow(
+        'File system error',
+      )
     })
   })
 })

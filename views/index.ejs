@@ -104,8 +104,8 @@ _%>
         </nav>
       </aside>
 
-      <main class="min-w-0 flex-1">
-        <article>
+      <main class="flex min-w-0 flex-1 flex-col">
+        <article class="flex-1">
           <% if (hero) { %>
           <header class="hero-rise grid border-b border-rule <%= hero.usage.length > 0 ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]' : '' %>">
             <div class="px-6 py-10 sm:px-12 sm:py-14">
@@ -156,6 +156,10 @@ _%>
           </section>
           <% } %>
         </article>
+
+        <footer class="border-t border-rule px-6 py-6 font-mono text-xs text-soft">
+          <a href="/health" class="hover:text-pine hover:underline">État du site</a>
+        </footer>
       </main>
 
       <% if (toc.length > 0) { %>

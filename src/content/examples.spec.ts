@@ -3,6 +3,8 @@
  */
 
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { logger } from '../logging/logger.js'
+import { resetReportedProblems } from './read-file.js'
 
 vi.mock('fs', () => ({
   readdirSync: vi.fn(),
@@ -115,6 +117,43 @@ describe('examples content', () => {
       mockReadFileSync.mockReturnValue('# Guide\n\nBody')
 
       expect(getReference('demo', 'guide')).toEqual({ slug: 'guide', title: 'Guide', content: '# Guide\n\nBody' })
+    })
+  })
+
+  describe('an unreadable file', () => {
+    it('is skipped and logged when listing the examples', () => {
+      resetReportedProblems()
+      const logError = vi.spyOn(logger, 'error')
+      mockExistsSync.mockReturnValue(true)
+      mockReaddirSync.mockReturnValue([dir('broken'), dir('ok')])
+      mockReadFileSync.mockImplementation((path: string) => {
+        if (path.includes('broken')) {
+          throw new Error('EACCES')
+        }
+        return '---\nname: ok\n---\nBody'
+      })
+
+      expect(listExamples().map(example => example.slug)).toEqual(['ok'])
+      expect(logError).toHaveBeenCalledWith(
+        expect.objectContaining({ file: 'examples/broken/SKILL.md' }),
+        'content.unreadable',
+      )
+    })
+
+    it('is skipped when listing the references of an example', () => {
+      resetReportedProblems()
+      const logError = vi.spyOn(logger, 'error')
+      mockExistsSync.mockReturnValue(true)
+      mockReaddirSync.mockReturnValue([file('a.md'), file('b.md')])
+      mockReadFileSync.mockImplementation((path: string) => {
+        if (path.endsWith('b.md')) {
+          throw new Error('EACCES')
+        }
+        return '---\nname: ok\n---\n# Title A'
+      })
+
+      expect(getExample('ok')?.references.map(reference => reference.slug)).toEqual(['a'])
+      expect(logError).toHaveBeenCalledTimes(1)
     })
   })
 })
