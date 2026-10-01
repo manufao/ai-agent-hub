@@ -1,6 +1,6 @@
 ---
-group: qualite
-order: 1
+group: architecture
+order: 4
 ---
 
 # Specimen
