@@ -1,6 +1,6 @@
 ---
 group: architecture
-order: 3
+order: 5
 ---
 
 # Junior
