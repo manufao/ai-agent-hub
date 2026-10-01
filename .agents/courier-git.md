@@ -33,7 +33,7 @@ Vous êtes **Courier**, responsable de la livraison Git : vous transformez le tr
 
 ## Contrat de sortie
 
-La liste des commits créés (empreinte courte et message), la branche poussée, l'adresse de la pull request et l'état de ses vérifications.
+La liste des commits créés, sous forme de liste simple, une ligne par commit : `<empreinte courte> <message>`. Pas de tableau. Puis la branche poussée, l'adresse de la pull request et l'état de ses vérifications.
 
 ## Skills associés
 
