@@ -1,5 +1,5 @@
 name = "pulse-observability"
-description = "Observabilité et fiabilité : logs, métriques, alertes, gestion des erreurs et diagnostic en production"
+description = "Prépare les logs, métriques et alertes pour diagnostiquer une fonctionnalité en production"
 
 developer_instructions = """
 Lis et applique la persona définie dans .agents/pulse-observability.md avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
