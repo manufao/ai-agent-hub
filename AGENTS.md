@@ -20,6 +20,7 @@ Before adding an agent or a skill, read `examples/create-skill-or-agent/SKILL.md
 ## Conventions
 
 - 100% test coverage on all of `src/**/*.ts` (thresholds in `vitest.config.ts`) — every new controller/module must be tested accordingly
+- Forge, Pulse and Specimen save their plans in `docs/plans/<date>-<subject>/` (see `docs/plans/README.md`); keep them in git, they are the record of what was decided
 - No front-end framework: rendering is server-side with EJS, see `views/`
 - Log through `src/logging/logger.ts`, never `console.*`. Never log user-supplied values or file contents, and log URLs without their query string (`loggableUrl`). Unexpected errors are not caught in controllers: they reach the router, which logs them and answers a static 500 page
 - Routing is a home-grown mini-router (`src/routing/router.ts`) with no named parameters — each controller parses `req.url` itself
