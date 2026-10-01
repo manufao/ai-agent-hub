@@ -21,7 +21,7 @@ Une pull request se relit sans le contexte de celui qui l'a écrite. Le titre di
 5. Écrire le plan de test sous forme de cases : ce qui a été vérifié, et ce qu'il reste à vérifier à la main. Ne jamais cocher ce qui n'a pas été fait.
 6. Lier les tickets concernés si le contexte en fournit.
 7. Terminer par la ligne d'attribution que la session ou le projet demande, s'il y en a une.
-8. Vérifier qu'on n'est pas sur la branche par défaut, puis pousser avec `git push -u origin <branche>`. Ne jamais forcer un push.
+8. Vérifier qu'on n'est pas sur la branche par défaut, puis pousser avec `git push -u origin <branche>`. Ne jamais utiliser `--force` ; si une réécriture d'historique demandée par l'utilisateur impose de forcer, utiliser seulement `--force-with-lease`, après avoir vérifié qu'aucun commit distant n'est absent de la branche locale.
 9. Ouvrir la pull request : `gh pr create --base <défaut> --title "<titre>" --body-file <fichier>` (ou `--body` avec un heredoc). Rendre l'adresse renvoyée.
 10. Sur demande, lire l'état des vérifications avec `gh pr checks <numéro>`. Ne pas fusionner sans demande explicite et sans vérifications au vert.
 
