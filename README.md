@@ -15,8 +15,6 @@ ai-agent-hub/
 ├── .agents/         # Agent personas (<name>.md) and skills (skills/<category>/<name>/SKILL.md)
 ├── docker/          # Docker configuration
 │   ├── compose/     # Docker Compose files
-│   │   ├── compose.yaml
-│   │   ├── compose.debug.yaml
 │   │   └── docker-compose.dev.yml
 │   └── prod/        # Production environment
 │       └── Dockerfile
