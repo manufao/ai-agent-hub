@@ -11,10 +11,10 @@ Envie d'en créer un ? L'exemple [Créer un skill ou un agent](/examples/create-
 
 ## L'équipe
 
-Douze agents couvrent le cycle de développement, de l'idée à la pull request. Ils sont regroupés par niveau dans le menu, et on ne les lance pas tous à chaque fois.
+Treize agents couvrent le cycle de développement, de l'idée à la pull request. Ils sont regroupés par niveau dans le menu, et on ne les lance pas tous à chaque fois.
 
 - **Produit** : Atlas (User Stories), Verifier (validation), Slice (découpe)
-- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Pulse (observabilité), Scribe (documentation)
+- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Junior (implémentation du plan), Pulse (observabilité), Scribe (documentation)
 - **Qualité et revue** : Specimen (tests), Inspector (revue de code et audit de maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
 - **Livraison** : Courier (commits, push et pull request)
 
@@ -27,7 +27,7 @@ Demande métier ou idée
   → Forge       prépare le plan d'implémentation
   → Pulse       prévoit logs, métriques et alertes si la fonctionnalité part en production
   → Specimen    définit la stratégie de tests
-  → Développement
+  → Junior      implémente le plan de Forge à la lettre
   → Inspector   relit le code
   → Gatekeeper  valide la Definition of Done
   → Scribe      met la documentation à jour
@@ -36,7 +36,7 @@ Demande métier ou idée
 
 Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone qu'Inspector juge à refactorer lors d'un audit.
 
-Pour une petite évolution : Atlas, Verifier, Slice, Forge, Inspector, Gatekeeper, Courier. Pour une fonctionnalité sensible (paiement, authentification, donnée personnelle), ajoutez Blueprint, Specimen et Pulse.
+Pour une petite évolution : Atlas, Verifier, Slice, Forge, Junior, Inspector, Gatekeeper, Courier. Pour une fonctionnalité sensible (paiement, authentification, donnée personnelle), ajoutez Blueprint, Specimen et Pulse.
 
 ## Catégories de skills
 
