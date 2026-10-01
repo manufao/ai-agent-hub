@@ -6,6 +6,7 @@ export default defineConfig({
   test: {
     include: ['src/**/*.spec.ts'],
     environment: 'node',
+    env: { LOG_LEVEL: 'silent' },
     restoreMocks: true,
     coverage: {
       provider: 'v8',

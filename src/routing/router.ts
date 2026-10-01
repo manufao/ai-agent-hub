@@ -1,5 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http'
 import { pathnameOf } from './url.js'
+import { handleServerError, sendNotFound } from '../http/errors.js'
 
 /**
  * Type for a route handler function
@@ -47,12 +48,16 @@ export class Router {
       return route.path === url
     })
 
-    if (match) {
+    if (!match) {
+      sendNotFound(res)
+      return
+    }
+
+    // One place turns any unexpected error into a logged, static 500 page
+    try {
       match.handler(req, res)
-    } else {
-      // 404 default if no route matches
-      res.writeHead(404)
-      res.end('Not Found')
+    } catch (error) {
+      handleServerError(req, res, error)
     }
   }
 }

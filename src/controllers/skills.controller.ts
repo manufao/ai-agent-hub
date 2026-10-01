@@ -49,64 +49,56 @@ const renderCategoryPage = (category: CategorySummary): string =>
  * @param res - HTTP response object
  */
 export const skillsController = (req: IncomingMessage, res: ServerResponse): void => {
-  try {
-    const match = SKILLS_URL.exec(pathnameOf(req.url || ''))
-    const categorySlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
-    const skillSlug = match?.[2] === undefined ? '' : decodeSegment(match[2])
+  const match = SKILLS_URL.exec(pathnameOf(req.url || ''))
+  const categorySlug = match?.[1] === undefined ? '' : decodeSegment(match[1])
+  const skillSlug = match?.[2] === undefined ? '' : decodeSegment(match[2])
 
-    if (!match || categorySlug === undefined || skillSlug === undefined) {
-      renderPage(res, { statusCode: 404, bodyHtml: notFound('URL de skill invalide'), active: { type: 'skills' } })
-      return
-    }
+  if (!match || categorySlug === undefined || skillSlug === undefined) {
+    renderPage(res, { statusCode: 404, bodyHtml: notFound('URL de skill invalide'), active: { type: 'skills' } })
+    return
+  }
 
-    if (!categorySlug) {
-      renderPage(res, { statusCode: 200, bodyHtml: renderSkillsIndex(), active: { type: 'skills' } })
-      return
-    }
+  if (!categorySlug) {
+    renderPage(res, { statusCode: 200, bodyHtml: renderSkillsIndex(), active: { type: 'skills' } })
+    return
+  }
 
-    if (!skillSlug) {
-      const category = getCategory(categorySlug)
-      if (!category) {
-        renderPage(res, {
-          statusCode: 404,
-          bodyHtml: notFound(`Aucune catégorie nommée ${categorySlug} n'est disponible.`),
-          active: { type: 'category', slug: categorySlug },
-        })
-        return
-      }
-
-      renderPage(res, {
-        statusCode: 200,
-        bodyHtml: renderCategoryPage(category),
-        active: { type: 'category', slug: category.slug },
-      })
-      return
-    }
-
-    const skill = getSkill(categorySlug, skillSlug)
-    if (!skill) {
+  if (!skillSlug) {
+    const category = getCategory(categorySlug)
+    if (!category) {
       renderPage(res, {
         statusCode: 404,
-        bodyHtml: notFound(`Aucun skill nommé ${skillSlug} n'est disponible dans ${categorySlug}.`),
-        active: { type: 'skill', category: categorySlug, slug: skillSlug },
+        bodyHtml: notFound(`Aucune catégorie nommée ${categorySlug} n'est disponible.`),
+        active: { type: 'category', slug: categorySlug },
       })
       return
     }
 
-    const { html, headings } = renderMarkdown(skill.content, { stripTitle: true })
     renderPage(res, {
       statusCode: 200,
-      bodyHtml: html,
-      active: { type: 'skill', category: skill.category, slug: skill.slug },
-      hero: skillHero(skill),
-      toc: headings,
-      related: skillRelated(skill, getCategory(skill.category)?.skills ?? []),
+      bodyHtml: renderCategoryPage(category),
+      active: { type: 'category', slug: category.slug },
     })
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error rendering skills page:', error)
-    res.setHeader('Content-Type', 'text/plain;charset=utf-8')
-    res.writeHead(500)
-    res.end('Internal Server Error')
+    return
   }
+
+  const skill = getSkill(categorySlug, skillSlug)
+  if (!skill) {
+    renderPage(res, {
+      statusCode: 404,
+      bodyHtml: notFound(`Aucun skill nommé ${skillSlug} n'est disponible dans ${categorySlug}.`),
+      active: { type: 'skill', category: categorySlug, slug: skillSlug },
+    })
+    return
+  }
+
+  const { html, headings } = renderMarkdown(skill.content, { stripTitle: true })
+  renderPage(res, {
+    statusCode: 200,
+    bodyHtml: html,
+    active: { type: 'skill', category: skill.category, slug: skill.slug },
+    hero: skillHero(skill),
+    toc: headings,
+    related: skillRelated(skill, getCategory(skill.category)?.skills ?? []),
+  })
 }
