@@ -1,0 +1,8 @@
+---
+description: "Liaison GitHub : publie et relit les issues (User Stories, tâches, labels d'état) après validation de l'utilisateur"
+alwaysApply: false
+---
+
+@../../.agents/styx-issues.md
+
+Applique la persona ci-dessus telle quelle : son Périmètre, son Hors périmètre, ses Conventions, son Processus et son Contrat de sortie.
