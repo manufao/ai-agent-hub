@@ -11,30 +11,32 @@ Envie d'en créer un ? L'exemple [Créer un skill ou un agent](/examples/create-
 
 ## L'équipe
 
-Treize agents couvrent le cycle de développement, de l'idée à la pull request. Ils sont regroupés par niveau dans le menu, et on ne les lance pas tous à chaque fois.
+Quatorze agents couvrent le cycle de développement, de l'idée à la pull request. Ils sont regroupés par niveau dans le menu, et on ne les lance pas tous à chaque fois.
 
 - **Produit** : Atlas (User Stories), Verifier (validation), Slice (découpe)
-- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Specimen (plan de tests), Pulse (observabilité), Junior (implémentation du plan), Scribe (documentation)
+- **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Specimen (plan de tests), Pulse (observabilité), Junior (implémentation des plans), Scribe (documentation)
 - **Qualité et revue** : Inspector (revue de code et audit de maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
-- **Livraison** : Courier (commits, push et pull request)
+- **Livraison** : Courier (commits, push et pull request), Styx (issues GitHub)
 
 ```text
 Demande métier ou idée
   → Atlas       formalise une User Story
   → Verifier    valide clarté, risques et critères d'acceptation
   → Slice       découpe en tranches livrables
-  → Blueprint   décide de l'architecture                            (si fonctionnalité sensible)
+  → Blueprint   décide de l'architecture                            (si fonctionnalité sensible, en session principale)
   → Forge       prépare le plan d'implémentation
   → Specimen    prépare le plan de tests avant le code              (si fonctionnalité sensible)
   → Pulse       prévoit logs, métriques et alertes                  (si mise en production)
-  → Junior      implémente le plan de Forge à la lettre
+  → Junior      implémente à la lettre les plans de Forge, Pulse et Specimen
   → Inspector   relit le code
   → Gatekeeper  valide la Definition of Done
   → Scribe      met la documentation à jour
   → Courier     commite, pousse et ouvre la pull request
 ```
 
-Forge, Pulse et Specimen enregistrent chacun leur plan dans `docs/plans/<date>-<sujet>/` : c'est la trace de ce qui a été décidé avant de coder.
+Styx n'apparaît pas dans le flux : la session principale l'appelle, après votre validation, pour publier la User Story (labels `us` et `brouillon`, puis `prete` après Verifier) et les tâches de Slice (label `tache`, puis `decoupee` sur la User Story), et pour relire ces issues au profit de Blueprint, Forge, Specimen et Gatekeeper.
+
+Blueprint, Forge, Pulse et Specimen enregistrent chacun leur plan dans `docs/plans/<date>-<sujet>/` : c'est la trace de ce qui a été décidé avant de coder.
 
 Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone qu'Inspector juge à refactorer lors d'un audit.
 

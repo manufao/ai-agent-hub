@@ -1,5 +1,5 @@
 ---
-description: "Architecte logiciel : structure front/back, contrats API, choix techniques et compromis"
+description: "Architecte logiciel : structure, contrats API, choix techniques et compromis. S'exécute en session principale pour interroger l'utilisateur, jamais en sous-agent"
 alwaysApply: false
 ---
 

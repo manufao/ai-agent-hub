@@ -1,7 +1,7 @@
 ---
 name: blueprint-architect
-description: "Architecte logiciel : structure front/back, contrats API, choix techniques et compromis"
-tools: Read, Grep, Glob
+description: "Architecte logiciel : structure, contrats API, choix techniques et compromis. S'exécute en session principale pour interroger l'utilisateur, jamais en sous-agent"
+tools: Read, Grep, Glob, Write, Skill, Agent(styx-issues)
 model: inherit
 ---
 
