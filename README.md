@@ -23,6 +23,9 @@ ai-agent-hub/
 ├── .claude/         # Claude Code wrappers: agents/ (personas), plus skills/ symlinks for real skills
 ├── .codex/          # Codex CLI wrappers: agents/*.toml
 ├── .cursor/         # Cursor wrappers: rules/*.mdc
+├── .opencode/       # opencode wrappers: agents/*.md (model, mode and permissions per agent)
+├── opencode.json    # opencode provider config (local Ollama models)
+├── scripts/         # sync-agents.sh: install the agents and skills for a tool, from any repo
 ├── src/             # Server source code
 │   ├── main.ts      # HTTP server
 │   ├── config.ts    # Configuration
@@ -144,6 +147,18 @@ The server writes one JSON line per event on stdout (`docker compose logs` or `p
 | `http.unhandled` | error | An unexpected error; the visitor got a generic 500 page (stack in `err`) | Read the stack, reproduce with the logged `url` |
 
 The two content events are logged once per file until the server restarts. Out of scope for now: response-time metrics and alerting, which only make sense once the site is deployed and monitored.
+
+### Using the agents in other repositories
+
+The wrappers point to `.agents/<name>.md`, a path that only exists here. Run the sync script once per machine (and again after changing an agent) to install them for a tool:
+
+```bash
+scripts/sync-agents.sh <claude-code|opencode|codex>          # user-level install
+scripts/sync-agents.sh cursor <project-dir>                   # Cursor has no global location
+scripts/sync-agents.sh --dry-run <tool>                       # preview, writes nothing
+```
+
+It copies each wrapper with an absolute path to this clone and symlinks the skills. See `examples/create-skill-or-agent/references/how-use-agent-in-opencode.md` for the per-agent models used with opencode.
 
 ## Technology Stack
 
