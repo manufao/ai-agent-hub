@@ -42,6 +42,15 @@ Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone qu'Ins
 
 Pour une petite évolution : Atlas, Verifier, Slice, Forge, Junior, Inspector, Gatekeeper, Courier. Pour une fonctionnalité sensible (paiement, authentification, donnée personnelle), ajoutez Blueprint, Specimen et Pulse.
 
+## Lancer Blueprint
+
+Blueprint dialogue avec vous : il se lance dans la session principale, jamais en sous-agent. Videz la session, puis :
+
+- **Claude Code** : `claude --agent blueprint-architect --effort high`. L'effort est aussi fixé dans l'agent, mais la documentation ne dit pas s'il s'applique à une session lancée avec `--agent` : l'option `--effort` le garantit. Pour contrôler le niveau actif, tapez `/effort`.
+- **opencode** : c'est un agent principal (`primary`). Choisissez-le dans l'interface (la touche Tab change d'agent principal, d'après la documentation), ou fixez-le par défaut avec `default_agent` dans `opencode.json`.
+
+À la fin, Blueprint écrit son ADR dans `docs/plans/<date>-<sujet>/architecture.md` : relisez-la avant d'appeler Forge.
+
 ## Catégories de skills
 
 - **Ingénierie** — architecture, plan d'implémentation, tests, revue de code, maintenabilité, refactoring, observabilité, Definition of Done, commits et pull requests
