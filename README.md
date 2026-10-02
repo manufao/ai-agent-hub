@@ -158,7 +158,7 @@ scripts/sync-agents.sh cursor <project-dir>                   # Cursor has no gl
 scripts/sync-agents.sh --dry-run <tool>                       # preview, writes nothing
 ```
 
-It copies each wrapper with an absolute path to this clone and symlinks the skills. See `examples/create-skill-or-agent/references/how-use-agent-in-opencode.md` for the per-agent models used with opencode.
+It copies each wrapper with an absolute path to this clone and symlinks the skills. See `examples/create-skill-or-agent/references/how-use-agent-in-opencode.md` for how to choose a model per agent with opencode.
 
 ## Technology Stack
 

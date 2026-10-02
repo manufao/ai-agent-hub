@@ -1,6 +1,6 @@
 # Utiliser un agent canonique avec opencode
 
-Comment transformer un persona canonique (`.agents/<nom>.md`) en agent opencode **sans en copier le contenu**, et choisir un modèle différent par agent.
+Comment transformer un persona canonique (`.agents/<nom>.md`) en agent opencode **sans en copier le contenu**, avec son propre modèle et ses propres permissions.
 
 ## Pourquoi un wrapper
 
@@ -16,7 +16,7 @@ Les skills n'ont pas besoin de wrapper : opencode lit `.agents/skills/` nativeme
    ---
    description: "Même description que les autres wrappers"
    mode: subagent
-   model: ollama/qwen3-coder-agent
+   model: <fournisseur>/<modèle>
    temperature: 0.2
    permission:
      edit: deny
@@ -30,43 +30,22 @@ Les skills n'ont pas besoin de wrapper : opencode lit `.agents/skills/` nativeme
 2. `mode: primary` pour un agent avec lequel on dialogue directement (Atlas, Blueprint : ils posent leurs questions à l'utilisateur), `mode: subagent` pour les autres, que l'agent principal invoque ou qu'on appelle par `@nom`.
 3. Les `permission.bash` se lisent de haut en bas : la règle générale `"*"` d'abord, les exceptions ensuite. Elles sont **appliquées par l'outil**, contrairement aux limites écrites dans une persona.
 
-## Modèles par agent
+## Choisir le modèle de chaque agent
 
-La configuration de départ vise un Mac Intel (i9, 32 Go de RAM, sans puce Apple) : les modèles tournent sur le processeur seul, donc on garde quelques modèles, adaptés au rôle de chaque agent plutôt qu'un gros modèle partout.
+Chaque agent peut avoir son propre modèle, au format `<fournisseur>/<modèle>` : le fournisseur est la clé déclarée dans la section `provider` de `opencode.json`, le modèle une clé de ses `models`. Sans `model`, un agent principal utilise le modèle global et un sous-agent celui de l'agent principal qui l'invoque.
 
-| Alias Ollama | Modèle de base | Agents | Pourquoi |
-|---|---|---|---|
-| `qwen3-general` | `qwen3:14b` (9 Go) | Atlas, Verifier, Slice | Rédiger et relire des tickets, recueillir un besoin : pas de connaissance de code nécessaire |
-| `qwen3-coder-agent` | `qwen3-coder:30b` (MoE, environ 3 milliards de paramètres actifs, 19 Go) | Blueprint, Forge, Specimen, Pulse, Inspector, Refactor, Gatekeeper, Scribe | Lire du code, arbitrer une structure, planifier, relire |
-| `qwen-coder-light` | `qwen2.5-coder:7b` (5 Go) | Junior | Il exécute un plan déjà précis : un petit modèle spécialisé code suffit, et ménage les ressources |
-| `qwen3-light` | `qwen3:8b` (5 Go) | Styx, Courier | Enchaîner des commandes `gh` et `git` : tâches mécaniques, un petit modèle suffit pour commencer |
+Ce dépôt n'impose aucun modèle : le choix revient à celui qui l'utilise, selon sa machine, son budget et ses fournisseurs. Les fournisseurs se configurent comme l'explique la [documentation d'opencode](https://opencode.ai/docs/providers). Quelques critères pour répartir les rôles :
 
-Pour changer le modèle d'un agent, modifier la ligne `model:` de son fichier.
+| Rôle | Agents | Ce qu'il faut |
+|---|---|---|
+| Recueillir un besoin, rédiger et relire des tickets | Atlas, Verifier, Slice | Un modèle généraliste, sans connaissance de code particulière |
+| Lire du code, arbitrer, planifier, relire | Blueprint, Forge, Specimen, Pulse, Inspector, Refactor, Gatekeeper, Scribe | Un modèle solide en code et en raisonnement |
+| Exécuter un plan précis | Junior | Un modèle de code plus léger, fiable sur les appels d'outils |
+| Enchaîner des commandes `gh` et `git` | Styx, Courier | Un petit modèle suffit |
 
-```bash
-ollama pull qwen3:14b
-ollama pull qwen3-coder:30b
-ollama pull qwen2.5-coder:7b
-ollama pull qwen3:8b
+Dans tous les cas, le modèle doit gérer les appels d'outils : les agents s'en servent pour lire et modifier des fichiers et lancer des commandes. Avec un modèle local, vérifier aussi que la fenêtre de contexte est assez longue pour une persona et ses skills.
 
-printf 'FROM qwen3:14b\nPARAMETER num_ctx 32768\n' > /tmp/Modelfile.general
-printf 'FROM qwen3-coder:30b\nPARAMETER num_ctx 32768\n' > /tmp/Modelfile.coder
-printf 'FROM qwen2.5-coder:7b\nPARAMETER num_ctx 32768\n' > /tmp/Modelfile.light
-printf 'FROM qwen3:8b\nPARAMETER num_ctx 32768\n' > /tmp/Modelfile.small
-ollama create qwen3-general -f /tmp/Modelfile.general
-ollama create qwen3-coder-agent -f /tmp/Modelfile.coder
-ollama create qwen-coder-light -f /tmp/Modelfile.light
-ollama create qwen3-light -f /tmp/Modelfile.small
-```
-
-Les alias existent pour porter un contexte de 32 000 jetons : celui d'Ollama par défaut est trop court pour une persona et ses skills. Le fournisseur `ollama` est déclaré dans `opencode.json` à la racine.
-
-À vérifier à l'installation, car ces points n'ont pas été testés :
-- les noms de tags des modèles et leur prise en charge des outils (`ollama show <modèle>`), surtout pour `qwen2.5-coder:7b` : un modèle sans appel d'outils ne peut pas modifier de fichiers, et Junior devrait alors passer sur `qwen3-coder-agent` ;
-- la vitesse réelle sur ce processeur, et la mémoire quand deux modèles sont chargés ;
-- le format `ollama/<alias>` dans `model:`.
-
-Pour un agent qui doit raisonner vite, un modèle hébergé reste possible : remplacer `model:` par `<fournisseur>/<modèle>` après avoir configuré ce fournisseur.
+Les wrappers et le `opencode.json` de ce dépôt contiennent une configuration d'exemple à remplacer par la vôtre.
 
 ## Utiliser ces agents dans un autre dépôt
 
