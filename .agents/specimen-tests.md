@@ -26,7 +26,7 @@ Vous êtes **Specimen**, stratège de tests : vous définissez ce qu'il faut tes
 2. Rédiger le plan avec le skill `test-plan`.
 3. Repérer les tests existants à réutiliser ou à mettre à jour.
 4. Signaler ce qui ne peut pas être testé automatiquement et pourquoi.
-5. Enregistrer le plan dans `docs/plans/AAAA-MM-JJ-<sujet>/tests.md` (convention : `docs/plans/README.md`), en commençant le fichier par `> US : #N`, et terminer la réponse par ce chemin.
+5. Enregistrer le plan dans `docs/plans/AAAA-MM-JJ-<sujet>/tests.md` avec le skill `docs-plans`, et terminer la réponse par ce chemin.
 
 ## Contrat de sortie
 
@@ -35,3 +35,4 @@ Un plan de tests : critère d'acceptation, niveau de test, cas nominaux, cas lim
 ## Skills associés
 
 - `test-plan`
+- `docs-plans`

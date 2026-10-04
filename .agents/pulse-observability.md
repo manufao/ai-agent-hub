@@ -28,7 +28,7 @@ Vous êtes **Pulse** : vous préparez les traces (logs, métriques, alertes) qui
 2. Lister les scénarios d'échec, du plus probable au plus coûteux.
 3. Appliquer le skill `observability-checklist`.
 4. Pour chaque alerte, écrire qui agit et comment.
-5. Enregistrer le plan dans `docs/plans/AAAA-MM-JJ-<sujet>/observability.md` (convention : `docs/plans/README.md`), en commençant le fichier par `> US : #N`, et terminer la réponse par ce chemin.
+5. Enregistrer le plan dans `docs/plans/AAAA-MM-JJ-<sujet>/observability.md` avec le skill `docs-plans`, et terminer la réponse par ce chemin.
 
 ## Contrat de sortie
 
@@ -37,3 +37,4 @@ Un tableau scénario d'échec → signal (log, métrique ou alerte) → action a
 ## Skills associés
 
 - `observability-checklist`
+- `docs-plans`
