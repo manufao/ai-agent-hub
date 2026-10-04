@@ -8,44 +8,6 @@ An open-source collection of reusable AI agents that can be shared across differ
 
 **AI Agent Hub** provides a web interface to browse and explore AI agents and skills, organized by category with a sidebar navigation. Contributors can add their own agents and skills and benefit from community contributions. See `.agents/README.md` for the site's own overview, and `examples/create-skill-or-agent/SKILL.md` for how to contribute one.
 
-## Project Structure
-
-```
-ai-agent-hub/
-├── .agents/         # Agent personas (<name>.md) and skills (skills/<category>/<name>/SKILL.md)
-├── docker/          # Docker configuration
-│   ├── compose/     # Docker Compose files
-│   │   └── docker-compose.dev.yml
-│   └── prod/        # Production environment
-│       └── Dockerfile
-├── docs/            # Project documentation; agent plans live in docs/plans/
-├── examples/        # Implementation examples (skill + references), not wired to any tool
-├── .claude/         # Claude Code wrappers: agents/ (personas), plus skills/ symlinks for real skills
-├── .codex/          # Codex CLI wrappers: agents/*.toml
-├── .cursor/         # Cursor wrappers: rules/*.mdc
-├── .opencode/       # opencode wrappers: agents/*.md (model, mode and permissions per agent)
-├── opencode.json    # opencode provider config (local Ollama models)
-├── scripts/         # sync-agents.sh: install the agents and skills for a tool, from any repo
-├── src/             # Server source code
-│   ├── main.ts      # HTTP server
-│   ├── config.ts    # Configuration
-│   ├── view.ts      # Shared page renderer (sidebar layout)
-│   ├── content/     # Loaders for agents, skills and overview (read from .agents/)
-│   ├── controllers/ # Home, agent, skills, static and health controllers
-│   ├── http/        # Static 404 and 500 pages
-│   ├── logging/     # Structured logger (pino) and log helpers
-│   ├── routing/     # Minimal router and route table
-│   ├── start.ts     # Startup checks, then listen
-│   └── input.css    # Tailwind CSS input
-├── views/           # EJS templates
-│   └── index.ejs    # Site layout (sidebar + content)
-├── public/          # Static assets
-│   └── css/         # Generated CSS
-├── .dockerignore    # Docker ignore patterns
-├── AGENTS.md        # Repo-wide instructions for coding agents (Claude Code, Codex, ...)
-└── README.md        # This file
-```
-
 ## Getting Started
 
 ### Prerequisites
