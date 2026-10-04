@@ -1,6 +1,6 @@
 ---
 name: courier-git
-description: "Livraison Git : commits au format Conventional Commits, push et pull request GitHub"
+description: "Livraison Git : commits au format Conventional Commits, push et pull request (merge request sur GitLab)"
 tools: Read, Grep, Glob, Bash
 model: haiku
 ---
