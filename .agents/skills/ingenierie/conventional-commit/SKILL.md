@@ -27,10 +27,10 @@ Un historique lisible se relit comme un journal : un commit, un sujet, un titre 
 
 ## Pull request
 
-Une pull request a un titre et, pour seule description, des lignes `Closes #N` (une par issue qu'elle termine) : ni résumé, ni plan de test, ni ligne d'attribution.
+Une pull request (merge request sur GitLab) a un titre et, pour seule description, des lignes `Closes #N` (une par issue qu'elle termine) : ni résumé, ni plan de test, ni ligne d'attribution.
 
 1. Écrire le titre au même format, moins de 70 caractères, qui décrit l'ensemble de la branche (`git log <défaut>..HEAD`).
-2. Ouvrir avec `gh pr create --base <défaut> --title "<titre>" --body "Closes #N"` (`--body ""` s'il n'y a aucune issue à fermer), puis rendre l'adresse renvoyée.
+2. Ouvrir avec les commandes du skill de la forge (`forge-github` ou `forge-gitlab`), en passant le titre et, comme description, les lignes `Closes #N` (ou rien s'il n'y a aucune issue à fermer), puis rendre l'adresse renvoyée.
 
 ## Format de sortie
 

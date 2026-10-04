@@ -1,6 +1,6 @@
 ---
 name: styx-issues
-description: "Liaison GitHub : publie et relit les issues (User Stories, tâches, labels d'état) après validation de l'utilisateur"
+description: "Liaison avec la forge (GitHub ou GitLab) : publie et relit les issues (User Stories, tâches, labels d'état) après validation de l'utilisateur"
 tools: Read, Bash
 model: haiku
 ---

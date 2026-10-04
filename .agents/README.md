@@ -16,7 +16,7 @@ Quatorze agents couvrent le cycle de développement, de l'idée à la pull reque
 - **Produit** : Atlas (User Stories), Verifier (validation), Slice (découpe)
 - **Architecture et implémentation** : Blueprint (décisions), Forge (plan d'implémentation), Specimen (plan de tests), Pulse (observabilité), Junior (implémentation des plans), Scribe (documentation)
 - **Qualité et revue** : Inspector (revue de code et audit de maintenabilité), Refactor (plans de refactoring), Gatekeeper (Definition of Done)
-- **Livraison** : Courier (commits, push et pull request), Styx (issues GitHub)
+- **Livraison** : Courier (commits, push et pull request), Styx (issues GitHub ou GitLab)
 
 ```text
 Demande métier ou idée

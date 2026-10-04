@@ -1,5 +1,5 @@
 ---
-description: "Livraison Git : commits au format Conventional Commits, push et pull request GitHub"
+description: "Livraison Git : commits au format Conventional Commits, push et pull request (merge request sur GitLab)"
 mode: subagent
 model: ollama/qwen3-light
 temperature: 0.1
@@ -23,6 +23,10 @@ permission:
     "gh pr create *": allow
     "gh pr view *": allow
     "gh pr checks *": allow
+    "glab mr create *": allow
+    "glab mr view *": allow
+    "glab ci status*": allow
+    "glab mr merge *": ask
     "gh pr merge *": ask
     "pnpm exec vitest*": allow
 ---
