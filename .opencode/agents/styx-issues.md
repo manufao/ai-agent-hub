@@ -13,6 +13,7 @@ permission:
     "glab issue *": allow
     "glab label *": allow
     "glab api *": allow
+    "git remote get-url *": allow
     "gh issue delete *": deny
     "glab issue delete *": deny
 ---
