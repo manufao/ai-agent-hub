@@ -55,7 +55,7 @@ Ce dépôt suit deux conventions distinctes, volontairement séparées :
    ln -s ../../.agents/skills/<catégorie>/<nom> .claude/skills/<nom>
    ```
 
-   Codex CLI, Cursor et Gemini CLI découvrent `.agents/skills/` nativement : aucune étape supplémentaire pour eux.
+   Codex CLI, Cursor, Gemini CLI et opencode découvrent `.agents/skills/` nativement : aucune étape supplémentaire pour eux.
 
 ## Créer un agent
 
@@ -65,6 +65,7 @@ Ce dépôt suit deux conventions distinctes, volontairement séparées :
    - Claude Code : `.claude/agents/<nom>.md` — voir [`references/how-use-agent-in-claude.md`](references/how-use-agent-in-claude.md)
    - Codex CLI : `.codex/agents/<nom>.toml` — voir [`references/how-use-agent-in-codex.md`](references/how-use-agent-in-codex.md)
    - Cursor : `.cursor/rules/<nom>.mdc` — voir [`references/how-use-agent-in-cursor.md`](references/how-use-agent-in-cursor.md)
+   - opencode : `.opencode/agents/<nom>.md` — voir [`references/how-use-agent-in-opencode.md`](references/how-use-agent-in-opencode.md)
 
 ## Avant de créer quoi que ce soit : est-ce vraiment nécessaire ?
 

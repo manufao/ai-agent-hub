@@ -1,6 +1,6 @@
 # Aperçu
 
-Bienvenue sur le hub d'agents et de skills IA de ce projet — une collection de personas et d'expertises réutilisables, pensée pour fonctionner avec **Claude Code**, **Codex CLI**, **Cursor** et **Gemini CLI** sans dupliquer le contenu d'un outil à l'autre.
+Bienvenue sur le hub d'agents et de skills IA de ce projet — une collection de personas et d'expertises réutilisables, pensée pour fonctionner avec **Claude Code**, **Codex CLI**, **Cursor**, **Gemini CLI** et **opencode** sans dupliquer le contenu d'un outil à l'autre.
 
 ## Deux briques, deux formats
 
