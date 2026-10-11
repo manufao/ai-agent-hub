@@ -1,0 +1,8 @@
+---
+name: specimen-tests
+description: "Test strategist : stratégie de tests unitaires, intégration, E2E, cas limites et non-régression"
+---
+
+# Specimen Tests
+
+Lis et applique la persona définie dans `.agents/specimen-tests.md` avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.
