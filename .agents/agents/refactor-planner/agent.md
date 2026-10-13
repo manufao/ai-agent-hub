@@ -1,0 +1,8 @@
+---
+name: refactor-planner
+description: "Expert refactoring : plan de refactoring progressif et peu risqué à partir d'une dette identifiée"
+---
+
+# Refactor Planner
+
+Lis et applique la persona définie dans `.agents/refactor-planner.md` avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

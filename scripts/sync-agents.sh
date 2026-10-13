@@ -13,32 +13,44 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage : scripts/sync-agents.sh [--dry-run] <outil> [dossier-projet]
+Usage : scripts/sync-agents.sh [--dry-run] [--force] <outil> [dossier-projet]
 
 Outils :
   claude-code   agents dans ~/.claude/agents, skills dans ~/.claude/skills
   opencode      agents dans ~/.config/opencode/agents, skills dans ~/.agents/skills
   codex         agents dans ~/.codex/agents, skills dans ~/.agents/skills
+  antigravity   agents dans ~/.gemini/config/agents/<nom>/agent.md, skills dans ~/.gemini/config/skills
   cursor        pas d'emplacement global : indiquer le dossier du projet cible
                 (règles dans <projet>/.cursor/rules, skills dans <projet>/.agents/skills)
 
 Options :
   -n, --dry-run   affiche ce qui serait fait, sans rien écrire
+  -f, --force     crée les dossiers même si le dossier racine de l'outil n'existe pas
   -h, --help      affiche cette aide
 EOF
 }
 
 DRY_RUN=0
-case "${1:-}" in
-  -h | --help)
-    usage
-    exit 0
-    ;;
-  -n | --dry-run)
-    DRY_RUN=1
-    shift
-    ;;
-esac
+FORCE=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    -n | --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    -f | --force)
+      FORCE=1
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 TOOL="${1:-}"
 PROJECT="${2:-}"
@@ -56,18 +68,28 @@ case "$TOOL" in
     EXT="md"
     AGENTS_DST="$HOME/.claude/agents"
     SKILLS_DST="$HOME/.claude/skills"
+    CHECK_DIR="$HOME/.claude"
     ;;
   opencode)
     SRC="$ROOT/.opencode/agents"
     EXT="md"
     AGENTS_DST="$HOME/.config/opencode/agents"
     SKILLS_DST="$HOME/.agents/skills"
+    CHECK_DIR="$HOME/.config/opencode"
     ;;
   codex)
     SRC="$ROOT/.codex/agents"
     EXT="toml"
     AGENTS_DST="$HOME/.codex/agents"
     SKILLS_DST="$HOME/.agents/skills"
+    CHECK_DIR="$HOME/.codex"
+    ;;
+  antigravity)
+    SRC="$ROOT/.agents/agents"
+    EXT="md"
+    AGENTS_DST="$HOME/.gemini/config/agents"
+    SKILLS_DST="$HOME/.gemini/config/skills"
+    CHECK_DIR="$HOME/.gemini"
     ;;
   cursor)
     if [ -z "$PROJECT" ]; then
@@ -84,6 +106,7 @@ case "$TOOL" in
     EXT="mdc"
     AGENTS_DST="$PROJECT/.cursor/rules"
     SKILLS_DST="$PROJECT/.agents/skills"
+    CHECK_DIR="$PROJECT"
     ;;
   *)
     echo "Outil inconnu : $TOOL" >&2
@@ -97,6 +120,14 @@ if [ ! -d "$SRC" ]; then
   exit 1
 fi
 
+if [ -n "${CHECK_DIR:-}" ] && [ ! -d "$CHECK_DIR" ]; then
+  if [ "$FORCE" = 0 ]; then
+    echo "Dossier racine introuvable pour $TOOL : $CHECK_DIR" >&2
+    echo "L'outil ne semble pas installé ou configuré sur cette machine. Utilisez --force (-f) pour forcer." >&2
+    exit 1
+  fi
+fi
+
 say() {
   if [ "$DRY_RUN" = 1 ]; then
     echo "[dry-run] $*"
@@ -105,18 +136,39 @@ say() {
   fi
 }
 
+# Remplace le chemin relatif de la persona par un chemin absolu vers ce dépôt
+rewrite_paths() {
+  ROOT="$ROOT" perl -pe 's#(?:\.\./\.\./|(?<=[`\s]))\.agents/#$ENV{ROOT}/.agents/#g' "$1"
+}
+
 # --- Agents : on remplace le chemin relatif de la persona par un chemin absolu
 [ "$DRY_RUN" = 1 ] || mkdir -p "$AGENTS_DST"
 agents=0
-for file in "$SRC"/*."$EXT"; do
-  [ -f "$file" ] || continue
-  name="$(basename "$file")"
-  say "agent  $AGENTS_DST/$name"
-  if [ "$DRY_RUN" = 0 ]; then
-    ROOT="$ROOT" perl -pe 's#(?:\.\./\.\./|(?<=[`\s]))\.agents/#$ENV{ROOT}/.agents/#g' "$file" >"$AGENTS_DST/$name"
-  fi
-  agents=$((agents + 1))
-done
+if [ "$TOOL" = "antigravity" ]; then
+  for dir in "$SRC"/*/; do
+    [ -d "$dir" ] || continue
+    file="$dir/agent.md"
+    [ -f "$file" ] || continue
+    name="$(basename "$dir")"
+    target_dir="$AGENTS_DST/$name"
+    say "agent  $target_dir/agent.md"
+    if [ "$DRY_RUN" = 0 ]; then
+      mkdir -p "$target_dir"
+      rewrite_paths "$file" >"$target_dir/agent.md"
+    fi
+    agents=$((agents + 1))
+  done
+else
+  for file in "$SRC"/*."$EXT"; do
+    [ -f "$file" ] || continue
+    name="$(basename "$file")"
+    say "agent  $AGENTS_DST/$name"
+    if [ "$DRY_RUN" = 0 ]; then
+      rewrite_paths "$file" >"$AGENTS_DST/$name"
+    fi
+    agents=$((agents + 1))
+  done
+fi
 
 # --- Skills : un lien symbolique par skill, vers ce dépôt
 [ "$DRY_RUN" = 1 ] || mkdir -p "$SKILLS_DST"

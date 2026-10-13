@@ -65,6 +65,7 @@ Ce dépôt suit deux conventions distinctes, volontairement séparées :
    - Claude Code : `.claude/agents/<nom>.md` — voir [`references/how-use-agent-in-claude.md`](references/how-use-agent-in-claude.md)
    - Codex CLI : `.codex/agents/<nom>.toml` — voir [`references/how-use-agent-in-codex.md`](references/how-use-agent-in-codex.md)
    - Cursor : `.cursor/rules/<nom>.mdc` — voir [`references/how-use-agent-in-cursor.md`](references/how-use-agent-in-cursor.md)
+   - Antigravity : `.agents/agents/<nom>/agent.md` — voir [`references/how-use-agent-in-antigravity.md`](references/how-use-agent-in-antigravity.md)
    - opencode : `.opencode/agents/<nom>.md` — voir [`references/how-use-agent-in-opencode.md`](references/how-use-agent-in-opencode.md)
 
 ## Avant de créer quoi que ce soit : est-ce vraiment nécessaire ?

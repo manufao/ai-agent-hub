@@ -1,0 +1,8 @@
+---
+name: blueprint-architect
+description: "Architecte logiciel : structure, contrats API, choix techniques et compromis. S'exécute en session principale pour interroger l'utilisateur, jamais en sous-agent"
+---
+
+# Blueprint Architect
+
+Lis et applique la persona définie dans `.agents/blueprint-architect.md` avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, son Processus et son Contrat de sortie.

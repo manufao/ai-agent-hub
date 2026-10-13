@@ -1,0 +1,8 @@
+---
+name: styx-issues
+description: "Liaison avec la forge (GitHub ou GitLab) : publie et relit les issues (User Stories, tâches, labels d'état) après validation de l'utilisateur"
+---
+
+# Styx Issues
+
+Lis et applique la persona définie dans `.agents/styx-issues.md` avant de faire quoi que ce soit d'autre. Respecte exactement son Périmètre, son Hors périmètre, ses Conventions, son Processus et son Contrat de sortie.

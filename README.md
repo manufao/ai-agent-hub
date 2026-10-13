@@ -115,9 +115,9 @@ The two content events are logged once per file until the server restarts. Out o
 The wrappers point to `.agents/<name>.md`, a path that only exists here. Run the sync script once per machine (and again after changing an agent) to install them for a tool:
 
 ```bash
-scripts/sync-agents.sh <claude-code|opencode|codex>          # user-level install
-scripts/sync-agents.sh cursor <project-dir>                   # Cursor has no global location
-scripts/sync-agents.sh --dry-run <tool>                       # preview, writes nothing
+scripts/sync-agents.sh <claude-code|opencode|codex|antigravity>  # user-level install
+scripts/sync-agents.sh cursor <project-dir>                      # Cursor has no global location
+scripts/sync-agents.sh --dry-run <tool>                          # preview, writes nothing
 ```
 
 It copies each wrapper with an absolute path to this clone and symlinks the skills. See `examples/create-skill-or-agent/references/how-use-agent-in-opencode.md` for how to choose a model per agent with opencode.
