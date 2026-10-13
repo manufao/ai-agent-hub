@@ -84,7 +84,7 @@ case "$TOOL" in
     SKILLS_DST="$HOME/.agents/skills"
     CHECK_DIR="$HOME/.codex"
     ;;
-  antigravity | gemini)
+  antigravity)
     SRC="$ROOT/.agents/agents"
     EXT="md"
     AGENTS_DST="$HOME/.gemini/config/agents"
@@ -144,7 +144,7 @@ rewrite_paths() {
 # --- Agents : on remplace le chemin relatif de la persona par un chemin absolu
 [ "$DRY_RUN" = 1 ] || mkdir -p "$AGENTS_DST"
 agents=0
-if [ "$TOOL" = "antigravity" ] || [ "$TOOL" = "gemini" ]; then
+if [ "$TOOL" = "antigravity" ]; then
   for dir in "$SRC"/*/; do
     [ -d "$dir" ] || continue
     file="$dir/agent.md"
