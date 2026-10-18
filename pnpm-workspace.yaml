@@ -12,3 +12,9 @@ allowBuilds:
 # Refuse to install a dependency that declares itself incompatible with the
 # running Node version. pnpm 12 does not read this from .npmrc.
 engineStrict: true
+
+# Force transitive devDependencies past known vulnerabilities (see
+# `pnpm audit`) that their direct parents haven't bumped yet.
+overrides:
+  source-map-js: '>=1.2.2'
+  postcss-selector-parser: '>=7.1.6'
