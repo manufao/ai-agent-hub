@@ -126,7 +126,7 @@ It copies each wrapper with an absolute path to this clone and symlinks the skil
 
 - **Runtime**: Node.js 24 with TypeScript 6
 - **Server**: Native HTTP server (no Express)
-- **Templating**: EJS 6
+- **Templating**: EJS 7
 - **Styling**: Tailwind CSS v4
 - **Markdown**: marked 18
 - **Logging**: pino 10 (JSON lines on stdout)
