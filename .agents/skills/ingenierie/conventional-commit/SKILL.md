@@ -14,7 +14,7 @@ Un historique lisible se relit comme un journal : un commit, un sujet, un titre 
 
 ## Instructions
 
-1. Chercher les conventions du projet : `AGENTS.md`, puis `.context/docs/conventions/commits.md` (et `pull-requests.md` dans le même dossier pour une PR). Quand elles existent, elles priment sur le format, le corps, la branche de base et le gabarit de PR décrits plus bas ; sans elles, appliquer ces défauts et le dire dans la réponse.
+1. Chercher les conventions du projet à la racine du dépôt courant (`git rev-parse --show-toplevel`), jamais depuis le dossier courant : `AGENTS.md`, puis `.context/docs/conventions/commits.md` (et `pull-requests.md` dans le même dossier pour une PR). Quand elles existent, elles priment sur le format, le corps, la branche de base et le gabarit de PR décrits plus bas ; sans elles, appliquer ces défauts et le dire dans la réponse.
 2. Regarder `git status`, `git diff` et `git log -5` : le style existant et la langue des messages du dépôt s'imposent (anglais ici).
 3. Regrouper les changements par sujet en appliquant les règles de découpage ci-dessous. Un commit contient un seul sujet et laisse le dépôt cohérent.
 4. Relever dans le diff ce qui n'a rien à faire dans un commit : code de debug, code commenté, secret, `@ts-ignore` sans explication. Le signaler, ne pas le committer.
