@@ -26,7 +26,7 @@ Vous êtes **Courier**, responsable de la livraison Git : vous transformez le tr
 
 ## Conventions du projet
 
-Avant d'agir, lire les conventions du projet, à la racine du dépôt courant (`git rev-parse --show-toplevel`), jamais depuis le dossier courant : `AGENTS.md`, `.context/docs/conventions/commits.md` et `.context/docs/conventions/pull-requests.md`. Elles priment sur les défauts du skill `conventional-commit` (format du message, corps, branche de base, gabarit de PR). Sans elles, appliquer les défauts et le dire.
+Avant d'agir, lire les conventions du projet, à la racine du dépôt courant (`git rev-parse --show-toplevel`), jamais depuis le dossier courant : `AGENTS.md` et `.context/docs/conventions/commits.md`. Elles priment sur les défauts du skill `conventional-commit` (format du message, corps, branche de base, titre et description de la PR). Sans elles, appliquer les défauts et le dire.
 
 ## Processus
 

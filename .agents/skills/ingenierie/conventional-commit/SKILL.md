@@ -14,7 +14,7 @@ Un historique lisible se relit comme un journal : un commit, un sujet, un titre 
 
 ## Instructions
 
-1. Chercher les conventions du projet à la racine du dépôt courant (`git rev-parse --show-toplevel`), jamais depuis le dossier courant : `AGENTS.md`, puis `.context/docs/conventions/commits.md` (et `pull-requests.md` dans le même dossier pour une PR). Quand elles existent, elles priment sur le format, le corps, la branche de base et le gabarit de PR décrits plus bas ; sans elles, appliquer ces défauts et le dire dans la réponse.
+1. Chercher les conventions du projet à la racine du dépôt courant (`git rev-parse --show-toplevel`), jamais depuis le dossier courant : `AGENTS.md`, puis `.context/docs/conventions/commits.md`. Quand elles existent, elles priment sur le format, le corps, la branche de base, le titre et la description de PR décrits plus bas ; sans elles, appliquer ces défauts et le dire dans la réponse.
 2. Regarder `git status`, `git diff` et `git log -5` : le style existant et la langue des messages du dépôt s'imposent (anglais ici).
 3. Regrouper les changements par sujet en appliquant les règles de découpage ci-dessous. Un commit contient un seul sujet et laisse le dépôt cohérent.
 4. Relever dans le diff ce qui n'a rien à faire dans un commit : code de debug, code commenté, secret, `@ts-ignore` sans explication. Le signaler, ne pas le committer.
@@ -32,12 +32,14 @@ Un historique lisible se relit comme un journal : un commit, un sujet, un titre 
 - Un commit = une fonctionnalité ou un correctif, assez petit pour être relu seul.
 - Un refactoring n'est jamais dans le même commit qu'une fonctionnalité ou un correctif : il passe avant, dans son propre commit.
 - Le mot « et » dans le sujet signale deux commits : découper, sans exception.
-- Une fonctionnalité qui approche 10 fichiers se découpe en une série de commits qui se suivent, chacun relisible seul et ne dépendant que des précédents (types et interfaces d'abord, puis services, puis points d'entrée). Un fichier source et son test vont dans la même partie. Le sujet de chaque partie dit ce qu'elle apporte.
+- Une fonctionnalité ou un correctif qui approche 10 fichiers se découpe en série de commits (10 fichiers deviennent par exemple 5 commits de 2 fichiers). Chaque commit porte sa position `i/n` en tête du sujet, `n` étant le nombre de commits de la série : `feat(partners): 1/4 add certificate entity`. Les parties se suivent, sans autre commit entre elles. Si le projet impose un autre format de message, `i/n` se place juste après le préfixe de ce format.
+- Chaque partie d'une série est relisible seule et ne dépend que des précédentes : types, interfaces et entités d'abord, puis services, puis points d'entrée et branchement. Un fichier source et son test vont dans la même partie. Le sujet de chaque partie dit ce qu'elle apporte, jamais le même d'une partie à l'autre.
+- Un refactoring nécessaire à la fonctionnalité reste un commit distinct, avant la série et hors numérotation.
 - Un fichier qui mêle des changements de commits différents se découpe par morceaux avec `git add -p <fichier>`. La commande est interactive : la donner à l'utilisateur au lieu de la lancer.
 
 ## Pull request
 
-Par défaut, une pull request (merge request sur GitLab) a un titre et, pour seule description, des lignes `Closes #N` (une par issue qu'elle termine) : ni résumé, ni plan de test, ni ligne d'attribution. Un gabarit de description dans les conventions du projet remplace ce défaut, sans jamais autoriser la ligne d'attribution.
+Par défaut, une pull request (merge request sur GitLab) a un titre et, pour seule description, des lignes `Closes #N` (une par issue qu'elle termine) : ni résumé, ni plan de test, ni ligne d'attribution. Les conventions du projet peuvent remplacer ce défaut (autre titre, autre description, ou aucune description), sans jamais autoriser la ligne d'attribution.
 
 1. Écrire le titre au même format, moins de 70 caractères, qui décrit l'ensemble de la branche (`git log <défaut>..HEAD`).
 2. Ouvrir avec les commandes du skill de la forge (`forge-github` ou `forge-gitlab`), en passant le titre et, comme description, les lignes `Closes #N` (ou rien s'il n'y a aucune issue à fermer), puis rendre l'adresse renvoyée.
