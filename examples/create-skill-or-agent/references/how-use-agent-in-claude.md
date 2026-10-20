@@ -39,15 +39,14 @@ Seuls `description` (et `name`) doivent être écrits en clair dans le wrapper :
 
 ## Modèle et effort par agent
 
-Le frontmatter accepte `model` (alias `sonnet`, `opus`, `haiku`, `fable`, identifiant complet comme `claude-opus-5-5`, ou `inherit`) et `effort` (`low`, `medium`, `high`, `xhigh`, `max`). Les niveaux d'effort dépendent du modèle : Haiku n'en a pas, donc le champ est omis pour lui. Ordre de priorité du modèle : le paramètre passé à l'appel, puis le frontmatter, puis `CLAUDE_CODE_SUBAGENT_MODEL`, puis le modèle de la conversation.
+Le frontmatter accepte `model` (alias `sonnet`, `opus`, `haiku`, `fable`, identifiant complet comme `claude-opus-5-5`, ou `inherit`) et `effort` (`low`, `medium`, `high`, `xhigh`, `max`). Les niveaux d'effort dépendent du modèle : Haiku n'en a pas, donc le champ est omis pour lui (aucun agent n'en utilise plus ici). Ordre de priorité du modèle : le paramètre passé à l'appel, puis le frontmatter, puis `CLAUDE_CODE_SUBAGENT_MODEL`, puis le modèle de la conversation.
 
 | Agents | Modèle | Effort | Raison |
 |---|---|---|---|
 | Blueprint, Forge, Inspector | `opus` | `high` | Arbitrer une structure, produire un plan que Junior exécutera sans l'interpréter, trouver des bugs |
 | Atlas | `sonnet` | `high` | Le grilling du besoin demande du raisonnement |
-| Verifier, Slice, Specimen, Pulse, Refactor, Gatekeeper | `sonnet` | `medium` | Jugement sur des critères définis |
+| Verifier, Slice, Specimen, Pulse, Refactor, Gatekeeper, Styx, Courier | `sonnet` | `medium` | Jugement sur des critères définis, ou tâches à plusieurs règles à respecter (conventions de projet, forge) |
 | Scribe, Junior | `sonnet` | `low` | Rédiger à partir du code, exécuter un plan précis |
-| Styx, Courier | `haiku` | (aucun) | Tâches mécaniques |
 
 Pour vérifier ce qui tourne : `/tasks` affiche le modèle et l'effort de chaque sous-agent, `/effort` celui de la session. Un sous-agent reprend la réflexion étendue de la conversation : il n'existe pas de réglage de réflexion par agent. Blueprint tourne en session principale : on fixe aussi son effort au lancement (`claude --agent blueprint-architect --effort high`), car la documentation ne dit pas que celui du frontmatter s'y applique.
 
