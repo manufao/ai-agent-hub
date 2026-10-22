@@ -14,7 +14,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 
 ## Instructions
 
-1. **Gestionnaire et dépendances.** pnpm uniquement, `package-lock.json` supprimé. Dernières versions majeures, puis `pnpm audit` et `pnpm outdated` à zéro. Une dépendance bloquée sur une version plus ancienne est justifiée dans le README, avec le ticket à suivre.
+1. **Gestionnaire et dépendances.** pnpm uniquement, jamais npm ni yarn : l'installer s'il manque, migrer un projet npm, puis verrouiller son usage (`references/install.md`, section pnpm). Dernières versions majeures, puis `pnpm audit` et `pnpm outdated` à zéro. Une dépendance bloquée sur une version plus ancienne est justifiée dans le README, avec le ticket à suivre.
 2. **Structure.** Appliquer `project-structure`, `styling-conventions` et `react-conventions` ou `svelte-conventions`.
 3. **Installation.** Paquets, scripts et hooks Git : `references/install.md`.
 4. **Prettier.** Copier `references/lint/prettierrc.json` vers `.prettierrc` et `references/lint/prettierignore` vers `.prettierignore`. Ajouter le plugin du framework si besoin (`prettier-plugin-svelte`).
