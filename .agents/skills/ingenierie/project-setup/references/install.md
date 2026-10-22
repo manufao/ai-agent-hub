@@ -42,7 +42,7 @@ pnpm add -D husky lint-staged @commitlint/cli @commitlint/config-conventional
 pnpm exec husky init
 ```
 
-Puis remplacer le contenu de `.husky/` par les trois hooks de `husky/`. Gitleaks se lance s'il est installé (`brew install gitleaks`). Le hook l'ignore sinon, et la CI le rattrape.
+Puis remplacer le contenu de `.husky/` par les trois hooks de `git-hooks/`. Gitleaks se lance s'il est installé (`brew install gitleaks`). Le hook l'ignore sinon, et la CI le rattrape.
 
 `package.json` :
 
