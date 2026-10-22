@@ -19,7 +19,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 3. **Installation.** Paquets, scripts et hooks Git : `references/install.md`.
 4. **Prettier.** Copier `references/lint/prettierrc.json` vers `.prettierrc` et `references/lint/prettierignore` vers `.prettierignore`. Ajouter le plugin du framework si besoin (`prettier-plugin-svelte`).
 5. **ESLint.** Partir de `references/lint/eslint.config.example.js`. Socle commun : recommandés JS et TypeScript, tri des imports, `curly`, variables inutilisées préfixées `_`, règles de sécurité et détection de secrets. Règles de structure : sens des dépendances, nommage des fichiers, 150 lignes maximum, pas de style inline, classes Tailwind valides et non construites dynamiquement. Garder le bloc du framework concerné.
-6. **dependency-cruiser.** Copier `references/lint/dependency-cruiser.example.cjs` vers `.dependency-cruiser.cjs` : cycles, fichiers orphelins, paquets non déclarés, dépendances de dev en production. Il remplace `import-x/no-cycle`, lent. À poser dès le départ, même sur un petit projet : il coûte quelques secondes et évite la dette.
+6. **dependency-cruiser.** Copier `references/lint/dependency-cruiser.example.cjs` vers `.dependency-cruiser.cjs` : cycles, fichiers orphelins, imports introuvables, paquets non déclarés. Adapter la règle de couches (`no-logic-to-views`) aux dossiers du projet et en ajouter une par frontière réelle (serveur, code partagé). Exclure les points d'entrée de `no-orphans` (routes, hooks du framework) et le code généré. Il remplace `import-x/no-cycle`, lent. À poser dès le départ, même sur un petit projet : il coûte quelques secondes et évite la dette.
 7. **Scripts.** Garder les noms exacts de `references/install.md` : la CI les appelle.
 8. **Hooks Git.** Copier `references/git-hooks/` dans `.husky/` : `pre-commit` (Gitleaks sur les fichiers indexés, puis lint-staged), `commit-msg` (commitlint), `pre-push` (refus d'un push direct vers `main` ou `master`, puis types, lint, `lint:deps` et les tests s'il y en a). Ce hook est la seule protection quand le dépôt n'a pas de ruleset.
 9. **CI GitHub.** Copier `references/github/ci.yml` et `references/github/security-scan.yml` dans `.github/workflows/`. Adapter la commande qui démarre l'application pour le scan ZAP. Sans tests, retirer l'étape `test:ci` et le signaler au lieu de la laisser échouer.
@@ -31,6 +31,8 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 - typescript-eslint et dependency-cruiser n'acceptent pas encore TypeScript 7 : rester en TypeScript 6 tant que `npm view @typescript-eslint/parser peerDependencies.typescript` ne l'accepte pas.
 - `eslint-plugin-boundaries` et `eslint-plugin-check-file` tirent `braces`, vulnérable sans correctif : préférer `import-x/no-restricted-paths` et `unicorn/filename-case`.
 - `import-x` en flat config demande `import-x/resolver-next`, sinon `no-restricted-paths` ne voit aucun import.
+- SvelteKit : dependency-cruiser résout mal les alias de `.svelte-kit/tsconfig.json`, relatifs à ce dossier. Les redéclarer dans un `tsconfig.depcruise.json` qui étend `tsconfig.json`, et exclure `$app/*` et `$env/*` (modules virtuels) de `not-to-unresolvable`.
+- Pas de `not-to-dev-dep` dans une application bundlée (Vite, SvelteKit) : le framework y est en devDependencies par convention et le bundler l'embarque.
 - pnpm bloque les scripts d'installation inconnus : les autoriser ou les refuser explicitement avec `allowBuilds` dans `pnpm-workspace.yaml`, après avoir vérifié leur utilité.
 
 ## Format de sortie
