@@ -1,5 +1,14 @@
 [ -n "$CI" ] && exit 0
 
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main | refs/heads/master)
+      echo "Direct push to ${remote_ref#refs/heads/} is not allowed: push a branch and open a pull request."
+      exit 1
+      ;;
+  esac
+done
+
 echo "Running type check..."
 pnpm run test:types || { echo "Type check failed: push blocked."; exit 1; }
 
