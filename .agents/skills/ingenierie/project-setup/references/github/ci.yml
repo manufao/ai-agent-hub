@@ -45,5 +45,9 @@ jobs:
       - name: Type check
         run: pnpm run test:types
 
+      # Remove this step if the project has no tests yet (and say so).
+      - name: Test
+        run: pnpm run test:ci
+
       - name: Build
         run: pnpm run build
