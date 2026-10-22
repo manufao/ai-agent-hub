@@ -1,0 +1,10 @@
+[ -n "$CI" ] && exit 0
+
+echo "Running type check..."
+pnpm run test:types || { echo "Type check failed: push blocked."; exit 1; }
+
+echo "Running lint..."
+pnpm run lint || { echo "Lint failed: push blocked."; exit 1; }
+
+echo "Checking dependencies..."
+pnpm run lint:deps || { echo "Dependency rules failed: push blocked."; exit 1; }
