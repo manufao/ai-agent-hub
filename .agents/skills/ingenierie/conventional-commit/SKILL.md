@@ -36,6 +36,14 @@ Un historique lisible se relit comme un journal : un commit, un sujet, un titre 
 - Un refactoring nécessaire à la fonctionnalité reste un commit distinct, avant la série et hors numérotation.
 - Un fichier qui mêle des changements de commits différents se découpe par morceaux avec `git add -p <fichier>`. La commande est interactive : la donner à l'utilisateur au lieu de la lancer.
 
+## Corrections pendant la relecture
+
+Une branche dont la pull request est ouverte ne reçoit pas de nouveau commit de correction ni d'`--amend` : le relecteur ne verrait plus le delta et perdrait l'ancrage de ses commentaires.
+
+1. Committer chaque correction avec `git commit --fixup=<empreinte>`, l'empreinte étant le commit qui a introduit le code corrigé, un fixup par commit visé.
+2. Pousser normalement : les `fixup!` restent visibles pendant la relecture.
+3. Juste avant la fusion, et seulement sur demande : `git rebase --autosquash <défaut>` (avec `GIT_SEQUENCE_EDITOR=:` pour ne pas ouvrir d'éditeur), vérifier que le contenu final est inchangé, puis `git push --force-with-lease`.
+
 ## Pull request
 
 Une pull request (merge request sur GitLab) a un titre et, pour seule description, des lignes `Closes #N` (une par issue qu'elle termine) : ni résumé, ni plan de test, ni ligne d'attribution.
