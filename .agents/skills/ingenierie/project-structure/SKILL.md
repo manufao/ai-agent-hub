@@ -5,71 +5,49 @@ description: "À utiliser pour organiser ou relire l'arborescence d'un projet (R
 
 # Structure de projet
 
-Une bonne structure permet de trouver un fichier sans chercher et de modifier une partie sans en ouvrir trois autres. Ces règles valent pour tous les frameworks. Les règles propres à un framework sont dans `react-conventions` ou `svelte-conventions`, celles qui concernent le style dans `styling-conventions`.
+Une bonne structure permet de trouver un fichier sans chercher et de modifier une partie sans en ouvrir trois autres. Règles communes à tous les frameworks. Le spécifique est dans `react-conventions`, `svelte-conventions` et `styling-conventions`.
 
 ## Quand l'utiliser
 
-- À la création d'un projet ou d'un nouveau module
-- Avant d'ajouter une fonctionnalité dans un fichier déjà long
-- Pour une revue de code ou un audit de maintenabilité qui touche à l'organisation des fichiers
-- Pour préparer un plan de refactoring de structure
+- Création d'un projet ou d'un module, ajout dans un fichier déjà long
+- Revue, audit ou plan de refactoring qui touche à l'organisation des fichiers
 
 ## Règles
 
-### Un fichier, une responsabilité
+**Un fichier, une responsabilité.** Un composant, un service ou un module par fichier, nommé d'après ce qu'il contient. Au-delà d'environ 150 lignes, chercher ce qui s'extrait (repère, pas plafond). Une vue assemble et affiche, sans logique métier ni données en dur.
 
-- Un composant, un service ou un module par fichier. Le nom du fichier dit ce qu'il contient.
-- Repère de taille : au-delà d'environ 150 lignes, se demander ce qui peut être extrait. Ce n'est pas un plafond strict : un fichier long qui ne fait qu'une chose reste acceptable.
-- Une vue (composant, page, contrôleur) assemble et affiche. Elle ne contient pas la logique métier ni les données en dur.
+**Où ranger quoi** (noms à adapter au framework) :
 
-### Où ranger quoi
-
-Adapter les noms au framework, garder la séparation :
-
-| Contenu | Dossier type |
+| Contenu | Dossier |
 |---|---|
-| Composants d'interface | `components/` (sous-dossiers par domaine quand ils dépassent une dizaine) |
-| Logique avec état réutilisable | `hooks/` (React), `stores/` (Svelte), `services/` (NestJS) |
-| Fonctions pures, calculs | `lib/` ou `utils/` |
-| Données statiques et configuration | `data/`, `constants/`, `config/` |
+| Composants | `components/`, sous-dossiers par domaine au-delà d'une dizaine |
+| Logique avec état | `hooks/` (React), `stores/` (Svelte), `services/` (NestJS) |
+| Fonctions pures | `lib/` ou `utils/` |
+| Données, constantes, config | `data/`, `constants/`, `config/` |
 | Types partagés | `types/` |
-| Images | `assets/img/` |
-| Feuilles de style | `assets/css/` (ou `styles/`, selon la convention du framework) |
-| Fichiers servis tels quels (favicon, robots.txt) | `public/` ou `static/` |
+| Images, feuilles de style | `assets/img/`, `assets/css/` (ou `styles/`) |
+| Fichiers servis tels quels | `public/` ou `static/` |
 
-Dépendances à sens unique : les composants peuvent importer `hooks`, `lib`, `data` et `types`. L'inverse est interdit, car il crée des cycles et couple la logique à l'affichage.
+Dépendances à sens unique : les composants importent `hooks`, `lib`, `data` et `types`, jamais l'inverse.
 
-### Barrel files (`index.ts`)
+**Barrel files (`index.ts`).** Seulement à la racine d'un dossier consommé de l'extérieur (`components/`, `utils/`, un module NestJS), pas un par sous-dossier de composant. Exports nommés, jamais `export *`. À l'intérieur du dossier, imports directs (`./Figure`), jamais via `./index` : c'est la source classique des cycles. Ce qui est interne reste hors du barrel. Avec `verbatimModuleSyntax`, les types se réexportent en `export type`.
 
-Un barrel expose l'API publique d'un dossier. Utile à une frontière de module, nuisible partout ailleurs.
-
-- Placer un barrel à la racine d'un dossier consommé depuis l'extérieur (`components/`, `components/ui/`, `utils/`, un module NestJS). Pas un barrel par sous-dossier de composant.
-- Exports nommés et explicites. Pas de `export *`, qui masque ce qui est public et peut exporter deux fois le même nom.
-- À l'intérieur du dossier, les fichiers s'importent entre eux directement (`./Figure`), jamais via `./index` ou `.`. C'est la cause classique des imports circulaires.
-- Ne pas exporter ce qui est interne : un sous-composant utilisé par un seul composant reste hors du barrel.
-- Avec `verbatimModuleSyntax`, les types se réexportent avec `export type`.
-
-### Nommage des fichiers
-
-- Composants : PascalCase (`VotingDeck.svelte`, `NavButtons.tsx`).
-- Fonctions, hooks, stores, utilitaires : camelCase (`useCarousel.ts`, `calculateAverage.ts`).
-- Constantes exportées : UPPER_SNAKE_CASE dans le code, fichier en camelCase.
-- Tests : même nom que le fichier testé, suffixe `.test.ts` ou `.spec.ts` selon le projet.
+**Nommage.** Composants en PascalCase. Hooks, stores et utilitaires en camelCase. Constantes en UPPER_SNAKE_CASE. Tests : nom du fichier testé + `.test.ts` ou `.spec.ts`.
 
 ## Instructions
 
-1. Lire l'arborescence existante et le fichier d'instructions du projet (`CLAUDE.md`, `AGENTS.md`). Une convention déjà établie dans le projet l'emporte sur ce skill : la signaler si elle s'en écarte, sans l'imposer.
-2. Repérer les fichiers qui mélangent plusieurs responsabilités ou dépassent nettement le repère de taille.
-3. Repérer les données, la logique et les ressources rangées au mauvais endroit, et les dépendances dans le mauvais sens.
-4. Vérifier les barrels : emplacement, `export *`, imports internes qui passent par le barrel.
-5. Proposer l'arborescence cible et, pour chaque déplacement, ce qui change dans les imports.
+1. Lire l'arborescence et les instructions du projet (`CLAUDE.md`, `AGENTS.md`). Une convention déjà établie l'emporte : la signaler sans l'imposer.
+2. Repérer les fichiers à plusieurs responsabilités et ceux qui dépassent nettement le repère de taille.
+3. Repérer ce qui est mal rangé et les dépendances dans le mauvais sens.
+4. Vérifier les barrels : emplacement, `export *`, imports internes via le barrel.
+5. Proposer l'arborescence cible et les imports à mettre à jour.
 
 ## Format de sortie
 
 ```markdown
 ### Constats
-1. `chemin/fichier` : [règle concernée] — [ce qui ne va pas] → [correction proposée]
+1. `chemin/fichier` : [règle] — [problème] → [correction]
 
 ### Arborescence cible
-[arbre des dossiers et fichiers]
+[arbre]
 ```
