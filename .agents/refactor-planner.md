@@ -35,3 +35,6 @@ Un plan de pas ordonnés : pour chacun, les fichiers touchés, le filet de tests
 ## Skills associés
 
 - `refactoring-plan`
+- `project-structure`
+- `styling-conventions`
+- `react-conventions` ou `svelte-conventions`, selon la stack du projet

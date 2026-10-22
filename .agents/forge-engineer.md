@@ -42,3 +42,6 @@ Un plan numéroté : pour chaque étape, les fichiers touchés, ce qui change, l
 - `implementation-plan`
 - `requirements-grilling`
 - `docs-plans`
+- `project-structure`
+- `styling-conventions`
+- `react-conventions` ou `svelte-conventions`, selon la stack du projet
