@@ -1,5 +1,16 @@
 # Installation
 
+## pnpm
+
+```bash
+# Installer pnpm s'il manque (corepack est fourni avec Node)
+corepack enable pnpm || npm install -g pnpm
+# Projet existant sous npm : convertir le lockfile en gardant les versions, puis repartir de zéro
+pnpm import && rm -rf package-lock.json node_modules && pnpm install
+```
+
+Dans `package.json`, déclarer `"packageManager": "pnpm@<version>"` (voir `pnpm -v`), exigé par `pnpm/action-setup` en CI, et le script `"preinstall": "npx only-allow pnpm"`, qui fait échouer `npm install` et `yarn` dans le projet. Ajouter `package-lock.json` et `yarn.lock` au `.gitignore`.
+
 ## ESLint et Prettier
 
 ```bash
@@ -33,7 +44,7 @@ pnpm add -D eslint-plugin-better-tailwindcss
 }
 ```
 
-Svelte : `"test:types": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"`. Déclarer aussi `"packageManager": "pnpm@<version>"`, exigé par `pnpm/action-setup` en CI.
+Svelte : `"test:types": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"`.
 
 ## Hooks Git
 
