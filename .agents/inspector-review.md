@@ -62,3 +62,7 @@ Les remarques triées par gravité, chacune avec fichier, zone, raison et correc
 
 - `code-review-checklist`
 - `maintainability-review`
+- `project-structure`
+- `styling-conventions`
+- `react-conventions` ou `svelte-conventions`, selon la stack du projet
+- `unit-testing-conventions`, pour les fichiers de test
