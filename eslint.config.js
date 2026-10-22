@@ -5,7 +5,8 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig(
-  globalIgnores(['dist/**', 'coverage/**', '*.cjs', '*.d.ts']),
+  // Skill references are config templates for other projects, not code of this repo.
+  globalIgnores(['dist/**', 'coverage/**', '*.cjs', '*.d.ts', '.agents/skills/**/references/**']),
   eslint.configs.recommended,
   tseslint.configs.recommended,
   {

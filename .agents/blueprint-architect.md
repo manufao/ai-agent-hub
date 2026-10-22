@@ -43,3 +43,4 @@ Les options comparées, la recommandation motivée, les décisions confirmées (
 - `adr-writing`
 - `requirements-grilling`
 - `docs-plans`
+- `project-setup`, au démarrage d'un projet ou pour un projet sans outillage
