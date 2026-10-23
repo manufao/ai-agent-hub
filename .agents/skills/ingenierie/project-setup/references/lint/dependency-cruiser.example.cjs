@@ -139,7 +139,7 @@ module.exports = {
       severity: 'error',
       from: {
         path: '^src/(?:lib|hooks|data|services|utils)/',
-        pathNot: '[.](?:spec|test)[.](?:js|ts|tsx)$',
+        pathNot: '[.](?:spec|test)[.](?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$',
       },
       to: { path: '^src/(?:components|routes|pages|app)/' },
     },
