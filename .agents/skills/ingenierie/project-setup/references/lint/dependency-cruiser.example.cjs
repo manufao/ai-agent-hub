@@ -130,52 +130,18 @@ module.exports = {
         path: '[.](?:spec|test)[.](?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$',
       },
     },
+
+    // Layer rules: adapt the folders to the project. Logic and data never
+    // depend on views or on the app shell (routes, pages).
     {
-      name: 'not-to-dev-dep',
+      name: 'no-logic-to-views',
+      comment: 'Logic and data must not depend on views or routes.',
       severity: 'error',
-      comment:
-        "This module depends on an npm package from the 'devDependencies' section of your " +
-        'package.json. It looks like something that ships to production, though. To prevent problems ' +
-        "with npm packages that aren't there on production declare it (only!) in the 'dependencies'" +
-        'section of your package.json. If this module is development only - add it to the ' +
-        'from.pathNot re of the not-to-dev-dep rule in the dependency-cruiser configuration',
       from: {
-        path: '^(src)',
-        pathNot: ['[.](?:spec|test)[.](?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$', '[.]d[.]ts$'],
+        path: '^src/(?:lib|hooks|data|services|utils)/',
+        pathNot: '[.](?:spec|test)[.](?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$',
       },
-      to: {
-        dependencyTypes: ['npm-dev'],
-        // type only dependencies are not a problem as they don't end up in the
-        // production code or are ignored by the runtime.
-        dependencyTypesNot: ['type-only'],
-        pathNot: ['node_modules/@types/'],
-      },
-    },
-    {
-      name: 'optional-deps-used',
-      severity: 'info',
-      comment:
-        'This module depends on an npm package that is declared as an optional dependency ' +
-        "in your package.json. As this makes sense in limited situations only, it's flagged here. " +
-        'If you use an optional dependency here by design - add an exception to your' +
-        'dependency-cruiser configuration.',
-      from: {},
-      to: {
-        dependencyTypes: ['npm-optional'],
-      },
-    },
-    {
-      name: 'peer-deps-used',
-      comment:
-        'This module depends on an npm package that is declared as a peer dependency ' +
-        'in your package.json. This makes sense if your package is e.g. a plugin, but in ' +
-        'other cases - maybe not so much. If the use of a peer dependency is intentional ' +
-        'add an exception to your dependency-cruiser configuration.',
-      severity: 'warn',
-      from: {},
-      to: {
-        dependencyTypes: ['npm-peer'],
-      },
+      to: { path: '^src/(?:components|routes|pages|app)/' },
     },
   ],
   options: {
