@@ -83,3 +83,9 @@ Ce dépôt suit deux conventions distinctes, volontairement séparées :
 - [ ] `description` dit clairement QUAND l'utiliser, cas principal en premier
 - [ ] Contenu volumineux déplacé dans un fichier annexe plutôt que d'alourdir le fichier principal
 - [ ] Wrapper créé pour chaque outil visé (agent), ou lien symbolique créé pour Claude Code (skill)
+- [ ] Aucune collision : pas de skill, d'agent ou de wrapper existant du même nom ; confirmer avec l'utilisateur avant d'écraser ou de renommer quoi que ce soit
+- [ ] Le `name` du wrapper est identique au nom de son fichier
+- [ ] Chaque chemin relatif cité (persona, `references/`) mène à un fichier existant
+- [ ] Aucun placeholder (`[...]`) ni commentaire HTML de gabarit laissé dans les fichiers produits, aucune section qui répète une autre
+- [ ] Rien d'inventé : une règle que l'utilisateur n'a pas donnée lui est demandée
+- [ ] `scripts/sync-agents.sh <outil>` relancé pour l'installer hors de ce dépôt ; rappeler qu'un nouveau skill ou agent n'apparaît qu'après redémarrage de la session
