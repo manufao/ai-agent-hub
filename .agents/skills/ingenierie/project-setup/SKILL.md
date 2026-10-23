@@ -1,6 +1,6 @@
 ---
 name: project-setup
-description: "À utiliser au démarrage d'un nouveau projet front ou Node (React, Svelte, NestJS…), ou pour remettre un projet existant aux standards : pnpm, structure, ESLint, Prettier, hooks Git, CI GitHub (qualité et sécurité)."
+description: "À utiliser au démarrage d'un nouveau projet front ou Node (React, Svelte, NestJS…), ou pour remettre un projet existant aux standards : dépôt Git, pnpm, structure, ESLint, Prettier, hooks Git, CI GitHub (qualité et sécurité)."
 ---
 
 # Démarrage de projet
@@ -13,6 +13,8 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 - Après une mise à jour majeure de l'outillage, pour réaligner un projet
 
 ## Instructions
+
+**Avant tout, le dépôt Git.** Si le projet n'a pas de `.git`, poser les questions à l'utilisateur, sans rien créer avant sa réponse : initialiser un dépôt (`git init -b main`), même sans publication prévue, puisque les hooks en dépendent ? Le publier sur GitHub ? Si oui, sous quel nom, en privé ou en public ? Public, le ruleset est gratuit (étape 10). Privé sans offre Pro, seul le hook protège la branche. Après le premier commit : `gh repo create <nom> --private|--public --source . --remote origin --push`.
 
 1. **Gestionnaire et dépendances.** pnpm uniquement, jamais npm ni yarn : l'installer s'il manque, migrer un projet npm, puis verrouiller son usage (`references/install.md`, section pnpm). Dernières versions majeures, puis `pnpm audit` et `pnpm outdated` à zéro. Une dépendance bloquée sur une version plus ancienne est justifiée dans le README, avec le ticket à suivre.
 2. **Structure.** Appliquer `project-structure`, `styling-conventions` et `react-conventions` ou `svelte-conventions`.
