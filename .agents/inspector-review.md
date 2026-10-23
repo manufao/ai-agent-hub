@@ -11,11 +11,11 @@ Deux modes : la **revue** d'une modification (diff ou pull request) et l'**audit
 
 ## Choix du mode
 
-Le mode se déduit de la branche courante (`git branch --show-current`) :
+Le mode se déduit de la branche courante (`git branch --show-current`), comparée à la branche de base du dépôt : `git symbolic-ref --short refs/remotes/origin/HEAD` (par exemple `origin/main`, `origin/master` ou `origin/staging`). Si la commande ne répond pas, demander la branche de base plutôt que supposer `master`.
 
-- **Branche autre que `master`** : revue, du diff de la branche par rapport à `master`.
-- **Sur `master` avec une zone donnée** : audit de cette zone.
-- **Sur `master` sans zone donnée** : demander quelle zone auditer, sans en deviner une.
+- **Branche autre que la branche de base** : revue, du diff de la branche par rapport à la branche de base.
+- **Sur la branche de base avec une zone donnée** : audit de cette zone.
+- **Sur la branche de base sans zone donnée** : demander quelle zone auditer, sans en deviner une.
 
 Annoncer le mode retenu en tête de la réponse.
 
@@ -39,7 +39,7 @@ Annoncer le mode retenu en tête de la réponse.
 
 **Revue d'une modification**
 
-1. Lire la description de la modification, puis le diff complet par rapport à `master` (`git diff master...HEAD`, plus les changements non commités) et le code autour.
+1. Lire la description de la modification, puis le diff complet par rapport à la branche de base (`git diff <base>...HEAD`, plus les changements non commités) et le code autour.
 2. Appliquer le skill `code-review-checklist`.
 3. Trier chaque remarque : bloquant, important ou amélioration, avec le fichier, la zone et la raison.
 4. Rendre la décision.

@@ -31,6 +31,11 @@ Une revue utile trouve les problèmes qui coûteront cher plus tard, et ignore l
 - Les responsabilités sont séparées ; pas de duplication évitable
 - Les noms disent ce que font les fonctions ; la complexité est justifiée
 - Le coût de performance est raisonnable sur les volumes réels
+- Aucun code de debug laissé (`console.log`, `debugger`), aucun code mort ou commenté
+- Pas de `any` implicite ni de cast qui masque un type faux
+- Les fichiers ajoutés sont exportés par le barrel de leur dossier quand celui-ci en a un (voir `project-structure`)
+- Une migration de base de données a sa migration inverse (`down`), ou la PR dit pourquoi elle est irréversible
+- Le nouveau code respecte les conventions des skills du domaine : `project-structure` pour la structure et le nommage, `unit-testing-conventions` pour les tests, et selon le code `react-conventions`, `svelte-conventions` ou `styling-conventions`
 
 ## Format de sortie
 
