@@ -50,7 +50,7 @@ it('should show the next figurine when next is clicked', async () => {
 
 - Un appel attendu exactement une fois : `toHaveBeenCalledExactlyOnceWith(…)`. Plusieurs appels : `toHaveBeenCalledTimes(n)` avec `toHaveBeenCalledWith(…)`. Aucun appel : `toHaveBeenCalledTimes(0)`.
 - Une valeur transmise telle quelle : un `Symbol('xxxMock')` prouve qu'elle passe sans transformation, sans fabriquer de donnée.
-- Un ordre d'appel : comparer `mock.invocationCallOrder[0]` des deux mocks.
+- Un ordre d'appel : comparer `<nom>Mock.mock.invocationCallOrder[0]` des deux mocks (la propriété est sur `.mock`, pas sur la fonction mockée elle-même).
 - Une méthode privée se teste par la notation crochet (`instance['privateMethod'](…)`), jamais en la rendant publique ou exportée pour le test.
 
 **Couverture.** 100 % sur les quatre métriques (instructions, branches, fonctions, lignes) du fichier testé. Ne jamais déclarer un chemin impossible à tester pour s'arrêter avant, ne jamais baisser le seuil ni sauter un test : lire les lignes non couvertes et ajouter le test qui manque. Une branche vraiment inatteignable révèle du code mort, à signaler plutôt qu'à exclure.
