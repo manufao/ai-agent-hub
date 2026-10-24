@@ -1,7 +1,7 @@
 ---
 description: "Expert refactoring : plan de refactoring progressif et peu risqué à partir d'une dette identifiée"
 mode: subagent
-model: ollama/qwen3-coder-agent
+model: ollama/qwen3-coder:30b
 temperature: 0.2
 permission:
   edit: deny

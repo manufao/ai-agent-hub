@@ -1,7 +1,7 @@
 ---
 description: "Livraison Git : commits au format Conventional Commits, push et pull request (merge request sur GitLab)"
 mode: subagent
-model: ollama/qwen3-light
+model: ollama/qwen3:14b
 temperature: 0.1
 permission:
   edit: deny

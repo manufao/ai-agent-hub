@@ -1,7 +1,7 @@
 ---
 description: "Test strategist : stratégie de tests unitaires, intégration, E2E, cas limites et non-régression"
 mode: subagent
-model: ollama/qwen3-coder-agent
+model: ollama/qwen3-coder:30b
 temperature: 0.2
 permission:
   edit: allow

@@ -1,7 +1,7 @@
 ---
 description: "Architecte logiciel : structure, contrats API, choix techniques et compromis. S'exécute en session principale pour interroger l'utilisateur, jamais en sous-agent"
 mode: primary
-model: ollama/qwen3-coder-agent
+model: ollama/qwen3:30b
 temperature: 0.3
 permission:
   edit: allow

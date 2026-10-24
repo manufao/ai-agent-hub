@@ -1,7 +1,7 @@
 ---
 description: "Développeur d'exécution : implémente à la lettre les plans de Forge, Pulse et Specimen, sans interprétation"
 mode: subagent
-model: ollama/qwen-coder-light
+model: ollama/qwen3-coder:30b
 temperature: 0.1
 permission:
   edit: allow

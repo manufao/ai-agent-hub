@@ -1,7 +1,7 @@
 ---
 description: "Prépare les logs, métriques et alertes pour diagnostiquer une fonctionnalité en production"
 mode: subagent
-model: ollama/qwen3-coder-agent
+model: ollama/qwen3-coder:30b
 temperature: 0.2
 permission:
   edit: allow

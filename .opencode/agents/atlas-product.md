@@ -1,7 +1,7 @@
 ---
 description: "Product Owner : transforme une idée ou une demande en User Stories exploitables"
 mode: primary
-model: ollama/qwen3-general
+model: ollama/qwen3:14b
 temperature: 0.3
 permission:
   edit: deny
