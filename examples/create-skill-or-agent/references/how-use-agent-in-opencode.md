@@ -47,6 +47,28 @@ Dans tous les cas, le modèle doit gérer les appels d'outils : les agents s'en 
 
 Les wrappers et le `opencode.json` de ce dépôt contiennent une configuration d'exemple à remplacer par la vôtre.
 
+### La configuration d'exemple : Ollama en local
+
+Les clés de `models` dans `opencode.json` sont les tags Ollama eux-mêmes (`qwen3:14b`, pas un alias). Il suffit donc de télécharger les modèles, sans créer de Modelfile :
+
+```bash
+ollama pull qwen3-coder:30b   # Forge, Specimen, Inspector, Refactor, Junior, Pulse
+ollama pull qwen3:30b         # Blueprint (mode thinking)
+ollama pull qwen3:14b         # Atlas, Verifier, Slice, Scribe, Styx, Courier
+ollama pull qwen3:8b          # Gatekeeper
+```
+
+La fenêtre de contexte se règle côté Ollama, pas dans `opencode.json` : opencode passe par l'API compatible OpenAI (`/v1`), qui ignore `num_ctx`. Par défaut elle vaut 4096 jetons, trop peu pour une persona et ses skills : les appels d'outils échouent. Réglez-la à 32k une fois par machine :
+
+- **Avec l'application Ollama** (recommandé) : dans ses réglages, placer « Context length » sur 32k. Le réglage est conservé après un redémarrage.
+- **Sans l'application** : quitter d'abord l'application Ollama, qui occupe déjà le port 11434, puis lancer le serveur dans un terminal à garder ouvert :
+
+  ```bash
+  OLLAMA_CONTEXT_LENGTH=32768 ollama serve
+  ```
+
+Pour vérifier, lancer un modèle puis `ollama ps` : la colonne `CONTEXT` doit afficher 32768.
+
 ## Utiliser ces agents dans un autre dépôt
 
 Les wrappers disent « lis `.agents/<nom>.md` », un chemin relatif : dans un autre dépôt, ce fichier n'existe pas. Le script `scripts/sync-agents.sh` règle cela une fois par machine :
