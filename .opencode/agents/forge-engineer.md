@@ -1,7 +1,7 @@
 ---
 description: "Lead engineer : plan d'implémentation concret, ordonné, avec les fichiers à modifier"
 mode: subagent
-model: ollama/qwen3-coder-agent
+model: ollama/qwen3-coder:30b
 temperature: 0.2
 permission:
   edit: allow

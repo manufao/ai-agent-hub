@@ -1,7 +1,7 @@
 ---
 description: "Liaison avec la forge (GitHub ou GitLab) : publie et relit les issues (User Stories, tâches, labels d'état) après validation de l'utilisateur"
 mode: subagent
-model: ollama/qwen3-light
+model: ollama/qwen3:14b
 temperature: 0.1
 permission:
   edit: deny

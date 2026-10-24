@@ -1,7 +1,7 @@
 ---
 description: "Relecteur d'US : vérifie qu'une User Story est complète, testable et sans ambiguïté"
 mode: subagent
-model: ollama/qwen3-general
+model: ollama/qwen3:14b
 temperature: 0.1
 permission:
   edit: deny

@@ -1,7 +1,7 @@
 ---
 description: "Code reviewer : revue structurée de code ou de PR (bugs, sécurité, performance) ou audit de maintenabilité d'une zone"
 mode: subagent
-model: ollama/qwen3-coder-agent
+model: ollama/qwen3-coder:30b
 temperature: 0.1
 permission:
   edit: deny
