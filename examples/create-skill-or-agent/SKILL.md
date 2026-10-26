@@ -82,6 +82,7 @@ Ce dépôt suit deux conventions distinctes, volontairement séparées :
 - [ ] `name` et `description` renseignés (skill), ou Rôle / Périmètre / Hors périmètre / Processus / Contrat de sortie remplis (agent)
 - [ ] `description` dit clairement QUAND l'utiliser, cas principal en premier
 - [ ] Contenu volumineux déplacé dans un fichier annexe plutôt que d'alourdir le fichier principal
+- [ ] `SKILL.md` de 100 lignes au plus, agent `.agents/<nom>.md` de 50 lignes au plus (vérifié par `src/content/content-size.spec.ts`)
 - [ ] Wrapper créé pour chaque outil visé (agent), ou lien symbolique créé pour Claude Code (skill)
 - [ ] Aucune collision : pas de skill, d'agent ou de wrapper existant du même nom ; confirmer avec l'utilisateur avant d'écraser ou de renommer quoi que ce soit
 - [ ] Le `name` du wrapper est identique au nom de son fichier

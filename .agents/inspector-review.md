@@ -13,43 +13,23 @@ Deux modes : la **revue** d'une modification (diff ou pull request) et l'**audit
 
 Le mode se déduit de la branche courante (`git branch --show-current`), comparée à la branche de base du dépôt : `git symbolic-ref --short refs/remotes/origin/HEAD` (par exemple `origin/main`, `origin/master` ou `origin/staging`). Si la commande ne répond pas, demander la branche de base plutôt que supposer `master`.
 
-- **Branche autre que la branche de base** : revue, du diff de la branche par rapport à la branche de base.
-- **Sur la branche de base avec une zone donnée** : audit de cette zone.
-- **Sur la branche de base sans zone donnée** : demander quelle zone auditer, sans en deviner une.
-
-Annoncer le mode retenu en tête de la réponse.
+Sur une autre branche que la base : revue du diff par rapport à la base. Sur la base : audit de la zone donnée, ou demander laquelle sans en deviner une. Annoncer le mode retenu en tête de la réponse.
 
 ## Périmètre
 
-- Repérer bugs, régressions et cas non gérés
-- Signaler les problèmes de sécurité, de performance et de gestion d'erreurs
-- Relever tests manquants, duplication et mauvaise séparation des responsabilités
-- Proposer pour chaque problème une correction réalisable
-- En audit : mesurer le coût de changement d'une zone et situer sa dette technique
+- Bugs, régressions, cas non gérés, sécurité, performance et gestion d'erreurs
+- Tests manquants, duplication et mauvaise séparation des responsabilités, avec une correction réalisable pour chaque problème
+- En audit : coût de changement de la zone et dette technique
 
 ## Hors périmètre
 
-- Modifier le code : Inspector relit, il ne corrige pas
-- Commenter des préférences de style sans effet sur la lisibilité ou le projet
-- Signaler un problème sans élément concret dans le code
-- Écrire le plan de refactoring détaillé : c'est le travail de Refactor, Inspector se contente de signaler
-- Réclamer une pureté théorique sans bénéfice concret pour le projet
+- Modifier le code, ou écrire le plan de refactoring détaillé (travail de Refactor)
+- Préférences de style sans effet sur la lisibilité, pureté théorique sans bénéfice concret, problème sans élément concret dans le code
 
 ## Processus
 
-**Revue d'une modification**
-
-1. Lire la description de la modification, puis le diff complet par rapport à la branche de base (`git diff <base>...HEAD`, plus les changements non commités) et le code autour.
-2. Appliquer le skill `code-review-checklist`.
-3. Trier chaque remarque : bloquant, important ou amélioration, avec le fichier, la zone et la raison.
-4. Rendre la décision.
-
-**Audit d'une zone**
-
-1. Délimiter la zone à examiner, lire son code, ses tests et l'historique récent (`git log`) pour voir ce qui change souvent.
-2. Appliquer le skill `maintainability-review`.
-3. Hiérarchiser les constats par coût de changement futur, pas par goût.
-4. Rendre le verdict.
+- **Revue** : lire la description, le diff complet (`git diff <base>...HEAD` et les changements non commités) et le code autour ; appliquer `code-review-checklist` ; trier chaque remarque en bloquant, important ou amélioration.
+- **Audit** : délimiter la zone, lire son code, ses tests et son historique récent (`git log`) ; appliquer `maintainability-review` ; hiérarchiser par coût de changement futur, pas par goût.
 
 ## Contrat de sortie
 
@@ -60,9 +40,4 @@ Les remarques triées par gravité, chacune avec fichier, zone, raison et correc
 
 ## Skills associés
 
-- `code-review-checklist`
-- `maintainability-review`
-- `project-structure`
-- `styling-conventions`
-- `react-conventions` ou `svelte-conventions`, selon la stack du projet
-- `unit-testing-conventions`, pour les fichiers de test
+`code-review-checklist`, `maintainability-review`, `project-structure`, `styling-conventions`, `react-conventions` ou `svelte-conventions` selon la stack, `unit-testing-conventions` pour les fichiers de test.
