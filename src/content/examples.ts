@@ -1,6 +1,11 @@
 import { readdirSync, existsSync } from 'fs'
-import { join } from 'path'
-import { examplesDir, isSafeSegment } from './paths.js'
+import {
+  exampleFilePath,
+  exampleReferenceFilePath,
+  exampleReferencesDirPath,
+  examplesDir,
+  isSafeSegment,
+} from './paths.js'
 import { parseFrontmatter } from './frontmatter.js'
 import { extractTitle } from './markdown.js'
 import { readContentFile, skipUnreadable } from './read-file.js'
@@ -25,8 +30,8 @@ export interface Example extends ExampleSummary {
   references: ReferenceSummary[]
 }
 
-function listReferences(exampleDir: string): ReferenceSummary[] {
-  const referencesDir = join(exampleDir, 'references')
+function listReferences(exampleSlug: string): ReferenceSummary[] {
+  const referencesDir = exampleReferencesDirPath(exampleSlug)
   if (!existsSync(referencesDir)) {
     return []
   }
@@ -35,7 +40,7 @@ function listReferences(exampleDir: string): ReferenceSummary[] {
     .filter(entry => entry.isFile() && entry.name.endsWith('.md'))
     .map(entry => {
       const slug = entry.name.replace(/\.md$/, '')
-      const filePath = join(referencesDir, entry.name)
+      const filePath = exampleReferenceFilePath(exampleSlug, slug)
       return skipUnreadable(filePath, (): ReferenceSummary => ({
         slug,
         title: extractTitle(readContentFile(filePath), slug),
@@ -50,7 +55,7 @@ export function listExamples(): ExampleSummary[] {
   return readdirSync(examplesDir, { withFileTypes: true })
     .filter(entry => entry.isDirectory())
     .map(entry => {
-      const skillPath = join(examplesDir, entry.name, 'SKILL.md')
+      const skillPath = exampleFilePath(entry.name)
       if (!existsSync(skillPath)) {
         return undefined
       }
@@ -70,8 +75,7 @@ export function getExample(slug: string): Example | undefined {
     return undefined
   }
 
-  const exampleDir = join(examplesDir, slug)
-  const skillPath = join(exampleDir, 'SKILL.md')
+  const skillPath = exampleFilePath(slug)
   if (!existsSync(skillPath)) {
     return undefined
   }
@@ -82,7 +86,7 @@ export function getExample(slug: string): Example | undefined {
     name: data.name ?? slug,
     description: data.description ?? '',
     content,
-    references: listReferences(exampleDir),
+    references: listReferences(slug),
   }
 }
 
@@ -92,7 +96,7 @@ export function getReference(exampleSlug: string, referenceSlug: string): Refere
     return undefined
   }
 
-  const referencePath = join(examplesDir, exampleSlug, 'references', `${referenceSlug}.md`)
+  const referencePath = exampleReferenceFilePath(exampleSlug, referenceSlug)
   if (!existsSync(referencePath)) {
     return undefined
   }

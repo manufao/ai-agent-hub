@@ -1,7 +1,6 @@
-import { join } from 'path'
 import { describe, expect, it } from 'vitest'
 import { listAgents } from './agents.js'
-import { agentsDir, skillsDir } from './paths.js'
+import { agentFilePath, skillFilePath } from './paths.js'
 import { readContentFile } from './read-file.js'
 import { listCategories } from './skills.js'
 
@@ -10,9 +9,9 @@ describe('content size', () => {
   const MAX_AGENT_LINES = 50
 
   const skillPaths = listCategories().flatMap(category =>
-    category.skills.map(skill => join(skillsDir, category.slug, skill.slug, 'SKILL.md')),
+    category.skills.map(skill => skillFilePath(category.slug, skill.slug)),
   )
-  const agentPaths = listAgents().map(agent => join(agentsDir, `${agent.slug}.md`))
+  const agentPaths = listAgents().map(agent => agentFilePath(agent.slug))
 
   it.each(skillPaths)(`should keep %s at most ${MAX_SKILL_LINES} lines long`, path => {
     // When
