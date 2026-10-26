@@ -15,7 +15,7 @@ Comment écrire un test. Quoi tester et à quel niveau relève de `test-plan`.
 
 **Structure.** Deux niveaux de `describe` au plus : un pour l'unité (`describe('Carousel')`), un par méthode ou fonction testée (`describe('next')`). Jamais de troisième niveau : les sous-cas d'une méthode sont des `it()` à plat, au nom descriptif. Un `describe` nomme une vraie méthode ou fonction testée, jamais une constante ou une table de données : les tests d'une constante sont des `it()` directement sous le `describe` de l'unité, avec le nom de la constante dans le titre. Données partagées en haut du `describe` de l'unité. Un `beforeEach` local à un `describe` de méthode est permis quand plusieurs tests de cette méthode partagent la même mise en place.
 
-**Nom des tests.** En anglais, au format `should <action> <condition>` : `'should return an error when the token is expired'`. Un `it()` vérifie un seul comportement.
+**Nom des tests.** En anglais, au format `should <action> <condition>` : `'should return an error when the token is expired'`. Un `it()` couvre un seul chemin d'exécution (le cas nominal, une branche d'un `if`, un `case`, un retour anticipé, un `throw`) et vérifie tout ce que ce chemin produit. Le titre nomme le chemin, pas une assertion isolée.
 
 **Corps des tests.** Chaque test porte les commentaires `// Given`, `// When`, `// Then`, dans cet ordre. `// Given` s'omet quand les défauts du `beforeEach` suffisent. `// When` contient un seul appel à l'unité testée. `// When / Then` remplace les deux quand l'appel et l'assertion forment une seule expression (`await expect(…).rejects.toThrow(…)`).
 
@@ -51,6 +51,7 @@ it('should show the next figurine when next is clicked', async () => {
 - Un appel attendu exactement une fois : `toHaveBeenCalledExactlyOnceWith(…)`. Plusieurs appels : `toHaveBeenCalledTimes(n)` avec `toHaveBeenCalledWith(…)`. Aucun appel : `toHaveBeenCalledTimes(0)`.
 - Une valeur transmise telle quelle : un `Symbol('xxxMock')` prouve qu'elle passe sans transformation, sans fabriquer de donnée.
 - Un ordre d'appel : comparer `<nom>Mock.mock.invocationCallOrder[0]` des deux mocks (la propriété est sur `.mock`, pas sur la fonction mockée elle-même).
+- Un test par chemin, pas un test par assertion. Quand plusieurs tests auraient le même `// Given` et le même `// When`, les fusionner en un seul. Dans ce test, vérifier les appels du chemin suivi **et** l'absence des appels propres aux autres branches (`toHaveBeenCalledTimes(0)`), ainsi que la valeur renvoyée. Seul un appel préalable commun à toutes les branches (lecture de session, récupération d'une donnée) peut avoir son propre test.
 - Une méthode privée se teste par la notation crochet (`instance['privateMethod'](…)`), jamais en la rendant publique ou exportée pour le test.
 
 **Couverture.** 100 % sur les quatre métriques (instructions, branches, fonctions, lignes) du fichier testé. Ne jamais déclarer un chemin impossible à tester pour s'arrêter avant, ne jamais baisser le seuil ni sauter un test : lire les lignes non couvertes et ajouter le test qui manque. Une branche vraiment inatteignable révèle du code mort, à signaler plutôt qu'à exclure.
@@ -76,7 +77,7 @@ it('should show the next figurine when next is clicked', async () => {
 
 1. Lire l'unité à tester, les tests voisins pour en reprendre les motifs, et les fabriques de mocks du projet.
 2. Cartographier les chemins de chaque méthode (voir plus haut).
-3. Écrire un `it()` par chemin et par comportement, en suivant les règles ci-dessus.
+3. Écrire un `it()` par chemin cartographié à l'étape 2, en suivant les règles ci-dessus.
 4. Lancer dans l'ordre : formatage, lint, le fichier seul, sa couverture, puis toute la suite. Recommencer jusqu'à 100 % sur les quatre métriques.
 
 ## Format de sortie

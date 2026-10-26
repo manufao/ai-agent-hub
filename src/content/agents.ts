@@ -1,6 +1,5 @@
 import { readdirSync, statSync } from 'fs'
-import { join } from 'path'
-import { agentsDir, isSafeSegment } from './paths.js'
+import { agentFilePath, agentsDir, isSafeSegment } from './paths.js'
 import { parseFrontmatter } from './frontmatter.js'
 import { extractSummary, extractTitle } from './markdown.js'
 import { readContentFile, skipUnreadable } from './read-file.js'
@@ -61,9 +60,10 @@ export function listAgents(): AgentSummary[] {
   return readdirSync(agentsDir, { withFileTypes: true })
     .filter(entry => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'README.md')
     .map(entry => {
-      const filePath = join(agentsDir, entry.name)
+      const slug = entry.name.replace(/\.md$/, '')
+      const filePath = agentFilePath(slug)
       return skipUnreadable(filePath, (): AgentSummary => {
-        const agent = readAgent(entry.name.replace(/\.md$/, ''), readContentFile(filePath))
+        const agent = readAgent(slug, readContentFile(filePath))
         return {
           slug: agent.slug,
           title: agent.title,
@@ -84,7 +84,7 @@ export function getAgent(slug: string): Agent | undefined {
     return undefined
   }
 
-  const filePath = join(agentsDir, `${slug}.md`)
+  const filePath = agentFilePath(slug)
   if (!statSync(filePath, { throwIfNoEntry: false })?.isFile()) {
     return undefined
   }

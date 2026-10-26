@@ -34,10 +34,7 @@ Si le dernier mot ne ressemble pas à un chemin, tout le texte est l'objectif. U
 
 ## Instructions
 
-1. **Choisir le dossier.**
-   - Si un chemin est fourni, l'utiliser tel quel (`~` désigne le dossier personnel).
-   - Sinon, utiliser le dossier `context` du dossier de configuration global de Claude : `~/.claude/context`.
-   - Créer le dossier s'il n'existe pas.
+1. **Choisir le dossier.** Le chemin fourni tel quel (`~` désigne le dossier personnel), sinon `~/.claude/context`. Le créer s'il n'existe pas.
 2. **Choisir le nom du fichier.**
    - 4 ou 5 mots en minuscules, sans accent, séparés par des tirets, qui résument le travail de la session, suivis de `.md`. Exemple : `renforcer-definition-of-done-gatekeeper.md`.
    - Décrire le travail réalisé ou en cours, jamais un mot générique (`handoff`, `session`, `notes`).
