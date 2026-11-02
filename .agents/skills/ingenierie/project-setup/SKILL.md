@@ -50,6 +50,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 - SvelteKit 3 : la configuration passe dans `sveltekit({ … })` de `vite.config.ts` (`svelte.config.js` n'est plus lu) et `tsconfig.json` étend `$app/tsconfig`. Les alias `$lib` et `kit.alias` cèdent la place aux imports de sous-chemin (`"imports": { "#lib/*": "./src/lib/*" }` dans `package.json`, importés avec leur extension : `#lib/utils/index.js`), que TypeScript et dependency-cruiser résolvent sans configuration. Exclure seulement `$app/*` (modules virtuels) de `not-to-unresolvable` : `$env/*` est obsolète au profit de `$app/env`. Migration : `npx sv migrate sveltekit-3`.
 - Pas de `not-to-dev-dep` dans une application bundlée (Vite, SvelteKit) : le framework y est en devDependencies par convention et le bundler l'embarque.
 - Les badges de workflow GitHub (`…/actions/workflows/<fichier>.yml/badge.svg`) renvoient une 404, donc une image cassée, tant que le dépôt n'est pas publié ou que le workflow n'a jamais tourné sur la branche par défaut : le signaler plutôt que de chercher une erreur dans l'URL.
+- `astral-sh/setup-uv` (outils Python gérés par uv) ne publie pas d'étiquette majeure : `@v10` est introuvable en CI, il faut la version complète (`@v10.3.3`, voir `gh api repos/astral-sh/setup-uv/releases/latest --jq .tag_name`).
 - pnpm bloque les scripts d'installation inconnus : les autoriser ou les refuser explicitement avec `allowBuilds` dans `pnpm-workspace.yaml`, après avoir vérifié leur utilité.
 
 ## Format de sortie
