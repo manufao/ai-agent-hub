@@ -1,6 +1,6 @@
 ---
 name: project-setup
-description: "À utiliser au démarrage d'un nouveau projet front ou Node (React, Svelte, NestJS…), ou pour remettre un projet existant aux standards : dépôt Git, pnpm, structure, ESLint, Prettier, hooks Git, CI GitHub (qualité et sécurité)."
+description: "À utiliser au démarrage d'un nouveau projet front ou Node (React, Svelte, NestJS…), ou pour remettre un projet existant aux standards : dépôt Git, pnpm, structure, ESLint, Prettier, hooks Git, CI GitHub (qualité et sécurité), README."
 ---
 
 # Démarrage de projet
@@ -26,7 +26,14 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 8. **Hooks Git.** Copier `references/git-hooks/` dans `.husky/` : `pre-commit` (Gitleaks sur les fichiers indexés, puis lint-staged), `commit-msg` (commitlint), `pre-push` (refus d'un push direct vers `main` ou `master`, puis types, lint, `lint:deps` et les tests s'il y en a). Ce hook est la seule protection quand le dépôt n'a pas de ruleset.
 9. **CI GitHub.** Copier `references/github/ci.yml` et `references/github/security-scan.yml` dans `.github/workflows/`. Adapter la commande qui démarre l'application pour le scan ZAP. Sans tests, retirer l'étape `test:ci` et le signaler au lieu de la laisser échouer.
 10. **Protéger la branche par défaut.** Si le dépôt est public ou l'offre GitHub le permet (Pro, Team) : `gh api -X POST repos/<owner>/<repo>/rulesets --input references/github/ruleset.json`. Il interdit le push forcé et la suppression, et exige une PR fusionnée en squash avec la CI verte. Adapter les noms des jobs requis. Sinon, le signaler : seul le hook protège la branche.
-11. **Vérifier** en local : `pnpm format:check`, `pnpm lint`, `pnpm lint:deps`, `pnpm test:types`, `pnpm test:ci`, `pnpm build`, `pnpm audit`, puis tester qu'un message de commit invalide et un secret indexé sont bien bloqués. Puis pousser une branche et vérifier que les deux workflows passent sur la pull request.
+11. **README.** Le README racine, et celui de chaque sous-projet (outil, paquet), contient ces parties, dans cet ordre :
+    1. **Bannière** : image large en tête (`docs/images/banner.webp`), avec un `alt` qui la décrit.
+    2. **Logo** : une image centrée sous la bannière ; la mascotte ou une image du projet suffit.
+    3. **Titre** et accroche d'une ou deux lignes.
+    4. **Badges** : statut des workflows CI et sécurité, couverture, langage, outils (build, lint, format, tests, types), conventions de commit, licence.
+    5. **Skill Icons** : `https://skillicons.dev/icons?i=<ids>` avec les technologies du projet. Vérifier chaque identifiant : un identifiant inconnu renvoie une image vide de 256 octets (`curl -s "https://skillicons.dev/icons?i=<id>" | wc -c`).
+    6. **Documentation soignée** : ce que fait le projet, prérequis, démarrage, tableau des commandes, structure, tests, déploiement, qualité et sécurité, licence. Chaque affirmation vérifiée dans le code (`technical-documentation`).
+12. **Vérifier** en local : `pnpm format:check`, `pnpm lint`, `pnpm lint:deps`, `pnpm test:types`, `pnpm test:ci`, `pnpm build`, `pnpm audit`, puis tester qu'un message de commit invalide et un secret indexé sont bien bloqués. Relire chaque README contre les six parties de l'étape 11. Puis pousser une branche et vérifier que les deux workflows passent sur la pull request.
 
 ## Pièges connus
 
@@ -35,6 +42,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 - `import-x` en flat config demande `import-x/resolver-next`, sinon `no-restricted-paths` ne voit aucun import.
 - SvelteKit 3 : la configuration passe dans `sveltekit({ … })` de `vite.config.ts` (`svelte.config.js` n'est plus lu) et `tsconfig.json` étend `$app/tsconfig`. Les alias `$lib` et `kit.alias` cèdent la place aux imports de sous-chemin (`"imports": { "#lib/*": "./src/lib/*" }` dans `package.json`, importés avec leur extension : `#lib/utils/index.js`), que TypeScript et dependency-cruiser résolvent sans configuration. Exclure seulement `$app/*` (modules virtuels) de `not-to-unresolvable` : `$env/*` est obsolète au profit de `$app/env`. Migration : `npx sv migrate sveltekit-3`.
 - Pas de `not-to-dev-dep` dans une application bundlée (Vite, SvelteKit) : le framework y est en devDependencies par convention et le bundler l'embarque.
+- Les badges de workflow GitHub (`…/actions/workflows/<fichier>.yml/badge.svg`) renvoient une 404, donc une image cassée, tant que le dépôt n'est pas publié ou que le workflow n'a jamais tourné sur la branche par défaut : le signaler plutôt que de chercher une erreur dans l'URL.
 - pnpm bloque les scripts d'installation inconnus : les autoriser ou les refuser explicitement avec `allowBuilds` dans `pnpm-workspace.yaml`, après avoir vérifié leur utilité.
 
 ## Format de sortie
@@ -45,6 +53,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 
 ### Vérifications
 - format:check / lint / test:types / build / audit : [résultat de chaque commande]
+- README : [pour chaque README, bannière / logo / titre / badges / Skill Icons / documentation : présent ou manquant]
 - CI : [lien de la pull request, état des deux workflows]
 
 ### Écarts
