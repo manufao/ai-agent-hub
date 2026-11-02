@@ -33,7 +33,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 - typescript-eslint et dependency-cruiser n'acceptent pas encore TypeScript 7 : rester en TypeScript 6 tant que `npm view @typescript-eslint/parser peerDependencies.typescript` ne l'accepte pas.
 - `eslint-plugin-boundaries` et `eslint-plugin-check-file` tirent `braces`, vulnérable sans correctif : préférer `import-x/no-restricted-paths` et `unicorn/filename-case`.
 - `import-x` en flat config demande `import-x/resolver-next`, sinon `no-restricted-paths` ne voit aucun import.
-- SvelteKit : dependency-cruiser résout mal les alias de `.svelte-kit/tsconfig.json`, relatifs à ce dossier. Les redéclarer dans un `tsconfig.depcruise.json` qui étend `tsconfig.json`, et exclure `$app/*` et `$env/*` (modules virtuels) de `not-to-unresolvable`.
+- SvelteKit 3 : la configuration passe dans `sveltekit({ … })` de `vite.config.ts` (`svelte.config.js` n'est plus lu) et `tsconfig.json` étend `$app/tsconfig`. Les alias `$lib` et `kit.alias` cèdent la place aux imports de sous-chemin (`"imports": { "#lib/*": "./src/lib/*" }` dans `package.json`, importés avec leur extension : `#lib/utils/index.js`), que TypeScript et dependency-cruiser résolvent sans configuration. Exclure seulement `$app/*` (modules virtuels) de `not-to-unresolvable` : `$env/*` est obsolète au profit de `$app/env`. Migration : `npx sv migrate sveltekit-3`.
 - Pas de `not-to-dev-dep` dans une application bundlée (Vite, SvelteKit) : le framework y est en devDependencies par convention et le bundler l'embarque.
 - pnpm bloque les scripts d'installation inconnus : les autoriser ou les refuser explicitement avec `allowBuilds` dans `pnpm-workspace.yaml`, après avoir vérifié leur utilité.
 
