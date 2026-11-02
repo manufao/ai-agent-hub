@@ -27,13 +27,20 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 9. **CI GitHub.** Copier `references/github/ci.yml` et `references/github/security-scan.yml` dans `.github/workflows/`. Adapter la commande qui démarre l'application pour le scan ZAP. Sans tests, retirer l'étape `test:ci` et le signaler au lieu de la laisser échouer.
 10. **Protéger la branche par défaut.** Si le dépôt est public ou l'offre GitHub le permet (Pro, Team) : `gh api -X POST repos/<owner>/<repo>/rulesets --input references/github/ruleset.json`. Il interdit le push forcé et la suppression, et exige une PR fusionnée en squash avec la CI verte. Adapter les noms des jobs requis. Sinon, le signaler : seul le hook protège la branche.
 11. **README.** Le README racine, et celui de chaque sous-projet (outil, paquet), contient ces parties, dans cet ordre :
-    1. **Bannière** : image large en tête (`docs/images/banner.webp`), avec un `alt` qui la décrit.
+    1. **Bannière** : image large en tête, composée à partir des visuels du projet et versionnée dans `docs/images/` (`banner.webp`), avec un `alt` qui la décrit. Si ces visuels ont une licence propre, elle couvre aussi `docs/images/`.
     2. **Logo** : une image centrée sous la bannière ; la mascotte ou une image du projet suffit.
-    3. **Titre** et accroche d'une ou deux lignes.
-    4. **Badges** : statut des workflows CI et sécurité, couverture, langage, outils (build, lint, format, tests, types), conventions de commit, licence.
+    3. **Titre animé**, à la place du titre `#` (pas de doublon) : une [readme-typing-svg](https://github.com/DenverCoder1/readme-typing-svg) dont la première ligne est le nom du projet et les suivantes ce qu'il fait, puis l'accroche d'une ou deux lignes. Une `<picture>` donne la couleur du texte de GitHub pour chaque thème, en police Inter, graisse 600, taille 32, comme un titre `h1` :
+       ```html
+       <picture>
+         <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=32&center=true&vCenter=true&width=640&height=50&lines=<Nom>;<Ce+qu'il+fait>&color=F0F6FC">
+         <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=32&center=true&vCenter=true&width=640&height=50&lines=<Nom>;<Ce+qu'il+fait>&color=1F2328" alt="<Nom>. <Ce qu'il fait>.">
+       </picture>
+       ```
+       Le `alt` reprend toutes les lignes : c'est le titre pour les lecteurs d'écran.
+    4. **Badges** : statut des workflows CI et sécurité, couverture, langage, outils (build, lint, format, tests, types), conventions de commit, licence. Un badge ne décrit que ce qui est en place : pas de badge Dependabot sans `.github/dependabot.yml`.
     5. **Skill Icons** : `https://skillicons.dev/icons?i=<ids>` avec les technologies du projet. Vérifier chaque identifiant : un identifiant inconnu renvoie une image vide de 256 octets (`curl -s "https://skillicons.dev/icons?i=<id>" | wc -c`).
     6. **Documentation soignée** : ce que fait le projet, prérequis, démarrage, tableau des commandes, structure, tests, déploiement, qualité et sécurité, licence. Chaque affirmation vérifiée dans le code (`technical-documentation`).
-12. **Vérifier** en local : `pnpm format:check`, `pnpm lint`, `pnpm lint:deps`, `pnpm test:types`, `pnpm test:ci`, `pnpm build`, `pnpm audit`, puis tester qu'un message de commit invalide et un secret indexé sont bien bloqués. Relire chaque README contre les six parties de l'étape 11. Puis pousser une branche et vérifier que les deux workflows passent sur la pull request.
+12. **Vérifier** en local : `pnpm format:check`, `pnpm lint`, `pnpm lint:deps`, `pnpm test:types`, `pnpm test:ci`, `pnpm build`, `pnpm audit`, puis tester qu'un message de commit invalide et un secret indexé sont bien bloqués. Relire chaque README contre les six parties de l'étape 11. Puis pousser une branche et vérifier que les deux workflows passent sur la pull request. À la publication, proposer à l'utilisateur la description et les topics de l'encart « About » du dépôt.
 
 ## Pièges connus
 
