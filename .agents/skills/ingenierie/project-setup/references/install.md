@@ -52,26 +52,28 @@ Svelte : `"test:types": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.j
 pnpm add -D vitest @vitest/coverage-v8
 ```
 
-`vitest.config.ts` :
+`vitest.config.ts`, sous la clé `test` de `defineConfig` :
 
 ```ts
-coverage: {
-  provider: 'v8',
-  include: ['src/**/*.ts'],
-  exclude: ['src/**/*.{test,spec}.ts', 'src/**/*.d.ts'],
-  thresholds: {
-    perFile: true,
-    statements: 100,
-    branches: 100,
-    functions: 100,
-    lines: 100,
+test: {
+  coverage: {
+    provider: 'v8',
+    include: ['src/**/*.ts'],
+    exclude: ['src/**/*.{test,spec}.ts', 'src/**/*.d.ts'],
+    thresholds: {
+      perFile: true,
+      statements: 100,
+      branches: 100,
+      functions: 100,
+      lines: 100,
+    },
   },
 },
 ```
 
 - `include` est obligatoire : sans lui, Vitest ne mesure que les fichiers importés par un test, et un fichier sans aucun test échappe au seuil.
 - `perFile` applique le seuil à chaque fichier : une bonne moyenne ne cache plus un fichier non testé.
-- Les composants (`.svelte`, `.tsx`) restent hors de la couverture : les tests e2e vérifient les parcours et les captures visuelles la structure des pages. Toute la logique vit donc dans des fichiers `.ts` (stores, utilitaires, services), comme le demande `project-structure`.
+- Les composants (`.svelte`, `.tsx`) restent hors de la couverture : les tests e2e vérifient les parcours et les captures d'écran vérifient la structure des pages. Toute la logique vit donc dans des fichiers `.ts` (stores, utilitaires, services), comme le demande `project-structure`.
 - Exclure en plus le code généré (Paraglide…) et les barrels `index.ts` qui ne font que réexporter.
 
 ## Hooks Git
