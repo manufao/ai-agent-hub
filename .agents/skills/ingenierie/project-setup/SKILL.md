@@ -1,6 +1,6 @@
 ---
 name: project-setup
-description: "À utiliser au démarrage d'un nouveau projet front ou Node (React, Svelte, NestJS…), ou pour remettre un projet existant aux standards : dépôt Git, pnpm, structure, ESLint, Prettier, hooks Git, CI GitHub (qualité et sécurité)."
+description: "À utiliser au démarrage d'un nouveau projet front ou Node (React, Svelte, NestJS…), ou pour remettre un projet existant aux standards : dépôt Git, pnpm, structure, ESLint, Prettier, hooks Git, CI GitHub (qualité et sécurité), README."
 ---
 
 # Démarrage de projet
@@ -14,7 +14,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 
 ## Instructions
 
-**Avant tout, le dépôt Git.** Si le projet n'a pas de `.git`, poser les questions à l'utilisateur, sans rien créer avant sa réponse : initialiser un dépôt (`git init -b main`), même sans publication prévue, puisque les hooks en dépendent ? Le publier sur GitHub ? Si oui, sous quel nom, en privé ou en public ? Public, le ruleset est gratuit (étape 10). Privé sans offre Pro, seul le hook protège la branche. Après le premier commit : `gh repo create <nom> --private|--public --source . --remote origin --push`.
+**Avant tout, le dépôt Git.** Si le projet n'a pas de `.git`, poser les questions à l'utilisateur, sans rien créer avant sa réponse : initialiser un dépôt (`git init -b main`), même sans publication prévue, puisque les hooks en dépendent ? Le publier sur GitHub ? Si oui, sous quel nom, en privé ou en public ? Public, le ruleset est gratuit (étape 10). Privé sans offre Pro, seul le hook protège la branche. Après le premier commit : `HUSKY=0 gh repo create <nom> --private|--public --source . --remote origin --push`. `HUSKY=0` est indispensable si les hooks sont déjà posés : le `pre-push` refuse tout push vers `main`, y compris le tout premier. Ensuite, tout passe par une branche et une pull request.
 
 1. **Gestionnaire et dépendances.** pnpm uniquement, jamais npm ni yarn : l'installer s'il manque, migrer un projet npm, puis verrouiller son usage (`references/install.md`, section pnpm). Dernières versions majeures, puis `pnpm audit` et `pnpm outdated` à zéro. Une dépendance bloquée sur une version plus ancienne est justifiée dans le README, avec le ticket à suivre.
 2. **Structure.** Appliquer `project-structure`, `styling-conventions` et `react-conventions` ou `svelte-conventions`.
@@ -22,19 +22,35 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 4. **Prettier.** Copier `references/lint/prettierrc.json` vers `.prettierrc` et `references/lint/prettierignore` vers `.prettierignore`. Ajouter le plugin du framework si besoin (`prettier-plugin-svelte`).
 5. **ESLint.** Partir de `references/lint/eslint.config.example.js`. Socle commun : recommandés JS et TypeScript, tri des imports, `curly`, variables inutilisées préfixées `_`, règles de sécurité et détection de secrets. Règles de structure : sens des dépendances, nommage des fichiers, 150 lignes maximum, pas de style inline, classes Tailwind valides et non construites dynamiquement. Garder le bloc du framework concerné.
 6. **dependency-cruiser.** Copier `references/lint/dependency-cruiser.example.cjs` vers `.dependency-cruiser.cjs` : cycles, fichiers orphelins, imports introuvables, paquets non déclarés. Adapter la règle de couches (`no-logic-to-views`) aux dossiers du projet et en ajouter une par frontière réelle (serveur, code partagé). Exclure les points d'entrée de `no-orphans` (routes, hooks du framework) et le code généré. Il remplace `import-x/no-cycle`, lent. À poser dès le départ, même sur un petit projet : il coûte quelques secondes et évite la dette.
-7. **Scripts.** Garder les noms exacts de `references/install.md` : la CI les appelle.
+7. **Scripts et couverture.** Garder les noms exacts de `references/install.md` : la CI les appelle. Fixer les seuils de couverture à 100 % sur les quatre métriques, pour chaque fichier `.ts` (`references/install.md`, section Tests) : `test:ci` échoue en dessous, et la CI avec lui.
 8. **Hooks Git.** Copier `references/git-hooks/` dans `.husky/` : `pre-commit` (Gitleaks sur les fichiers indexés, puis lint-staged), `commit-msg` (commitlint), `pre-push` (refus d'un push direct vers `main` ou `master`, puis types, lint, `lint:deps` et les tests s'il y en a). Ce hook est la seule protection quand le dépôt n'a pas de ruleset.
 9. **CI GitHub.** Copier `references/github/ci.yml` et `references/github/security-scan.yml` dans `.github/workflows/`. Adapter la commande qui démarre l'application pour le scan ZAP. Sans tests, retirer l'étape `test:ci` et le signaler au lieu de la laisser échouer.
 10. **Protéger la branche par défaut.** Si le dépôt est public ou l'offre GitHub le permet (Pro, Team) : `gh api -X POST repos/<owner>/<repo>/rulesets --input references/github/ruleset.json`. Il interdit le push forcé et la suppression, et exige une PR fusionnée en squash avec la CI verte. Adapter les noms des jobs requis. Sinon, le signaler : seul le hook protège la branche.
-11. **Vérifier** en local : `pnpm format:check`, `pnpm lint`, `pnpm lint:deps`, `pnpm test:types`, `pnpm build`, `pnpm audit`, puis tester qu'un message de commit invalide et un secret indexé sont bien bloqués. Puis pousser une branche et vérifier que les deux workflows passent sur la pull request.
+11. **README.** Le README racine, et celui de chaque sous-projet (outil, paquet), contient ces parties, dans cet ordre :
+    1. **Bannière** : image large en tête, composée à partir des visuels du projet et versionnée dans `docs/images/` (`banner.webp`), avec un `alt` qui la décrit. Si ces visuels ont une licence propre, elle couvre aussi `docs/images/`.
+    2. **Logo** : une image centrée sous la bannière ; la mascotte ou une image du projet suffit.
+    3. **Titre animé**, à la place du titre `#` (pas de doublon) : une [readme-typing-svg](https://github.com/DenverCoder1/readme-typing-svg) dont la première ligne est le nom du projet et les suivantes ce qu'il fait, puis l'accroche d'une ou deux lignes. Une `<picture>` donne la couleur du texte de GitHub pour chaque thème, en police Inter, graisse 600, taille 32, comme un titre `h1` :
+       ```html
+       <picture>
+         <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=32&center=true&vCenter=true&width=640&height=50&lines=<Nom>;<Ce+qu'il+fait>&color=F0F6FC">
+         <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=32&center=true&vCenter=true&width=640&height=50&lines=<Nom>;<Ce+qu'il+fait>&color=1F2328" alt="<Nom>. <Ce qu'il fait>.">
+       </picture>
+       ```
+       Le `alt` reprend toutes les lignes : c'est le titre pour les lecteurs d'écran.
+    4. **Badges** : statut des workflows CI et sécurité, couverture, langage, outils (build, lint, format, tests, types), conventions de commit, licence. Un badge ne décrit que ce qui est en place : pas de badge Dependabot sans `.github/dependabot.yml`.
+    5. **Skill Icons** : `https://skillicons.dev/icons?i=<ids>` avec les technologies du projet. Vérifier chaque identifiant : un identifiant inconnu renvoie une image vide de 256 octets (`curl -s "https://skillicons.dev/icons?i=<id>" | wc -c`).
+    6. **Documentation soignée** : ce que fait le projet, prérequis, démarrage, tableau des commandes, structure, tests, déploiement, qualité et sécurité, licence. Chaque affirmation vérifiée dans le code (`technical-documentation`).
+12. **Vérifier** en local : `pnpm format:check`, `pnpm lint`, `pnpm lint:deps`, `pnpm test:types`, `pnpm test:ci` (sauf si l'étape 9 l'a retiré faute de tests), `pnpm build`, `pnpm audit`, puis tester qu'un message de commit invalide et un secret indexé sont bien bloqués. Relire chaque README contre les six parties de l'étape 11. Puis pousser une branche et vérifier que les deux workflows passent sur la pull request. À la publication, proposer à l'utilisateur la description et les topics de l'encart « About » du dépôt.
 
 ## Pièges connus
 
 - typescript-eslint et dependency-cruiser n'acceptent pas encore TypeScript 7 : rester en TypeScript 6 tant que `npm view @typescript-eslint/parser peerDependencies.typescript` ne l'accepte pas.
 - `eslint-plugin-boundaries` et `eslint-plugin-check-file` tirent `braces`, vulnérable sans correctif : préférer `import-x/no-restricted-paths` et `unicorn/filename-case`.
 - `import-x` en flat config demande `import-x/resolver-next`, sinon `no-restricted-paths` ne voit aucun import.
-- SvelteKit : dependency-cruiser résout mal les alias de `.svelte-kit/tsconfig.json`, relatifs à ce dossier. Les redéclarer dans un `tsconfig.depcruise.json` qui étend `tsconfig.json`, et exclure `$app/*` et `$env/*` (modules virtuels) de `not-to-unresolvable`.
+- SvelteKit 3 : la configuration passe dans `sveltekit({ … })` de `vite.config.ts` (`svelte.config.js` n'est plus lu) et `tsconfig.json` étend `$app/tsconfig`. Les alias `$lib` et `kit.alias` cèdent la place aux imports de sous-chemin (`"imports": { "#lib/*": "./src/lib/*" }` dans `package.json`, importés avec leur extension : `#lib/utils/index.js`), que TypeScript et dependency-cruiser résolvent sans configuration. Exclure seulement `$app/*` (modules virtuels) de `not-to-unresolvable` : `$env/*` est obsolète au profit de `$app/env`. Migration : `npx sv migrate sveltekit-3`.
 - Pas de `not-to-dev-dep` dans une application bundlée (Vite, SvelteKit) : le framework y est en devDependencies par convention et le bundler l'embarque.
+- Les badges de workflow GitHub (`…/actions/workflows/<fichier>.yml/badge.svg`) renvoient une 404, donc une image cassée, tant que le dépôt n'est pas publié ou que le workflow n'a jamais tourné sur la branche par défaut : le signaler plutôt que de chercher une erreur dans l'URL.
+- `astral-sh/setup-uv` (outils Python gérés par uv) ne publie pas d'étiquette majeure : `@v10` est introuvable en CI, il faut la version complète (`@v10.3.3`, voir `gh api repos/astral-sh/setup-uv/releases/latest --jq .tag_name`).
 - pnpm bloque les scripts d'installation inconnus : les autoriser ou les refuser explicitement avec `allowBuilds` dans `pnpm-workspace.yaml`, après avoir vérifié leur utilité.
 
 ## Format de sortie
@@ -45,6 +61,7 @@ Un projet démarre avec ses garde-fous en place, pas après le premier incident.
 
 ### Vérifications
 - format:check / lint / test:types / build / audit : [résultat de chaque commande]
+- README : [pour chaque README, bannière / logo / titre / badges / Skill Icons / documentation : présent ou manquant]
 - CI : [lien de la pull request, état des deux workflows]
 
 ### Écarts
