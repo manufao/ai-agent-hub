@@ -112,7 +112,7 @@ The two content events are logged once per file until the server restarts. Out o
 
 ### Using the agents in other repositories
 
-The wrappers point to `.agents/<name>.md`, a path that only exists here. Run the sync script once per machine (and again after changing an agent) to install them for a tool:
+The wrappers point to `.agents/<name>.md`, a path that only exists here. Run the sync script once per machine, and again after changing an agent or a persona (including after a `git pull`), to install them for a tool:
 
 ```bash
 scripts/sync-agents.sh <claude-code|opencode|codex|antigravity>  # user-level install
@@ -120,7 +120,7 @@ scripts/sync-agents.sh cursor <project-dir>                      # Cursor has no
 scripts/sync-agents.sh --dry-run <tool>                          # preview, writes nothing
 ```
 
-It copies each wrapper with an absolute path to this clone and symlinks the skills. See `examples/create-skill-or-agent/references/how-use-agent-in-opencode.md` for how to choose a model per agent with opencode.
+Each installed agent is the wrapper's header (name, description, tools, model, effort…) followed by the content of its persona, without the persona's frontmatter: the agent starts with its persona and has no file to read. The model of each agent is therefore set in the wrapper's header. Remaining `.agents/` paths are rewritten as absolute paths to this clone, and the skills are symlinked. The script stops if a wrapper references no persona or if the persona is missing. See `examples/create-skill-or-agent/references/how-use-agent-in-opencode.md` for how to choose a model per agent with opencode.
 
 ## Technology Stack
 
