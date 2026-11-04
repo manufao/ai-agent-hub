@@ -164,8 +164,13 @@ inline_persona() {
         or die "developer_instructions introuvable dans $file\n";
       print $wrapper;
     } else {
-      $wrapper =~ m{\A(---\n.*?\n---\n)}s or die "Front-matter introuvable dans $file\n";
-      print "$1\n$persona";
+      $wrapper =~ m{\A(---\n.*?\n---\n)(.*)\z}s or die "Front-matter introuvable dans $file\n";
+      my ($front, $body) = ($1, $2);
+      my @extra = grep {
+        !/\A# / && !/persona (définie dans|ci-dessus)/ && !/\A@\S*\.agents\/[A-Za-z0-9_-]+\.md\z/
+      } grep { /\S/ } map { s/\A\s+|\s+\z//gr } split /\n\s*\n/, $body;
+      print "$front\n$persona";
+      print "\n", join("\n\n", @extra), "\n" if @extra;
     }
   ' "$1"
 }
