@@ -3,10 +3,13 @@
 # Installe les agents et les skills de ce dépôt pour un outil, afin de les
 # utiliser depuis n'importe quel autre dépôt de la machine.
 #
-# Les wrappers du dépôt disent « lis .agents/<nom>.md », un chemin relatif qui
-# n'existe pas ailleurs. Le script copie donc chaque wrapper en remplaçant ce
-# chemin par le chemin absolu de ce dépôt, et relie les skills par des liens
-# symboliques. À relancer après chaque modification d'un agent, ou si ce dépôt
+# Les wrappers du dépôt disent « lis .agents/<nom>.md », une indirection qu'un
+# agent peut sauter ou mal suivre. Le script installe donc chaque wrapper avec
+# son en-tête (modèle, effort, outils…) suivi du contenu de la persona, sans
+# son front-matter : l'agent démarre avec sa persona, sans fichier à lire. Les
+# chemins .agents/ restants sont réécrits en chemins absolus vers ce dépôt, et
+# les skills sont reliés par des liens symboliques. À relancer après chaque
+# modification d'un agent ou d'une persona (git pull compris), ou si ce dépôt
 # change d'emplacement.
 
 set -euo pipefail
@@ -136,12 +139,49 @@ say() {
   fi
 }
 
-# Remplace le chemin relatif de la persona par un chemin absolu vers ce dépôt
+# Remplace les chemins relatifs .agents/ par des chemins absolus vers ce dépôt
 rewrite_paths() {
-  ROOT="$ROOT" perl -pe 's#(?:\.\./\.\./|(?<=[`\s]))\.agents/#$ENV{ROOT}/.agents/#g' "$1"
+  ROOT="$ROOT" perl -pe 's#(?:\.\./\.\./|(?<=[`\s]))\.agents/#$ENV{ROOT}/.agents/#g' "$@"
 }
 
-# --- Agents : on remplace le chemin relatif de la persona par un chemin absolu
+# Remplace le corps du wrapper par la persona qu'il référence, sans son
+# front-matter. Pour codex, la persona devient la valeur de developer_instructions.
+inline_persona() {
+  ROOT="$ROOT" EXT="$EXT" perl -e '
+    my $file = $ARGV[0];
+    open my $wh, "<", $file or die "$file : $!\n";
+    my $wrapper = do { local $/; <$wh> };
+    $wrapper =~ m{\.agents/([A-Za-z0-9_-]+)\.md} or die "Aucune persona référencée dans $file\n";
+    my $path = "$ENV{ROOT}/.agents/$1.md";
+    open my $ph, "<", $path or die "Persona introuvable : $path\n";
+    my $persona = do { local $/; <$ph> };
+    $persona =~ s/\A---\n.*?\n---\n//s;
+    $persona =~ s/\A\s+//;
+    $persona =~ s/\s+\z/\n/;
+    if ($ENV{EXT} eq "toml") {
+      die "La persona $path contient des triples apostrophes\n" if $persona =~ /\x27\x27\x27/;
+      $wrapper =~ s/^developer_instructions\s*=\s*""".*?"""/developer_instructions = \x27\x27\x27\n${persona}\x27\x27\x27/ms
+        or die "developer_instructions introuvable dans $file\n";
+      print $wrapper;
+    } else {
+      $wrapper =~ m{\A(---\n.*?\n---\n)(.*)\z}s or die "Front-matter introuvable dans $file\n";
+      my ($front, $body) = ($1, $2);
+      my @extra = grep {
+        !/\A# / && !/persona (définie dans|ci-dessus)/ && !/\A@\S*\.agents\/[A-Za-z0-9_-]+\.md\z/
+      } grep { /\S/ } map { s/\A\s+|\s+\z//gr } split /\n\s*\n/, $body;
+      print "$front\n$persona";
+      print "\n", join("\n\n", @extra), "\n" if @extra;
+    }
+  ' "$1"
+}
+
+install_agent() {
+  local content
+  content="$(inline_persona "$1")"
+  printf '%s\n' "$content" | rewrite_paths >"$2"
+}
+
+# --- Agents : en-tête du wrapper suivi de la persona
 [ "$DRY_RUN" = 1 ] || mkdir -p "$AGENTS_DST"
 agents=0
 if [ "$TOOL" = "antigravity" ]; then
@@ -154,7 +194,7 @@ if [ "$TOOL" = "antigravity" ]; then
     say "agent  $target_dir/agent.md"
     if [ "$DRY_RUN" = 0 ]; then
       mkdir -p "$target_dir"
-      rewrite_paths "$file" >"$target_dir/agent.md"
+      install_agent "$file" "$target_dir/agent.md"
     fi
     agents=$((agents + 1))
   done
@@ -164,7 +204,7 @@ else
     name="$(basename "$file")"
     say "agent  $AGENTS_DST/$name"
     if [ "$DRY_RUN" = 0 ]; then
-      rewrite_paths "$file" >"$AGENTS_DST/$name"
+      install_agent "$file" "$AGENTS_DST/$name"
     fi
     agents=$((agents + 1))
   done

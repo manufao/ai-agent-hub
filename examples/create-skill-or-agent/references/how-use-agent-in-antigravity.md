@@ -46,4 +46,4 @@ scripts/sync-agents.sh antigravity              # installe les agents dans ~/.ge
 scripts/sync-agents.sh --dry-run antigravity    # prévisualiser sans rien modifier
 ```
 
-Le script installe chaque agent dans son dossier utilisateur dédié (`~/.gemini/config/agents/<nom>/agent.md`) en remplaçant les chemins relatifs par les chemins absolus vers ce clone, et référence les skills par des liens symboliques dans `~/.gemini/config/skills/`. Aucun fichier n'est donc écrit ni committé dans vos autres projets.
+Le script installe chaque agent dans son dossier utilisateur dédié (`~/.gemini/config/agents/<nom>/agent.md`) avec l'en-tête de son wrapper suivi du contenu de sa persona, sans le front-matter de celle-ci, de sorte que l'agent n'a aucun fichier à lire. Les chemins `.agents/` restants sont remplacés par les chemins absolus vers ce clone, et le script référence les skills par des liens symboliques dans `~/.gemini/config/skills/`. Aucun fichier n'est donc écrit ni committé dans vos autres projets.

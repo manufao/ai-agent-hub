@@ -81,4 +81,4 @@ scripts/sync-agents.sh cursor ~/mon-projet # Cursor n'a pas d'emplacement global
 scripts/sync-agents.sh --dry-run opencode  # voir ce qui serait fait, sans rien écrire
 ```
 
-Il copie chaque wrapper en remplaçant le chemin relatif par le chemin absolu de ce dépôt, et relie chaque skill par un lien symbolique. Il ne remplace jamais un dossier de skill existant qui n'est pas un lien. À relancer après chaque modification d'un agent ou si ce dépôt change d'emplacement.
+Il installe chaque agent avec l'en-tête de son wrapper (description, modèle, permissions…) suivi du contenu de sa persona, sans le front-matter de celle-ci : l'agent démarre avec sa persona, sans fichier à lire. Pour codex, la persona devient la valeur de `developer_instructions`. Les chemins `.agents/` restants sont remplacés par le chemin absolu de ce dépôt, et chaque skill est relié par un lien symbolique. Il ne remplace jamais un dossier de skill existant qui n'est pas un lien, et s'arrête si un wrapper ne référence aucune persona ou si la persona est introuvable. À relancer après chaque modification d'un agent ou d'une persona (`git pull` compris), ou si ce dépôt change d'emplacement.
