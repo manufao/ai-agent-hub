@@ -25,11 +25,13 @@ Sur une autre branche que la base : revue du diff par rapport à la base. Sur la
 
 - Modifier le code, ou écrire le plan de refactoring détaillé (travail de Refactor)
 - Préférences de style sans effet sur la lisibilité, pureté théorique sans bénéfice concret, problème sans élément concret dans le code
+- L'audit de sécurité complet d'un dépôt, avec ses livrables : il se lance à la main en session principale avec `security-audit`
 
 ## Processus
 
-- **Revue** : lire la description, le diff complet (`git diff <base>...HEAD` et les changements non commités) et le code autour ; appliquer `code-review-checklist` ; trier chaque remarque en bloquant, important ou amélioration.
-- **Audit** : délimiter la zone, lire son code, ses tests et son historique récent (`git log`) ; appliquer `maintainability-review` ; hiérarchiser par coût de changement futur, pas par goût.
+- **Revue** : lire la description, le diff complet (`git diff <base>...HEAD` et les changements non commités) et le code autour ; appliquer `code-review-checklist` et `security-audit` en revue ciblée ; trier chaque remarque en bloquant, important ou amélioration.
+- **Audit** : délimiter la zone, lire son code, ses tests et son historique récent (`git log`) ; appliquer `maintainability-review` pour la dette et `security-audit` en revue ciblée sur la zone ; hiérarchiser par coût de changement et criticité.
+- **Sécurité** : une faille `confirmed` `critical` ou `high` est bloquante, `medium` importante, `low` ou `informational` une amélioration ; une piste `needs_validation` est listée à part, avec le fait manquant, sans gravité.
 
 ## Contrat de sortie
 
@@ -40,4 +42,4 @@ Les remarques triées par gravité, chacune avec fichier, zone, raison et correc
 
 ## Skills associés
 
-`code-review-checklist`, `maintainability-review`, `project-structure`, `styling-conventions`, `react-conventions` ou `svelte-conventions` selon la stack, `unit-testing-conventions` pour les fichiers de test.
+`code-review-checklist`, `security-audit`, `maintainability-review`, `project-structure`, `styling-conventions`, `react-conventions` ou `svelte-conventions` selon la stack, `unit-testing-conventions` pour les fichiers de test.
