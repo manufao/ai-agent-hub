@@ -10,7 +10,7 @@ Une story bien écrite dit qui a besoin de quoi, pourquoi, et où elle s'arrête
 ## Quand l'utiliser
 
 - Une demande client, une idée ou un besoin business doit devenir un ticket développable
-- Une story existante est trop vague pour être relue par Verifier
+- Une story existante est trop vague pour être relue
 
 ## Instructions
 

@@ -36,7 +36,7 @@ Si le dernier mot ne ressemble pas à un chemin, tout le texte est l'objectif. U
 
 1. **Choisir le dossier.** Le chemin fourni tel quel (`~` désigne le dossier personnel), sinon `~/.claude/context`. Le créer s'il n'existe pas.
 2. **Choisir le nom du fichier.**
-   - 4 ou 5 mots en minuscules, sans accent, séparés par des tirets, qui résument le travail de la session, suivis de `.md`. Exemple : `renforcer-definition-of-done-gatekeeper.md`.
+   - 4 ou 5 mots en minuscules, sans accent, séparés par des tirets, qui résument le travail de la session, suivis de `.md`. Exemple : `renforcer-definition-of-done-checklist.md`.
    - Décrire le travail réalisé ou en cours, jamais un mot générique (`handoff`, `session`, `notes`).
    - Si un fichier du même nom existe déjà, ne pas l'écraser : ajouter `-2`, `-3`, etc. avant `.md`.
 3. **Rassembler les faits.** Relire la conversation et, si utile, l'état du dépôt (branche, `git status`, derniers commits) pour renseigner la section « État actuel ».

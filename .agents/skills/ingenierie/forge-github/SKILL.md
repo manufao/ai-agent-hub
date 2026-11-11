@@ -5,14 +5,14 @@ description: "À utiliser quand le remote du dépôt est GitHub, pour lire et é
 
 # Forge GitHub (`gh`)
 
-Les commandes de GitHub pour Styx (issues) et Courier (pull requests). Son pendant pour GitLab est le skill `forge-gitlab`.
+Les commandes de GitHub pour lire et écrire les issues et les pull requests. Son pendant pour GitLab est le skill `forge-gitlab`.
 
 ## Quand l'utiliser
 
 - Le remote `origin` pointe vers github.com (`git remote get-url origin`)
-- Styx ou Courier doit lire ou écrire une issue ou une pull request
+- Une issue ou une pull request doit être lue ou écrite
 
-## Issues (Styx)
+## Issues
 
 - Lire une issue : `gh issue view <n> --json number,title,body,labels,state`
 - Lister les tâches d'une US : `gh api repos/{owner}/{repo}/issues/<n>/sub_issues`
@@ -23,7 +23,7 @@ Les commandes de GitHub pour Styx (issues) et Courier (pull requests). Son penda
 - Labels : `gh label list`, puis `gh label create <nom> --color <hex> --description "<texte>"` pour ceux qui manquent
 - Relier une tâche à sa US comme sous-issue : `gh api repos/{owner}/{repo}/issues/<US>/sub_issues -F sub_issue_id=<id>`, où `<id>` est l'identifiant numérique de la tâche (`gh api repos/{owner}/{repo}/issues/<n> --jq .id`), pas son numéro
 
-## Pull requests (Courier)
+## Pull requests
 
 - Ouvrir : `gh pr create --base <défaut> --title "<titre>" --body "Closes #N"` (`--body ""` s'il n'y a aucune issue à fermer)
 - Lire l'état : `gh pr view <n> --json state,mergeable,mergeStateStatus,baseRefName`

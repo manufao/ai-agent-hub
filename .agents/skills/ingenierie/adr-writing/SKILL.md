@@ -11,7 +11,7 @@ Une Architecture Decision Record garde la trace d'un choix structurant et de ses
 
 - Une décision change la structure du code, un contrat d'API ou le modèle de données
 - Deux options raisonnables existaient et on en a écarté une
-- Blueprint vient de recommander une option
+- Une option d'architecture vient d'être recommandée et doit être consignée
 
 ## Instructions
 
