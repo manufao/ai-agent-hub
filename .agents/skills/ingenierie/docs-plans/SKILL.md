@@ -1,9 +1,9 @@
 ---
 name: docs-plans
-description: "À utiliser pour enregistrer un plan (architecture, implémentation, observabilité ou tests) dans `docs/plans/<date>-<sujet>/` du projet courant : nommage, en-tête, section Décisions. À appliquer à la fin de chaque plan, avant d'en indiquer le chemin."
+description: "À utiliser pour enregistrer un plan (architecture, implémentation, observabilité ou tests) dans `.docs/plans/<date>-<sujet>/` du projet courant : nommage, en-tête, section Décisions. À appliquer à la fin de chaque plan, avant d'en indiquer le chemin."
 ---
 
-# Plans dans `docs/plans`
+# Plans dans `.docs/plans`
 
 Les plans rédigés avant de coder (architecture, implémentation, observabilité, tests) sont enregistrés dans le dépôt, pour que les décisions restent dans git, à côté du code qu'elles ont produit, et ne vivent pas seulement dans une session de chat. Ce skill fixe où et comment, pour que les fichiers soient toujours les mêmes d'un projet à l'autre.
 
@@ -14,7 +14,7 @@ Les plans rédigés avant de coder (architecture, implémentation, observabilit�
 
 ## Instructions
 
-1. **Dossier.** Dans le projet courant (le dossier où tourne la session), créer si besoin `docs/plans/AAAA-MM-JJ-<sujet>/` : la date du jour, puis le sujet en quelques mots en minuscules, sans accent, séparés par des tirets. Si le dossier du sujet existe déjà, y ajouter le fichier au lieu d'en créer un autre.
+1. **Dossier.** À la racine du dépôt courant (`git rev-parse --show-toplevel`, pas le sous-dossier où tourne la session), créer si besoin `.docs/plans/AAAA-MM-JJ-<sujet>/` : la date du jour, puis le sujet en quelques mots en minuscules, sans accent, séparés par des tirets. Si le dossier du sujet existe déjà, y ajouter le fichier au lieu d'en créer un autre.
 2. **Fichier.** Un seul fichier par type de plan et par sujet :
    - `architecture.md` pour les décisions de structure (ADR)
    - `implementation.md` pour le plan d'implémentation ordonné
@@ -32,7 +32,7 @@ Les plans rédigés avant de coder (architecture, implémentation, observabilit�
 ## Format de sortie
 
 ```text
-docs/plans/2026-10-02-observabilite/
+.docs/plans/2026-10-02-observabilite/
 ├── architecture.md
 ├── implementation.md
 ├── observability.md

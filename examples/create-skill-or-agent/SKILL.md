@@ -87,6 +87,8 @@ Ce dépôt suit deux conventions distinctes, volontairement séparées :
 - [ ] Aucune collision : pas de skill, d'agent ou de wrapper existant du même nom ; confirmer avec l'utilisateur avant d'écraser ou de renommer quoi que ce soit
 - [ ] Le `name` du wrapper est identique au nom de son fichier
 - [ ] Chaque chemin relatif cité (persona, `references/`) mène à un fichier existant
+- [ ] Skill : aucun nom d'agent du dépôt, pour qu'il reste réutilisable par n'importe qui et dans n'importe quel outil
+- [ ] Fichiers produits par un skill dans le projet courant : sous `<racine>/.docs/`, la racine étant donnée par `git rev-parse --show-toplevel`
 - [ ] Aucun placeholder (`[...]`) ni commentaire HTML de gabarit laissé dans les fichiers produits, aucune section qui répète une autre
 - [ ] Rien d'inventé : une règle que l'utilisateur n'a pas donnée lui est demandée
 - [ ] `scripts/sync-agents.sh <outil>` relancé pour l'installer hors de ce dépôt ; rappeler qu'un nouveau skill ou agent n'apparaît qu'après redémarrage de la session

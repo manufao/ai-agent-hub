@@ -10,7 +10,7 @@ Un critère d'acceptation décrit un comportement observable, pas une intention.
 ## Quand l'utiliser
 
 - Une User Story vient d'être rédigée et n'a pas encore de critères
-- Verifier a jugé des critères vagues ou non testables
+- Une relecture a jugé des critères vagues ou non testables
 
 ## Instructions
 

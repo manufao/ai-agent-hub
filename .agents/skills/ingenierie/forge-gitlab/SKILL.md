@@ -5,12 +5,12 @@ description: "À utiliser quand le remote du dépôt est GitLab, pour lire et é
 
 # Forge GitLab (`glab`)
 
-Les commandes de GitLab pour Styx (issues) et Courier (merge requests). Son pendant pour GitHub est le skill `forge-github`. Ce qui n'a pas été confirmé dans la documentation est marqué « non vérifié » : le tester sur un projet GitLab de test avant de s'y fier.
+Les commandes de GitLab pour lire et écrire les issues et les merge requests. Son pendant pour GitHub est le skill `forge-github`. Ce qui n'a pas été confirmé dans la documentation est marqué « non vérifié » : le tester sur un projet GitLab de test avant de s'y fier.
 
 ## Quand l'utiliser
 
 - Le remote `origin` pointe vers un GitLab (`gitlab.com` ou une instance auto-hébergée)
-- Styx ou Courier doit lire ou écrire une issue ou une merge request
+- Une issue ou une merge request doit être lue ou écrite
 
 ## Vocabulaire
 
@@ -22,7 +22,7 @@ Les commandes de GitLab pour Styx (issues) et Courier (merge requests). Son pend
 - `glab` installé et connecté : `glab auth login`. Pour une instance auto-hébergée : `glab auth login --hostname <hôte>`.
 - `glab` déduit l'hôte et le projet du remote `origin` quand on est dans le dépôt.
 
-## Issues (Styx)
+## Issues
 
 - Lire une issue : `glab issue view <n> --comments`. La sortie JSON n'est pas vérifiée.
 - Créer : `glab issue create -t "<titre>" --description-file <fichier> -l us -l brouillon --yes`
@@ -34,7 +34,7 @@ Les commandes de GitLab pour Styx (issues) et Courier (merge requests). Son pend
   - **Repli sûr** : créer la tâche comme une issue reliée à la US, avec `--linked-issues <US> --link-type relates_to` ; la ligne `US : #N` en tête du corps garde le lien lisible.
   - **Hiérarchie** : GitLab sait placer une tâche comme enfant d'une issue (action rapide `/set_parent #<US>` dans la description de la tâche). Savoir si `glab` crée une tâche de ce type n'est pas vérifié, et la disponibilité selon l'offre GitLab non plus.
 
-## Merge requests (Courier)
+## Merge requests
 
 - Ouvrir : `glab mr create -t "<titre>" --description "Closes #N" --target-branch <défaut> --yes` (`--description ""` s'il n'y a aucune issue à fermer)
 - Lire l'état : `glab mr view <n>`

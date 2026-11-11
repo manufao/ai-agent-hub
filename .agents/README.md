@@ -36,7 +36,7 @@ Demande métier ou idée
 
 Styx n'apparaît pas dans le flux : la session principale l'appelle, après votre validation, pour publier la User Story (labels `us` et `brouillon`, puis `prete` après Verifier) et les tâches de Slice (label `tache`, puis `decoupee` sur la User Story), et pour relire ces issues au profit de Blueprint, Forge, Specimen et Gatekeeper.
 
-Blueprint, Forge, Pulse et Specimen enregistrent chacun leur plan dans `docs/plans/<date>-<sujet>/` : c'est la trace de ce qui a été décidé avant de coder.
+Blueprint, Forge, Pulse et Specimen enregistrent chacun leur plan dans `.docs/plans/<date>-<sujet>/` : c'est la trace de ce qui a été décidé avant de coder.
 
 Refactor reste hors de ce flux : on l'appelle à la demande, sur une zone qu'Inspector juge à refactorer lors d'un audit.
 
@@ -49,7 +49,7 @@ Blueprint dialogue avec vous : il se lance dans la session principale, jamais en
 - **Claude Code** : `claude --agent blueprint-architect --effort high`. L'effort est aussi fixé dans l'agent, mais la documentation ne dit pas s'il s'applique à une session lancée avec `--agent` : l'option `--effort` le garantit. Pour contrôler le niveau actif, tapez `/effort`.
 - **opencode** : c'est un agent principal (`primary`). Choisissez-le dans l'interface (la touche Tab change d'agent principal, d'après la documentation), ou fixez-le par défaut avec `default_agent` dans `opencode.json`.
 
-À la fin, Blueprint écrit son ADR dans `docs/plans/<date>-<sujet>/architecture.md` : relisez-la avant d'appeler Forge.
+À la fin, Blueprint écrit son ADR dans `.docs/plans/<date>-<sujet>/architecture.md` : relisez-la avant d'appeler Forge.
 
 ## Catégories de skills
 

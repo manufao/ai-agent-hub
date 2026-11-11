@@ -9,7 +9,7 @@ Un refactoring change la structure sans changer le comportement. Le rendre sûr 
 
 ## Quand l'utiliser
 
-- Inspector a rendu, en audit, un verdict À REFACTORER
+- Un audit de maintenabilité a conclu qu'une zone doit être refactorée
 - Une zone bloque une fonctionnalité à venir et doit être remise en ordre d'abord
 
 ## Instructions
