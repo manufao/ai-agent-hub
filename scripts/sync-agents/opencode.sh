@@ -39,6 +39,7 @@ merge_providers() {
 
 # Signale les modèles Ollama référencés par un agent mais pas installés
 warn_missing_ollama_models() {
+  [ "$agents" -gt 0 ] || return 0
   command -v ollama >/dev/null 2>&1 || return 0
   local installed model missing=0
   installed="$(ollama list 2>/dev/null | awk 'NR > 1 { print $1 }')" || return 0
