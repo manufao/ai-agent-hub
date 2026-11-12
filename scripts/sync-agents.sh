@@ -11,6 +11,10 @@
 # les skills sont reliés par des liens symboliques. À relancer après chaque
 # modification d'un agent ou d'une persona (git pull compris), ou si ce dépôt
 # change d'emplacement.
+#
+# Ce fichier ne fait qu'orchestrer :
+#   scripts/sync-agents/common.sh   fonctions partagées (persona, agents, skills)
+#   scripts/sync-agents/<outil>.sh  emplacements et étapes propres à l'outil
 
 set -euo pipefail
 
@@ -20,7 +24,8 @@ Usage : scripts/sync-agents.sh [--dry-run] [--force] <outil> [dossier-projet]
 
 Outils :
   claude-code   agents dans ~/.claude/agents, skills dans ~/.claude/skills
-  opencode      agents dans ~/.config/opencode/agents, skills dans ~/.agents/skills
+  opencode      agents dans ~/.config/opencode/agents, skills dans ~/.agents/skills,
+                fournisseurs de modèles fusionnés dans ~/.config/opencode/opencode.json
   codex         agents dans ~/.codex/agents, skills dans ~/.agents/skills
   antigravity   agents dans ~/.gemini/config/agents/<nom>/agent.md, skills dans ~/.gemini/config/skills
   cursor        pas d'emplacement global : indiquer le dossier du projet cible
@@ -64,175 +69,45 @@ if [ -z "$TOOL" ]; then
 fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+TOOLS_DIR="$ROOT/scripts/sync-agents"
 
+# Un nom d'outil sert de nom de fichier : on refuse tout ce qui n'est pas un outil connu
 case "$TOOL" in
-  claude-code)
-    SRC="$ROOT/.claude/agents"
-    EXT="md"
-    AGENTS_DST="$HOME/.claude/agents"
-    SKILLS_DST="$HOME/.claude/skills"
-    CHECK_DIR="$HOME/.claude"
-    ;;
-  opencode)
-    SRC="$ROOT/.opencode/agents"
-    EXT="md"
-    AGENTS_DST="$HOME/.config/opencode/agents"
-    SKILLS_DST="$HOME/.agents/skills"
-    CHECK_DIR="$HOME/.config/opencode"
-    ;;
-  codex)
-    SRC="$ROOT/.codex/agents"
-    EXT="toml"
-    AGENTS_DST="$HOME/.codex/agents"
-    SKILLS_DST="$HOME/.agents/skills"
-    CHECK_DIR="$HOME/.codex"
-    ;;
-  antigravity)
-    SRC="$ROOT/.agents/agents"
-    EXT="md"
-    AGENTS_DST="$HOME/.gemini/config/agents"
-    SKILLS_DST="$HOME/.gemini/config/skills"
-    CHECK_DIR="$HOME/.gemini"
-    ;;
-  cursor)
-    if [ -z "$PROJECT" ]; then
-      echo "cursor n'a pas d'emplacement global : indiquer le dossier du projet cible." >&2
-      usage >&2
-      exit 1
-    fi
-    if [ ! -d "$PROJECT" ]; then
-      echo "Dossier introuvable : $PROJECT" >&2
-      exit 1
-    fi
-    PROJECT="$(cd "$PROJECT" && pwd)"
-    SRC="$ROOT/.cursor/rules"
-    EXT="mdc"
-    AGENTS_DST="$PROJECT/.cursor/rules"
-    SKILLS_DST="$PROJECT/.agents/skills"
-    CHECK_DIR="$PROJECT"
-    ;;
-  *)
-    echo "Outil inconnu : $TOOL" >&2
-    usage >&2
-    exit 1
-    ;;
+  */* | common | .*) TOOL_FILE="" ;;
+  *) TOOL_FILE="$TOOLS_DIR/$TOOL.sh" ;;
 esac
+if [ -z "$TOOL_FILE" ] || [ ! -f "$TOOL_FILE" ]; then
+  echo "Outil inconnu : $TOOL" >&2
+  usage >&2
+  exit 1
+fi
+
+# shellcheck source=sync-agents/common.sh
+. "$TOOLS_DIR/common.sh"
+# shellcheck source=/dev/null
+. "$TOOL_FILE"
 
 if [ ! -d "$SRC" ]; then
   echo "Dossier d'agents introuvable : $SRC" >&2
   exit 1
 fi
 
-if [ -n "${CHECK_DIR:-}" ] && [ ! -d "$CHECK_DIR" ]; then
-  if [ "$FORCE" = 0 ]; then
-    echo "Dossier racine introuvable pour $TOOL : $CHECK_DIR" >&2
-    echo "L'outil ne semble pas installé ou configuré sur cette machine. Utilisez --force (-f) pour forcer." >&2
-    exit 1
-  fi
+if [ ! -d "$CHECK_DIR" ] && [ "$FORCE" = 0 ]; then
+  echo "Dossier racine introuvable pour $TOOL : $CHECK_DIR" >&2
+  echo "L'outil ne semble pas installé ou configuré sur cette machine. Utilisez --force (-f) pour forcer." >&2
+  exit 1
 fi
 
-say() {
-  if [ "$DRY_RUN" = 1 ]; then
-    echo "[dry-run] $*"
-  else
-    echo "$*"
-  fi
-}
-
-# Remplace les chemins relatifs .agents/ par des chemins absolus vers ce dépôt
-rewrite_paths() {
-  ROOT="$ROOT" perl -pe 's#(?:\.\./\.\./|(?<=[`\s]))\.agents/#$ENV{ROOT}/.agents/#g' "$@"
-}
-
-# Remplace le corps du wrapper par la persona qu'il référence, sans son
-# front-matter. Pour codex, la persona devient la valeur de developer_instructions.
-inline_persona() {
-  ROOT="$ROOT" EXT="$EXT" perl -e '
-    my $file = $ARGV[0];
-    open my $wh, "<", $file or die "$file : $!\n";
-    my $wrapper = do { local $/; <$wh> };
-    $wrapper =~ m{\.agents/([A-Za-z0-9_-]+)\.md} or die "Aucune persona référencée dans $file\n";
-    my $path = "$ENV{ROOT}/.agents/$1.md";
-    open my $ph, "<", $path or die "Persona introuvable : $path\n";
-    my $persona = do { local $/; <$ph> };
-    $persona =~ s/\A---\n.*?\n---\n//s;
-    $persona =~ s/\A\s+//;
-    $persona =~ s/\s+\z/\n/;
-    if ($ENV{EXT} eq "toml") {
-      die "La persona $path contient des triples apostrophes\n" if $persona =~ /\x27\x27\x27/;
-      $wrapper =~ s/^developer_instructions\s*=\s*""".*?"""/developer_instructions = \x27\x27\x27\n${persona}\x27\x27\x27/ms
-        or die "developer_instructions introuvable dans $file\n";
-      print $wrapper;
-    } else {
-      $wrapper =~ m{\A(---\n.*?\n---\n)(.*)\z}s or die "Front-matter introuvable dans $file\n";
-      my ($front, $body) = ($1, $2);
-      my @extra = grep {
-        !/\A# / && !/persona (définie dans|ci-dessus)/ && !/\A@\S*\.agents\/[A-Za-z0-9_-]+\.md\z/
-      } grep { /\S/ } map { s/\A\s+|\s+\z//gr } split /\n\s*\n/, $body;
-      print "$front\n$persona";
-      print "\n", join("\n\n", @extra), "\n" if @extra;
-    }
-  ' "$1"
-}
-
-install_agent() {
-  local content
-  content="$(inline_persona "$1")"
-  printf '%s\n' "$content" | rewrite_paths >"$2"
-}
-
-# --- Agents : en-tête du wrapper suivi de la persona
-[ "$DRY_RUN" = 1 ] || mkdir -p "$AGENTS_DST"
 agents=0
-if [ "$TOOL" = "antigravity" ]; then
-  for dir in "$SRC"/*/; do
-    [ -d "$dir" ] || continue
-    file="$dir/agent.md"
-    [ -f "$file" ] || continue
-    name="$(basename "$dir")"
-    target_dir="$AGENTS_DST/$name"
-    say "agent  $target_dir/agent.md"
-    if [ "$DRY_RUN" = 0 ]; then
-      mkdir -p "$target_dir"
-      install_agent "$file" "$target_dir/agent.md"
-    fi
-    agents=$((agents + 1))
-  done
-else
-  for file in "$SRC"/*."$EXT"; do
-    [ -f "$file" ] || continue
-    name="$(basename "$file")"
-    say "agent  $AGENTS_DST/$name"
-    if [ "$DRY_RUN" = 0 ]; then
-      install_agent "$file" "$AGENTS_DST/$name"
-    fi
-    agents=$((agents + 1))
-  done
-fi
-
-# --- Skills : un lien symbolique par skill, vers ce dépôt
-[ "$DRY_RUN" = 1 ] || mkdir -p "$SKILLS_DST"
 skills=0
 skipped=0
-for dir in "$ROOT"/.agents/skills/*/*/; do
-  dir="${dir%/}"
-  [ -f "$dir/SKILL.md" ] || continue
-  name="$(basename "$dir")"
-  target="$SKILLS_DST/$name"
-  if [ -e "$target" ] && [ ! -L "$target" ]; then
-    echo "skill  $target existe déjà et n'est pas un lien : ignoré" >&2
-    skipped=$((skipped + 1))
-    continue
-  fi
-  say "skill  $target -> $dir"
-  if [ "$DRY_RUN" = 0 ]; then
-    ln -sfn "$dir" "$target"
-  fi
-  skills=$((skills + 1))
-done
+
+[ "$DRY_RUN" = 1 ] || mkdir -p "$AGENTS_DST"
+install_agents
+
+[ "$DRY_RUN" = 1 ] || mkdir -p "$SKILLS_DST"
+install_skills
 
 say "$agents agents et $skills skills pour $TOOL ($skipped ignorés)"
 
-if [ "$TOOL" = "cursor" ]; then
-  echo "Ces fichiers sont dans $PROJECT : pensez à les exclure de git (.git/info/exclude)." >&2
-fi
+after_sync
