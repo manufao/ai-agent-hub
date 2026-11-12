@@ -49,14 +49,23 @@ Les wrappers et le `opencode.json` de ce dépôt contiennent une configuration d
 
 ### La configuration d'exemple : Ollama en local
 
-Les clés de `models` dans `opencode.json` sont les tags Ollama eux-mêmes (`qwen3:14b`, pas un alias). Il suffit donc de télécharger les modèles, sans créer de Modelfile :
+Les clés de `models` dans `opencode.json` sont les tags Ollama eux-mêmes (`qwen3:8b`, pas un alias). Trois modèles se téléchargent tels quels :
 
 ```bash
-ollama pull qwen3-coder:30b   # Forge, Specimen, Inspector, Refactor, Junior, Pulse
-ollama pull qwen3:30b         # Blueprint (mode thinking)
-ollama pull qwen3:14b         # Atlas, Verifier, Slice, Scribe, Styx, Courier
+ollama pull qwen3-coder:30b   # Blueprint, Forge, Specimen, Pulse, Inspector, Refactor, Junior
+ollama pull mimo-v2.6:9b      # Slice (mode thinking)
 ollama pull qwen3:8b          # Gatekeeper
 ```
+
+Le quatrième, `gemma4:12b-32k` (Atlas, Verifier, Scribe, Styx, Courier), est une variante locale de `dna5rm/gemma4:12b-8k`. Ce modèle fixe sa fenêtre à 8192 jetons dans son Modelfile, et ce réglage l'emporte sur celui du serveur décrit plus bas : il faut donc créer une variante à 32k :
+
+```bash
+ollama pull dna5rm/gemma4:12b-8k
+printf 'FROM dna5rm/gemma4:12b-8k\nPARAMETER num_ctx 32768\n' > Modelfile.gemma4-32k
+ollama create gemma4:12b-32k -f Modelfile.gemma4-32k
+```
+
+Ollama ne charge en mémoire que le modèle de l'agent actif, et le décharge après 5 minutes d'inactivité. Avec cette répartition, un enchaînement complet (Atlas, Slice, Blueprint, Forge, Junior, Inspector…) ne passe que par trois modèles.
 
 La fenêtre de contexte se règle côté Ollama, pas dans `opencode.json` : opencode passe par l'API compatible OpenAI (`/v1`), qui ignore `num_ctx`. Par défaut elle vaut 4096 jetons, trop peu pour une persona et ses skills : les appels d'outils échouent. Réglez-la à 32k une fois par machine :
 
