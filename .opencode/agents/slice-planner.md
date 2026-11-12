@@ -1,7 +1,7 @@
 ---
 description: "Découpe fonctionnelle et technique : transforme une US validée en tranches et tâches livrables"
 mode: subagent
-model: ollama/qwen3:14b
+model: ollama/mimo-v2.6:9b
 temperature: 0.2
 permission:
   edit: deny
