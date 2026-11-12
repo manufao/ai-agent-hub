@@ -11,7 +11,7 @@
         "qwen3-coder:30b": { "name": "Qwen3 Coder 30B" },
         "gemma4:12b-32k": { "name": "Gemma 4 12B (32k)" },
         "mimo-v2.6:9b": { "name": "MiMo v2.6 9B (thinking)" },
-        "qwen3:8b": { "name": "Qwen3 8B" }
+        "qwen3.5:9b": { "name": "Qwen3.5 9B" }
       }
     }
   }
