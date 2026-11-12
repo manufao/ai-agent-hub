@@ -1,7 +1,7 @@
 ---
 description: "Documentation technique : architecture, ADR, API, onboarding, README et changelog"
 mode: subagent
-model: ollama/qwen3:14b
+model: ollama/gemma4:12b-32k
 temperature: 0.3
 permission:
   edit: allow
