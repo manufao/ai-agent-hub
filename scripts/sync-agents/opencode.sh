@@ -7,31 +7,50 @@ AGENTS_DST="$HOME/.config/opencode/agents"
 SKILLS_DST="$HOME/.agents/skills"
 CHECK_DIR="$HOME/.config/opencode"
 
-PROVIDERS_SRC="$ROOT/opencode.json"
+CONFIG_SRC="$ROOT/opencode.json"
 CONFIG_DST="$HOME/.config/opencode/opencode.json"
 
 after_sync() {
-  merge_providers
+  merge_config
   warn_missing_ollama_models
 }
 
 # Les wrappers référencent des modèles « <fournisseur>/<modèle> » déclarés dans
 # le opencode.json de ce dépôt. Hors de ce dépôt, opencode ne lit que sa
 # configuration globale : sans ces fournisseurs, les agents échouent. On y
-# fusionne donc la section provider de ce dépôt, sans toucher au reste. Un
-# fichier avec commentaires (JSONC) n'est pas modifié.
-merge_providers() {
-  say "config $CONFIG_DST (fournisseurs de $PROVIDERS_SRC)"
+# fusionne donc la section provider de ce dépôt, ainsi que ses réglages
+# d'agents intégrés (section agent, par exemple le modèle de build), sans toucher
+# au reste. Un fichier avec commentaires (JSONC) n'est pas modifié.
+merge_config() {
+  say "config $CONFIG_DST (fournisseurs et agents intégrés de $CONFIG_SRC)"
   [ "$DRY_RUN" = 0 ] || return 0
-  SRC_JSON="$PROVIDERS_SRC" DST_JSON="$CONFIG_DST" perl -MJSON::PP -e '
+  SRC_JSON="$CONFIG_SRC" DST_JSON="$CONFIG_DST" perl -MJSON::PP -e '
     sub slurp { open my $h, "<", $_[0] or die "$_[0] : $!\n"; local $/; <$h> }
     my $src = eval { decode_json(slurp($ENV{SRC_JSON})) } or die "JSON invalide : $ENV{SRC_JSON}\n";
     my $dst = { "\$schema" => "https://opencode.ai/config.json" };
     if (-e $ENV{DST_JSON}) {
       $dst = eval { decode_json(slurp($ENV{DST_JSON})) }
-        or die "$ENV{DST_JSON} n\x27est pas du JSON strict (commentaires ?) : ajoutez-y à la main la section provider de $ENV{SRC_JSON}\n";
+        or die "$ENV{DST_JSON} n\x27est pas du JSON strict (commentaires ?) : ajoutez-y à la main les sections provider et agent de $ENV{SRC_JSON}\n";
+    }
+    # Chaque section fusionnée doit être un objet, des deux côtés
+    sub object_or_die {
+      my ($value, $where) = @_;
+      die "$where doit être un objet JSON : corrigez-le avant de relancer\n"
+        if defined $value && ref $value ne "HASH";
+    }
+    object_or_die($dst, $ENV{DST_JSON});
+    for my $section (qw(provider agent)) {
+      object_or_die($src->{$section}, "$section dans $ENV{SRC_JSON}");
+      object_or_die($dst->{$section}, "$section dans $ENV{DST_JSON}");
+    }
+    for my $name (keys %{ $src->{agent} || {} }) {
+      object_or_die($src->{agent}{$name}, "agent.$name dans $ENV{SRC_JSON}");
+      object_or_die($dst->{agent}{$name}, "agent.$name dans $ENV{DST_JSON}");
     }
     $dst->{provider}{$_} = $src->{provider}{$_} for keys %{ $src->{provider} || {} };
+    for my $name (keys %{ $src->{agent} || {} }) {
+      $dst->{agent}{$name} = { %{ $dst->{agent}{$name} || {} }, %{ $src->{agent}{$name} } };
+    }
     open my $out, ">", $ENV{DST_JSON} or die "$ENV{DST_JSON} : $!\n";
     print $out JSON::PP->new->utf8->pretty->canonical->encode($dst);
   '
