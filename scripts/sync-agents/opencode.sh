@@ -32,6 +32,21 @@ merge_config() {
       $dst = eval { decode_json(slurp($ENV{DST_JSON})) }
         or die "$ENV{DST_JSON} n\x27est pas du JSON strict (commentaires ?) : ajoutez-y à la main les sections provider et agent de $ENV{SRC_JSON}\n";
     }
+    # Chaque section fusionnée doit être un objet, des deux côtés
+    sub object_or_die {
+      my ($value, $where) = @_;
+      die "$where doit être un objet JSON : corrigez-le avant de relancer\n"
+        if defined $value && ref $value ne "HASH";
+    }
+    object_or_die($dst, $ENV{DST_JSON});
+    for my $section (qw(provider agent)) {
+      object_or_die($src->{$section}, "$section dans $ENV{SRC_JSON}");
+      object_or_die($dst->{$section}, "$section dans $ENV{DST_JSON}");
+    }
+    for my $name (keys %{ $src->{agent} || {} }) {
+      object_or_die($src->{agent}{$name}, "agent.$name dans $ENV{SRC_JSON}");
+      object_or_die($dst->{agent}{$name}, "agent.$name dans $ENV{DST_JSON}");
+    }
     $dst->{provider}{$_} = $src->{provider}{$_} for keys %{ $src->{provider} || {} };
     for my $name (keys %{ $src->{agent} || {} }) {
       $dst->{agent}{$name} = { %{ $dst->{agent}{$name} || {} }, %{ $src->{agent}{$name} } };
