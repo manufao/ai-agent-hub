@@ -52,8 +52,8 @@ Les wrappers et le `opencode.json` de ce dépôt contiennent une configuration d
 Les clés de `models` dans `opencode.json` sont les tags Ollama eux-mêmes (`qwen3.5:9b`, pas un alias). Trois modèles se téléchargent tels quels :
 
 ```bash
-ollama pull qwen3-coder:30b   # Blueprint, Forge, Specimen, Pulse, Inspector, Refactor, Junior
-ollama pull mimo-v2.6:9b      # Slice (mode thinking)
+ollama pull qwen3-coder:30b   # Blueprint, Specimen, Pulse, Inspector, Refactor, Junior
+ollama pull mimo-v2.6:9b      # Slice, Forge (mode thinking)
 ollama pull qwen3.5:9b        # Gatekeeper
 ```
 
