@@ -1,7 +1,7 @@
 ---
 description: "Quality gate : contrôle la Definition of Done avant merge ou livraison"
 mode: subagent
-model: ollama/qwen3:8b
+model: ollama/qwen3.5:9b
 temperature: 0.1
 permission:
   edit: deny
