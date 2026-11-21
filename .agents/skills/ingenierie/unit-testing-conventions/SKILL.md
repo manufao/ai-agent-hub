@@ -37,6 +37,8 @@ it('should show the next figurine when next is clicked', async () => {
 
 **i18n.** Ne pas mocker les traductions ni chercher par clé : utiliser le texte réellement rendu.
 
+**Isolation.** Un test unitaire n'ouvre aucune vraie base de données, ne lit ni n'écrit aucun fichier, n'appelle aucun réseau et ne lance aucun sous-processus : ces accès passent par des mocks. Il ne dépend d'aucun autre test, ni de leur ordre d'exécution, ni d'un état partagé : chaque test pose ses propres données et part de mocks vides.
+
 **Mocks.**
 
 - Mocker les dépendances testées ailleurs (utilitaires, stores, API, services injectés), jamais l'unité testée. Chaque dépendance a son propre objet de mock, chaque méthode mockée est un `vi.fn()`, et le mock renvoie le type exact de la vraie fonction.
