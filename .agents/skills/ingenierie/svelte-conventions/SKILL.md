@@ -1,6 +1,6 @@
 ---
 name: svelte-conventions
-description: "À utiliser pour écrire, relire ou valider du code Svelte 5 / SvelteKit : runes ($state, $derived, $effect, $props), interface Props, événements, absence de syntaxe Svelte 4, outils MCP Svelte. Complète project-structure et styling-conventions."
+description: "À utiliser pour écrire, relire ou valider du code Svelte 5 / SvelteKit : runes ($state, $derived, $effect, $props), interface Props, événements, absence de syntaxe Svelte 4, vérification par svelte-check et ESLint, choix de la structure d'un projet SvelteKit. Complète project-structure et styling-conventions."
 ---
 
 # Conventions Svelte 5
@@ -28,16 +28,33 @@ Ce qui est propre à Svelte 5. Dossiers et barrels : `project-structure`. Style 
 - Si le projet a un système d'i18n (Paraglide par exemple), tout texte visible passe par lui.
 - Labels ARIA sur les éléments interactifs sans texte visible.
 
-### Outils MCP Svelte (si disponibles)
+### Vérification sans serveur MCP
 
-1. `list-sections`, puis `get-documentation` sur toutes les sections utiles quand une API n'est pas certaine.
-2. `svelte-autofixer` sur chaque composant écrit ou modifié, jusqu'à zéro problème. Obligatoire avant de rendre du code.
-3. `playground-link` seulement sur demande, jamais pour du code déjà écrit dans des fichiers.
+Aucun serveur MCP n'est requis : le compilateur et l'outillage du projet suffisent.
+
+- **Mode runes forcé** : `compilerOptions: { runes: true }` dans `svelte.config.js`. La syntaxe Svelte 4 (`$:`, `export let`, `on:click`) ne compile alors plus, ce qui vaut mieux qu'une consigne à respecter.
+- **`svelte-check`** (via `pnpm run check`) : erreurs de types et avertissements d'accessibilité.
+- **`eslint-plugin-svelte`** (via `pnpm run lint`) : mauvais usages des runes et règles propres à Svelte.
+- **Doc officielle en cas de doute sur une API** : lire `https://svelte.dev/llms-small.txt` (version condensée) ou `https://svelte.dev/llms.txt` (index des sections), avec un simple fetch HTTP. Ne pas deviner une API.
+
+## Choisir la structure
+
+Deux structures d'exemple, à lire seulement quand on organise un projet SvelteKit :
+
+- `references/structure-par-fonctionnalite.md` : un dossier par entité métier
+- `references/structure-technique.md` : un dossier par type de fichier, plus légère
+
+Pour choisir :
+
+1. **L'existant gagne** : un projet déjà structuré garde sa structure.
+2. **Chercher les faits** : une User Story, un plan dans `.docs/plans/` ou une issue qui donne le nombre d'entités, la part de logique serveur et la durée de vie prévue.
+3. **Sinon, poser les questions** à l'utilisateur, avec une réponse recommandée : combien d'entités métier, et un écran en croise-t-il plusieurs ? Y a-t-il une logique serveur importante (base de données, API tierces) ? Prototype ou produit durable ?
+4. **Recommandation par défaut** : par fonctionnalité dès que les entités sont nombreuses ou la logique serveur importante, technique sinon.
 
 ## Instructions
 
 1. Lire le composant et ceux qui l'utilisent.
-2. Passer les règles, puis `svelte-autofixer` si le MCP est disponible.
+2. Passer les règles, en consultant la doc officielle si une API n'est pas certaine.
 3. Appliquer aussi `project-structure` et `styling-conventions`.
 4. Lancer les commandes du projet, en général `pnpm run format`, `pnpm run lint` et `pnpm run check`. Toutes doivent passer.
 
@@ -48,6 +65,5 @@ Ce qui est propre à Svelte 5. Dossiers et barrels : `project-structure`. Style 
 1. `chemin/Composant.svelte:ligne` : [règle] — [constat] → [correction]
 
 ### Vérifications
-- svelte-autofixer : [aucun problème | liste]
 - format / lint / check : [résultat de chaque commande]
 ```
