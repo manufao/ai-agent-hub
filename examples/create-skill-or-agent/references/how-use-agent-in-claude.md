@@ -48,6 +48,6 @@ Le frontmatter accepte `model` (alias `sonnet`, `opus`, `haiku`, `fable`, identi
 | Verifier, Slice, Specimen, Pulse, Refactor, Gatekeeper, Styx, Courier | `sonnet` | `medium` | Jugement sur des critères définis, ou tâches à plusieurs règles à respecter (conventions de projet, forge) |
 | Scribe, Junior | `sonnet` | `low` | Rédiger à partir du code, exécuter un plan précis |
 
-Pour vérifier ce qui tourne : `/tasks` affiche le modèle et l'effort de chaque sous-agent, `/effort` celui de la session. Un sous-agent reprend la réflexion étendue de la conversation : il n'existe pas de réglage de réflexion par agent. Blueprint tourne en session principale : on fixe aussi son effort au lancement (`claude --agent blueprint-architect --effort high`), car la documentation ne dit pas que celui du frontmatter s'y applique.
+Pour vérifier ce qui tourne : `/tasks` affiche le modèle et l'effort de chaque sous-agent, `/effort` celui de la session. Un sous-agent reprend la réflexion étendue de la conversation : il n'existe pas de réglage de réflexion par agent. Blueprint tourne en session principale : on fixe aussi son effort au lancement (`claude --agent blueprint-architect --effort max`), car la documentation ne dit pas que celui du frontmatter s'y applique.
 
 Source — vérifier les noms de champs actuels avant de s'y fier : https://code.claude.com/docs/en/sub-agents
