@@ -43,10 +43,11 @@ Le frontmatter accepte `model` (alias `sonnet`, `opus`, `haiku`, `fable`, identi
 
 | Agents | Modèle | Effort | Raison |
 |---|---|---|---|
-| Blueprint, Forge, Inspector | `opus` | `high` | Arbitrer une structure, produire un plan que Junior exécutera sans l'interpréter, trouver des bugs |
-| Atlas | `sonnet` | `high` | Le grilling du besoin demande du raisonnement |
-| Verifier, Slice, Specimen, Pulse, Refactor, Gatekeeper, Styx, Courier | `sonnet` | `medium` | Jugement sur des critères définis, ou tâches à plusieurs règles à respecter (conventions de projet, forge) |
-| Scribe, Junior | `sonnet` | `low` | Rédiger à partir du code, exécuter un plan précis |
+| Blueprint | `opus` | `max` | Définir la structure du projet : décision coûteuse à défaire, appelée rarement et seule |
+| Atlas, Forge, Inspector | `opus` | `medium` | Cadrer le besoin en User Stories, produire un plan que Junior exécutera sans l'interpréter, trouver des bugs |
+| Specimen, Refactor | `sonnet` | `high` | Cas limites et régressions à imaginer, dépendances à comprendre pour un refactoring peu risqué |
+| Verifier, Slice, Pulse, Gatekeeper, Courier, Scribe | `sonnet` | `medium` | Jugement sur des critères définis, ou tâches à plusieurs règles à respecter (conventions de projet, forge, affirmations vérifiées dans le code) |
+| Junior, Styx | `sonnet` | `low` | Exécuter un plan précis, publier un texte déjà validé avec des commandes connues |
 
 Pour vérifier ce qui tourne : `/tasks` affiche le modèle et l'effort de chaque sous-agent, `/effort` celui de la session. Un sous-agent reprend la réflexion étendue de la conversation : il n'existe pas de réglage de réflexion par agent. Blueprint tourne en session principale : on fixe aussi son effort au lancement (`claude --agent blueprint-architect --effort max`), car la documentation ne dit pas que celui du frontmatter s'y applique.
 
