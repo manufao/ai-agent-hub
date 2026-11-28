@@ -1,4 +1,5 @@
-# Mises à jour automatiques : une PR groupée par semaine et par écosystème.
+# Mises à jour hebdomadaires. Les changements mineurs et correctifs npm sont regroupés en une PR ;
+# les versions majeures arrivent séparément (5 PR ouvertes au plus).
 # `npm` couvre aussi pnpm (Dependabot lit pnpm-lock.yaml).
 version: 2
 updates:
