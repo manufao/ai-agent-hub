@@ -11,6 +11,8 @@ pnpm import && rm -rf package-lock.json node_modules && pnpm install
 
 Dans `package.json`, déclarer `"packageManager": "pnpm@<version>"` (voir `pnpm -v`), exigé par `pnpm/action-setup` en CI, et le script `"preinstall": "npx only-allow pnpm"`, qui fait échouer `npm install` et `yarn` dans le projet. Ajouter `package-lock.json` et `yarn.lock` au `.gitignore`.
 
+Imposer aussi les versions d'outils : `"engines": { "node": ">=<version de .nvmrc>" }` dans `package.json`, et `engine-strict=true` dans `.npmrc` (pnpm l'y lit). Sans cette ligne, `engines` n'est qu'un avertissement ; avec elle, `pnpm install` échoue sur une version de Node trop ancienne. Garder `.nvmrc` et `engines` alignés, et la version de la CI (`node-version`) sur eux.
+
 ## ESLint et Prettier
 
 ```bash
